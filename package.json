@@ -8,13 +8,29 @@
     "start": "next start"
   },
   "dependencies": {
+    "@zeit/next-css": "^1.0.1",
+    "apollo-cache-inmemory": "^1.6.6",
+    "apollo-client": "^2.6.9",
+    "apollo-link-http": "^1.5.17",
+    "detect-browser": "^5.1.0",
+    "graphql": "^15.0.0",
+    "imagemin-mozjpeg": "^8.0.0",
+    "imagemin-optipng": "^7.1.0",
+    "imagemin-svgo": "^7.1.0",
     "next": "9.4.0",
+    "next-compose-plugins": "^2.2.0",
+    "next-optimized-images": "^2.6.0",
     "react": "16.13.1",
-    "react-dom": "16.13.1"
+    "react-apollo": "^3.1.5",
+    "react-dom": "16.13.1",
+    "responsive-loader": "^1.2.0",
+    "sharp": "^0.25.2"
   },
   "devDependencies": {
     "@types/node": "^13.13.5",
     "@types/react": "^16.9.35",
+    "postcss-preset-env": "^6.7.0",
+    "tailwindcss": "^1.4.6",
     "typescript": "^3.8.3"
   }
 }

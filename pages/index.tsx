@@ -16,8 +16,12 @@ const Home: NextPage<Props> = ({}) => (
 				`}}
 			/>
 		</Head>
-		<div>
-      Welcome to RecipeJoiner! Anyone can cook, and this is a home for all who consider themselves a chef.
+    <img
+      className="h-40 w-40 m-auto mt-20"
+      src={require('images/logos/rj-logo.svg')}
+    />
+		<div className="text-center mt-5">
+      Welcome to RecipeJoiner! Anyone can cook, and this is a home for all who consider themselves to be a chef.
     </div>
 	</React.Fragment>
 );

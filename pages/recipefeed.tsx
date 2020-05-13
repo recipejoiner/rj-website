@@ -5,6 +5,7 @@ import * as React from 'react';
 import {ALL_RECIPES, AllRecipesData, AllRecipesVarsType, ShortRecipeInfoType} from 'requests/recipes';
 
 import InfiniteScroll, { EdgeType } from 'components/InfiniteScroll';
+import ShortRecipe from 'components/ShortRecipe'
 
 interface RecipeFeedProps {}
 
@@ -73,20 +74,11 @@ const RecipeFeed: NextPage<RecipeFeedProps> = ({}) => {
           >
             {
               edges.map((edge) => {
-                const { node } = edge;
-                const { id, by, title, description, servings } = node;
                 return(
-                  <li
-                    key={id}
-                    className="my-5 p-5 bg-gray-100 rounded-lg shadow-lg"
-                  >
-                    <div className="text-xl">{id}</div>
-                    <h3>{title}</h3>
-                    <div>Chef: {by.username}</div>
-                    <div>{servings}</div>
-                    <p>{description}</p>
-                  </li>
-                )
+                  <ShortRecipe
+                    edge={edge}
+                  />
+                );
               })
             }
           </ul>

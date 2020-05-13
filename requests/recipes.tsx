@@ -21,9 +21,12 @@ export interface AllRecipesData {
     edges: Array<ShortRecipeInfo>;
   }
 }
+export interface AllRecipesVars {
+  cursor: string;
+}
 export const ALL_RECIPES = gql`
   query getAllRecipes($cursor: String) {
-    allRecipes(first: 21, after: $cursor) {
+    allRecipes(first: 7, after: $cursor) {
       pageInfo {
         hasNextPage
       }

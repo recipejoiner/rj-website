@@ -11,9 +11,9 @@ import * as React from 'react';
 import '../styles/tailwind.css';
 
 import ApolloClient from 'apollo-client';
-import { HttpLink, createHttpLink } from 'apollo-link-http';
-import { ApolloProvider } from 'react-apollo';
+import { createHttpLink } from 'apollo-link-http';
 import { InMemoryCache } from 'apollo-cache-inmemory';
+
 import { detect } from 'detect-browser';
 
 export const client = new ApolloClient({
@@ -73,15 +73,13 @@ class MyApp extends App<{}, {}, AppState> {
           <meta key="og:type" property="og:type" content="website" />
           {/* OpenGraph tags end */}
         </Head>
-        <ApolloProvider client={client}>
-          {/* Flex col to allow for putting a header and footer above and below the page */}
-          <div className="min-h-screen flex flex-col">
-            {/* This div exists solely for applying styles, eg giving the page padding */}
-            <div className=" flex-grow antialiased bg-white text-gray-900 w-full relative mx-auto max-w-12xl">
-              <Component {...pageProps} />
-            </div>
+        {/* Flex col to allow for putting a header and footer above and below the page */}
+        <div className="min-h-screen flex flex-col">
+          {/* This div exists solely for applying styles, eg giving the page padding */}
+          <div className=" flex-grow antialiased bg-white text-gray-900 w-full relative mx-auto max-w-12xl">
+            <Component {...pageProps} />
           </div>
-        </ApolloProvider>
+        </div>
       </div>
     );
   }

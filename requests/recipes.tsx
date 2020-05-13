@@ -6,19 +6,24 @@ interface ShortRecipeInfo {
     id: string;
     by: {
       username: string;
+      __typename: string;
     }
     title: string;
     handle: string;
     description: string;
     servings: string;
+    __typename: string;
   }
+  __typename: string;
 }
 export interface AllRecipesData {
   allRecipes: {
     pageInfo: {
       hasNextPage: boolean;
+      __typename: string;
     }
     edges: Array<ShortRecipeInfo>;
+    __typename: string;
   }
 }
 export interface AllRecipesVars {
@@ -26,7 +31,7 @@ export interface AllRecipesVars {
 }
 export const ALL_RECIPES = gql`
   query getAllRecipes($cursor: String) {
-    allRecipes(first: 7, after: $cursor) {
+    allRecipes(first: 10, after: $cursor) {
       pageInfo {
         hasNextPage
       }

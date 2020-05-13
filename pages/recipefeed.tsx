@@ -2,131 +2,90 @@ import Head from 'next/head';
 import { NextPage } from 'next';
 import * as React from 'react';
 
-import client from 'requests/client';
-import {ALL_RECIPES, AllRecipesData, AllRecipesVars} from 'requests/recipes';
-import { useQuery } from '@apollo/react-hooks';
-import { useEvent } from 'helpers/methods';
+import {ALL_RECIPES, AllRecipesData, AllRecipesVarsType, ShortRecipeInfoType} from 'requests/recipes';
+
+import InfiniteScroll, { EdgeType } from 'components/InfiniteScroll';
+import ShortRecipe from 'components/ShortRecipe'
 
 interface RecipeFeedProps {}
 
 const RecipeFeed: NextPage<RecipeFeedProps> = ({}) => {
 
-  const token = process.env.NEXT_PUBLIC_RJ_API_TOKEN || ""
-
-  const { loading, data, error, fetchMore } = useQuery<AllRecipesData, AllRecipesVars>(
-    ALL_RECIPES,
-    {
-      client: client,
-      context: {
-        headers: {
-          authorization: `Bearer ${token}`,
-          'content-type': 'application/json',
-        }
-      }
-    }
-  );
-
-  const [activelyFetching, setActivelyFetching] = React.useState(false);
-
-  const [recipeFeedData, setRecipeFeedData] = React.useState<AllRecipesData>(
-    {
-      allRecipes: {
-        pageInfo: {
-          hasNextPage: true,
-          __typename: ""
-        },
-        edges: [
-          {
-            cursor: "",
-            node: {
-              id: "",
-              by: {
-                username: "",
-                __typename: ""
-              },
-              title: "",
-              handle: "",
-              description: "",
-              servings: "",
+  const queryDataInit: AllRecipesData = {
+    result: {
+      pageInfo: {
+        hasNextPage: true,
+        __typename: ""
+      },
+      edges: [
+        {
+          cursor: "",
+          node: {
+            id: "",
+            by: {
+              username: "",
               __typename: ""
             },
+            title: "",
+            handle: "",
+            description: "",
+            servings: "",
             __typename: ""
-          }
-        ],
-        __typename: ""
-      }
-    }
-  );
-
-  const onLoadMore = () => {
-    setActivelyFetching(true);
-    const { edges } = recipeFeedData.allRecipes;
-    const lastCursor = edges[edges.length - 1].cursor;
-    fetchMore({
-      variables: {
-        cursor: lastCursor
-      },
-      updateQuery: (prev, { fetchMoreResult }) => {
-        if (fetchMoreResult) {
-          let combinedData: AllRecipesData = {
-            allRecipes: {
-              pageInfo: fetchMoreResult.allRecipes.pageInfo,
-              edges: [...recipeFeedData.allRecipes.edges, ...fetchMoreResult.allRecipes.edges],
-              __typename: "RecipeConnection"
-            }
-          }
-          setRecipeFeedData(combinedData);
+          },
+          __typename: ""
         }
-        return(recipeFeedData);
-      }
-    })
-    setActivelyFetching(false);
+      ],
+      __typename: ""
+    }
   }
 
-  const handleScroll = () => {
-    if (!activelyFetching && ((window.innerHeight + window.scrollY) >= document.body.offsetHeight)) {
-      onLoadMore();
-    }
-  };
+  const AllRecipesVars: AllRecipesVarsType = {
+    cursor: null
+  }
 
-  useEvent('scroll', handleScroll);
+  const title = "Recipe Feed - RecipeJoiner";
+  const description = "All of our chefs' recipes!";
 
-  // for initial load
-  const [loaded, setLoad] = React.useState(false);
-  if(loaded === false && data){
-		setRecipeFeedData(data);
-		setLoad(true);
-	}
   return(
     <React.Fragment>
-      {loaded && 
-      (
-        <ul
-          className="p-10 overflow-scroll"
-        >
-          {
-            recipeFeedData.allRecipes.edges.map((recipe) => {
-              const { node } = recipe;
-              const { id, by, title, description, servings } = node;
-              return(
-                <li
-                  key={id}
-                  className="my-5 p-5 bg-gray-100 rounded-lg shadow-lg"
-                >
-                  <div className="text-xl">{id}</div>
-                  <h3>{title}</h3>
-                  <div>Chef: {by.username}</div>
-                  <div>{servings}</div>
-                  <p>{description}</p>
-                </li>
-              )
-            })
-          }
-        </ul>
-      )
-      }
+      <Head>
+        {/* Give the title a key so that it's not duplicated - this allows me to change the page title on other pages */}
+        <title key="title">{title}</title>
+        <meta charSet="utf-8" />
+        <meta
+          key="description"
+          name="description"
+          content={description}
+        />
+        {/* OpenGraph tags */}
+        <meta key="og:url" property="og:url" content={`${process.env.NEXT_PUBLIC_BASE_URL}/recipefeed`} />
+        <meta key="og:title" property="og:title" content={title} />
+        <meta key="og:description" property="og:description" content={description} />
+        {/* OpenGraph tags end */}
+      </Head>
+      <InfiniteScroll
+        QUERY={ALL_RECIPES}
+        QueryData={queryDataInit}
+        QueryVars={AllRecipesVars}
+      >
+        { (edges: Array<EdgeType<ShortRecipeInfoType>>) =>
+          <ul
+            className="p-10"
+          >
+            {
+              edges.map((edge) => {
+                return(
+                  <ShortRecipe
+                    edge={edge}
+                  />
+                );
+              })
+            }
+          </ul>
+        }
+      </InfiniteScroll>
     </React.Fragment>
-  )
+  );
 }
 
-export default RecipeFeed
+export default RecipeFeed;

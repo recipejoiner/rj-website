@@ -62,25 +62,21 @@ const RecipeFeed: NextPage<RecipeFeedProps> = ({}) => {
     setActivelyFetching(true);
     const { edges } = recipeFeedData.allRecipes;
     const lastCursor = edges[edges.length - 1].cursor;
-    console.log(lastCursor)
     fetchMore({
       variables: {
         cursor: lastCursor
       },
       updateQuery: (prev, { fetchMoreResult }) => {
         if (fetchMoreResult) {
-          console.log("prev", prev);
-          console.log("fetchmoreresult", fetchMoreResult);
           let combinedData: AllRecipesData = {
             allRecipes: {
               pageInfo: fetchMoreResult.allRecipes.pageInfo,
-              edges: [...prev.allRecipes.edges, ...fetchMoreResult.allRecipes.edges],
+              edges: [...recipeFeedData.allRecipes.edges, ...fetchMoreResult.allRecipes.edges],
               __typename: "RecipeConnection"
             }
           }
           setRecipeFeedData(combinedData);
         }
-        console.log("recipeFeedData", recipeFeedData)
         return(recipeFeedData);
       }
     })
@@ -94,7 +90,6 @@ const RecipeFeed: NextPage<RecipeFeedProps> = ({}) => {
   };
 
   useEvent('scroll', handleScroll);
-  // window.addEventListener('scroll', (e)=>console.log(e.currentTarget));
 
   // for initial load
   const [loaded, setLoad] = React.useState(false);

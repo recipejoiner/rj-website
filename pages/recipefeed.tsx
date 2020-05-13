@@ -69,7 +69,7 @@ const RecipeFeed: NextPage<RecipeFeedProps> = ({}) => {
       >
         { (edges: Array<EdgeType<ShortRecipeInfoType>>) =>
           <ul
-            className="p-10 overflow-scroll"
+            className="p-10"
           >
             {
               edges.map((edge) => {

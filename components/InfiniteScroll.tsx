@@ -98,13 +98,11 @@ const InfiniteScroll: React.FC<InfiniteScrollProps<any, any>> = ({
     <React.Fragment>
       {loaded && 
       (
-        <ul
-          className="p-10 overflow-scroll"
-        >
+        <div id="_infinitescroll">
           {
             children(infiniteScrollData.result.edges)
           }
-        </ul>
+        </div>
       )
       }
     </React.Fragment>

@@ -11,32 +11,28 @@ import * as React from 'react';
 import '../styles/tailwind.css';
 
 import ApolloClient from 'apollo-client';
-import { HttpLink } from 'apollo-link-http';
+import { HttpLink, createHttpLink } from 'apollo-link-http';
 import { ApolloProvider } from 'react-apollo';
 import { InMemoryCache } from 'apollo-cache-inmemory';
 import { detect } from 'detect-browser';
 
 export const client = new ApolloClient({
-  ssrMode: true,
-  link: new HttpLink({
-    uri: process.env.REACT_APP_STORE_URI,
-    headers: { 'X-Shopify-Storefront-Access-Token': process.env.REACT_APP_STOREFRONT_TOKEN }
-  }),
-  cache: new InMemoryCache(),
-  defaultOptions: {
-    watchQuery: {
-      fetchPolicy: 'no-cache',
-      errorPolicy: 'ignore'
-    },
-    query: {
-      fetchPolicy: 'no-cache',
-      errorPolicy: 'all'
-    },
-    mutate: {
-      errorPolicy: 'all'
-		}
-	}
+  link: createHttpLink({uri: process.env.RECIPEJOINER_API}),
+  cache: new InMemoryCache()
+})
+
+/* using the above a query should look as follows:
+
+client.query({
+  query: MY_QUERY,
+  context: {
+    // example of setting the headers with context per operation
+    headers: {
+      authorization: `Bearer ${token}`
+    }
+  }
 });
+*/
 
 interface AppState {
   // add state variables

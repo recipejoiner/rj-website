@@ -81,9 +81,38 @@ export interface RecipeType {
   }
 }
 
-export const RECIPE_BY_USERNAME_AND_HANDLE = gql `
+export const RECIPE_BY_USERNAME_AND_HANDLE = gql`
   query getRecipeByUsernameAndHandle($username: String, $handle: String) {
     result: recipeBy(username: $username, handle: $handle) {
+      by {
+        username
+      }
+      id
+      title
+      handle
+      description
+      servings
+      steps {
+        stepNum
+        stepTime
+        description
+        ingredients {
+          ingredientInfo {
+            name
+          }
+          quantity
+          unit {
+            name
+          }
+        }
+      }
+    }
+  }
+`;
+
+export const RECIPE_BY_ID = gql`
+  query getRecipeByID($id: ID) {
+    result: recipeBy(id: $id) {
       by {
         username
       }

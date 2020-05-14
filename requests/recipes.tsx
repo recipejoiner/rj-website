@@ -77,6 +77,7 @@ export interface RecipeType {
     handle: string;
     description: string;
     servings: string;
+    ingredients: Array<IngredientType>;
     steps: Array<RecipeStepType>;
   }
 }
@@ -92,6 +93,15 @@ export const RECIPE_BY_USERNAME_AND_HANDLE = gql`
       handle
       description
       servings
+      ingredients {
+        ingredientInfo {
+          name
+        }
+        quantity
+        unit {
+          name
+        }
+      }
       steps {
         stepNum
         stepTime
@@ -121,6 +131,15 @@ export const RECIPE_BY_ID = gql`
       handle
       description
       servings
+      ingredients {
+        ingredientInfo {
+          name
+        }
+        quantity
+        unit {
+          name
+        }
+      }
       steps {
         stepNum
         stepTime

@@ -15,13 +15,27 @@ interface RecipeProps {
 const RecipePage: NextPage<RecipeProps> = (props) => {
   const { recipe, errors } = props;
   if (recipe) {
-  return(
-    <React.Fragment>
-      <div>
-        Recipe page!
-      </div>
-    </React.Fragment>
-  );
+    const { by, description, handle, id, servings, steps, title } = recipe.result;
+    return(
+      <React.Fragment>
+        <h1>{title}</h1>
+        <div>By Chef {by.username}</div>
+        <p>{description}</p>
+        <ul>
+          {
+            steps.map((step) => {
+              const { stepNum, stepTime, description, ingredients, } = step;
+              return(
+                <li key={stepNum}>
+                  <h3>Step {stepNum}: About {stepTime} minutes</h3>
+                  <p>{description}</p>
+                </li>
+              );
+            })
+          }
+        </ul>
+      </React.Fragment>
+    );
   }
   else {
     return (

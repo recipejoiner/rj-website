@@ -116,7 +116,8 @@ export const getStaticProps: GetStaticProps = async ctx => {
 		}).then(res => {
 			return(res.data)
     });
-		return { props: { recipe: data }};
+
+    return { props: { recipe: data }};
   } catch (err) {
     // handle error - probably put honeybadger here or something
     return { props: {}};

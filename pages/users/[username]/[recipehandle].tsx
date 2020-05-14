@@ -9,8 +9,7 @@ import { RecipeType, RecipeStepType, RECIPE_BY_USERNAME_AND_HANDLE } from 'reque
 import client from 'requests/client';
 
 interface RecipeProps {
-  recipe?: RecipeType;
-  errors?: string;
+  recipe: RecipeType;
 }
 
 interface StepProps {
@@ -29,62 +28,43 @@ const Step: React.FC<StepProps> = ({
 }
 
 const RecipePage: NextPage<RecipeProps> = (props) => {
-  const { recipe, errors } = props;
-  if (errors) {
-    return (
-      <React.Fragment>
+  const { recipe } = props;
+  const { by, description, handle, id, steps, servings, title } = recipe?.result || {};
+  const { username } = by || {};
+
+  const pageTitle = `${title ? title.toLowerCase() : "a recipe"}, by ${by ? by.username : "rj"} - RecipeJoiner`;
+  const pageDescription = description;
+  return(
+    <React.Fragment>
+      {
+        recipe &&
         <Head>
-          <title key="title">Error - RecipeJoiner</title>
+          {/* Give the title a key so that it's not duplicated - this allows me to change the page title on other pages */}
+          <title key="title">{pageTitle}</title>
+          <meta charSet="utf-8" />
+          <meta
+            key="description"
+            name="description"
+            content={description}
+          />
+          {/* OpenGraph tags */}
+          <meta key="og:url" property="og:url" content={`${process.env.NEXT_PUBLIC_BASE_URL}/users/${username}/${handle}`} />
+          <meta key="og:title" property="og:title" content={pageTitle} />
+          <meta key="og:description" property="og:description" content={pageDescription} />
+          {/* OpenGraph tags end */}
         </Head>
-        <p>
-          <span
-            className="bg-white text-red text-xl font-bold"
-          >
-            Error:
-          </span>
-          {errors}
-        </p>
-      </React.Fragment>
-    );
-  }
-  else {
-    const { by, description, handle, id, steps, servings, title } = recipe?.result || {};
-    const { username } = by || {};
-  
-    const pageTitle = `${title ? title.toLowerCase() : "a recipe"}, by ${by ? by.username : "rj"} - RecipeJoiner`;
-    const pageDescription = description;
-    return(
-      <React.Fragment>
+      }
+      <h1>{title || <Skeleton />}</h1>
+      <div>By Chef {username || <Skeleton width={20}/>}</div>
+      <p>{description || <Skeleton />}</p>
+      <ul>
         {
-          recipe &&
-          <Head>
-            {/* Give the title a key so that it's not duplicated - this allows me to change the page title on other pages */}
-            <title key="title">{pageTitle}</title>
-            <meta charSet="utf-8" />
-            <meta
-              key="description"
-              name="description"
-              content={description}
-            />
-            {/* OpenGraph tags */}
-            <meta key="og:url" property="og:url" content={`${process.env.NEXT_PUBLIC_BASE_URL}/users/${username}/${handle}`} />
-            <meta key="og:title" property="og:title" content={pageTitle} />
-            <meta key="og:description" property="og:description" content={pageDescription} />
-            {/* OpenGraph tags end */}
-          </Head>
+          steps ? steps.map((step) => <Step step={step} key={step.stepNum}/>)
+          : [1, 2].map((num) => <Step key={num}/>)
         }
-        <h1>{title || <Skeleton />}</h1>
-        <div>By Chef {username || <Skeleton width={20}/>}</div>
-        <p>{description || <Skeleton />}</p>
-        <ul>
-          {
-            steps ? steps.map((step) => <Step step={step} key={step.stepNum}/>)
-            : [1,2,3,4,5].map((num) => <Step key={num}/>)
-          }
-        </ul>
-      </React.Fragment>
-    );
-  }
+      </ul>
+    </React.Fragment>
+  );
 }
 
 export const getStaticPaths: GetStaticPaths = async () => {
@@ -138,7 +118,8 @@ export const getStaticProps: GetStaticProps = async ctx => {
     });
 		return { props: { recipe: data }};
   } catch (err) {
-    return { props: { errors: err.message }};
+    // handle error - probably put honeybadger here or something
+    return { props: {}};
   }
 }
 

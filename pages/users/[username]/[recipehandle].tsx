@@ -67,7 +67,7 @@ const RecipePage: NextPage<RecipeProps> = (props) => {
               content={description}
             />
             {/* OpenGraph tags */}
-            <meta key="og:url" property="og:url" content={`${process.env.NEXT_PUBLIC_BASE_URL}/users/${by.username}/${handle}`} />
+            <meta key="og:url" property="og:url" content={`${process.env.NEXT_PUBLIC_BASE_URL}/users/${username}/${handle}`} />
             <meta key="og:title" property="og:title" content={pageTitle} />
             <meta key="og:description" property="og:description" content={pageDescription} />
             {/* OpenGraph tags end */}

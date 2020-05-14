@@ -77,6 +77,7 @@ const RecipeFeed: NextPage<RecipeFeedProps> = ({}) => {
                 return(
                   <ShortRecipe
                     edge={edge}
+                    key={edge.cursor}
                   />
                 );
               })

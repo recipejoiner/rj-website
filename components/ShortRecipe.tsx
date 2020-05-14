@@ -14,7 +14,6 @@ const ShortRecipe: React.FC<ShortRecipeProps> = ({
   const { id, by, title, description, servings } = node;
   return(
     <li
-      key={id}
       className="my-5 p-5 bg-gray-100 rounded-lg shadow-lg"
     >
       <div className="text-xl">{id}</div>

@@ -63,7 +63,7 @@ export interface IngredientType {
 export interface RecipeStepType {
   stepNum: number;
   stepTime: number;
-  desciption: string;
+  description: string;
   ingredients: Array<IngredientType>;
 }
 

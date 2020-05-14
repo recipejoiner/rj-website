@@ -1,4 +1,5 @@
 import * as React from 'react';
+import Skeleton from 'react-loading-skeleton';
 
 import { EdgeType } from 'components/InfiniteScroll';
 import {ShortRecipeInfoType} from 'requests/recipes';
@@ -16,11 +17,10 @@ const ShortRecipe: React.FC<ShortRecipeProps> = ({
     <li
       className="my-5 p-5 bg-gray-100 rounded-lg shadow-lg"
     >
-      <div className="text-xl">{id}</div>
-      <h3>{title}</h3>
-      <div>Chef: {by.username}</div>
-      <div>{servings}</div>
-      <p>{description}</p>
+      <h3 className="font-bold text-xl">{title || <Skeleton height={30} />}</h3>
+      <div>Chef: {by.username || <Skeleton width={150} />}</div>
+      <div>{servings || <Skeleton />}</div>
+      <p>{description || <Skeleton />}</p>
     </li>
   )
 }

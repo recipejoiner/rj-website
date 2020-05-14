@@ -96,15 +96,13 @@ const InfiniteScroll: React.FC<InfiniteScrollProps<any, any>> = ({
 	}
   return(
     <React.Fragment>
-      {loaded && 
-      (
-        <div id="_infinitescroll">
-          {
-            children(infiniteScrollData.result.edges)
-          }
-        </div>
-      )
-      }
+      <div
+        id="_infinitescroll"
+      >
+        {
+          children(infiniteScrollData.result.edges)
+        }
+      </div>
     </React.Fragment>
   )
 }

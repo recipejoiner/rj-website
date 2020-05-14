@@ -16,8 +16,26 @@ const RecipePage: NextPage<RecipeProps> = (props) => {
   const { recipe, errors } = props;
   if (recipe) {
     const { by, description, handle, id, servings, steps, title } = recipe.result;
+
+    const pageTitle = `${title.toLowerCase()}, by ${by.username} - RecipeJoiner`;
+    const pageDescription = description;
     return(
       <React.Fragment>
+        <Head>
+          {/* Give the title a key so that it's not duplicated - this allows me to change the page title on other pages */}
+          <title key="title">{pageTitle}</title>
+          <meta charSet="utf-8" />
+          <meta
+            key="description"
+            name="description"
+            content={description}
+          />
+          {/* OpenGraph tags */}
+          <meta key="og:url" property="og:url" content={`${process.env.NEXT_PUBLIC_BASE_URL}/users/${by.username}/${handle}`} />
+          <meta key="og:title" property="og:title" content={pageTitle} />
+          <meta key="og:description" property="og:description" content={pageDescription} />
+          {/* OpenGraph tags end */}
+        </Head>
         <h1>{title}</h1>
         <div>By Chef {by.username}</div>
         <p>{description}</p>

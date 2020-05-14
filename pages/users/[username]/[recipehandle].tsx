@@ -27,7 +27,7 @@ const RecipePage: NextPage<RecipeProps> = (props) => {
     return (
       <React.Fragment>
         <Head>
-          <title key="title">Error | AME Ultrasounds</title>
+          <title key="title">Error - RecipeJoiner</title>
         </Head>
         <p>
           <span

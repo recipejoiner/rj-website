@@ -37,7 +37,7 @@ const RecipePage: NextPage<RecipeProps> = (props) => {
       </React.Fragment>
     );
   }
-  else {
+  else if (errors) {
     return (
       <React.Fragment>
         <Head>
@@ -49,16 +49,15 @@ const RecipePage: NextPage<RecipeProps> = (props) => {
           >
             Error:
           </span>
-          {
-            errors
-            ?
-            {errors}
-            :
-            "Can't load errors"
-          }
+          {errors}
         </p>
       </React.Fragment>
-    )
+    );
+  }
+  else {
+    return (
+      <div>loading</div>
+    );
   }
 }
 
@@ -88,7 +87,6 @@ export const getStaticPaths: GetStaticPaths = async () => {
 }
 
 export const getStaticProps: GetStaticProps = async ctx => {
-
   try {
     const { params } = ctx;
 
@@ -111,7 +109,7 @@ export const getStaticProps: GetStaticProps = async ctx => {
       }
 		}).then(res => {
 			return(res.data)
-		});
+    });
 		return { props: { recipe: data }};
   } catch (err) {
     return { props: { errors: err.message }};

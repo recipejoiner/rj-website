@@ -5,7 +5,9 @@ interface HeaderProps {}
 
 const Header: React.FC<HeaderProps> = ({}) => {
   return(
-    <header>
+    <header
+      className="px-5 w-screen h-14 border-b border-gray-300"
+    >
       Header here!
     </header>
   );

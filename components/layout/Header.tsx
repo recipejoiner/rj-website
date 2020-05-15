@@ -5,26 +5,29 @@ interface HeaderProps {}
 
 const Header: React.FC<HeaderProps> = ({}) => {
   return(
-    <header
-      className="px-5 w-screen h-14 border-b border-gray-300 table text-gray-900 flex-row justify-between content-center font-light lowercase tracking-wide text-sm"
-    >
-      <div
-        className="table-cell align-middle w-1/3"
+    <div className="">
+      <header
+        className="px-5 w-screen h-14 border-b border-gray-300 table text-gray-900 flex-row justify-between content-center font-light lowercase tracking-wide text-sm fixed z-50 inset-x-0 top-0"
       >
-        Sign Up
-      </div>
-      <h2 className="table-cell align-middle w-1/3">
-        <img
-          className="h-10 m-auto"
-          src={require('images/logos/rj-logo-outline-nobg.svg')}
-        />
-      </h2>
-      <div
-        className="table-cell align-middle text-right w-1/3"
-      >
-        Log In
-      </div>
-    </header>
+        <div
+          className="table-cell align-middle w-1/3"
+        >
+          Sign Up
+        </div>
+        <h2 className="table-cell align-middle w-1/3">
+          <img
+            className="h-10 m-auto"
+            src={require('images/logos/rj-logo-outline-nobg.svg')}
+          />
+        </h2>
+        <div
+          className="table-cell align-middle text-right w-1/3"
+        >
+          Log In
+        </div>
+      </header>
+      <div className="bg-white opacity-95 w-screen h-14 fixed z-40 inset-x-0 top-0"/>
+    </div>
   );
 }
 

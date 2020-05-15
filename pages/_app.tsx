@@ -59,7 +59,7 @@ class MyApp extends App<{}, {}, AppState> {
         <div className="min-h-screen flex flex-col">
           <Header />
           {/* This div exists solely for applying styles, eg giving the page padding */}
-          <div className=" flex-grow antialiased bg-white text-gray-900 w-full relative mx-auto max-w-12xl">
+          <div className="pt-14 flex-grow antialiased bg-white text-gray-900 w-full relative mx-auto max-w-12xl">
             <Component {...pageProps} />
           </div>
         </div>

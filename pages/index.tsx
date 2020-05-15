@@ -19,6 +19,7 @@ const Home: NextPage<Props> = ({}) => (
 			/>
 		</Head>
     <Banner />
+		<div className="w-screen h-screen bg-red-900"/>
 	</React.Fragment>
 );
 

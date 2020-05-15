@@ -3,6 +3,8 @@ import Head from 'next/head';
 import Link from 'next/link';
 import React from 'react';
 
+import Banner from 'components/homepage/Banner';
+
 type Props = {}
 
 const Home: NextPage<Props> = ({}) => (
@@ -16,13 +18,7 @@ const Home: NextPage<Props> = ({}) => (
 				`}}
 			/>
 		</Head>
-    <img
-      className="h-40 w-40 m-auto mt-20"
-      src={require('images/logos/rj-logo.svg')}
-    />
-		<div className="text-center mt-5">
-      Welcome to RecipeJoiner! Anyone can cook, and this is a home for all who consider themselves to be a chef.
-    </div>
+    <Banner />
 	</React.Fragment>
 );
 

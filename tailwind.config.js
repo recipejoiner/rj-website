@@ -1,5 +1,5 @@
 module.exports = {
-  purge: [],
+  purge: false, // purgecss is configured in postcss.purge.js
   theme: {
     spacing: {
       px: '1px',

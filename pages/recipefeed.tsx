@@ -2,16 +2,16 @@ import Head from 'next/head';
 import { NextPage } from 'next';
 import * as React from 'react';
 
-import {ALL_RECIPES, AllRecipesData, AllRecipesVarsType, ShortRecipeInfoType} from 'requests/recipes';
+import {ALL_RECIPES, AllRecipesVarsType, ShortRecipeInfoType} from 'requests/recipes';
 
-import InfiniteScroll, { EdgeType } from 'components/InfiniteScroll';
+import InfiniteScroll, { EdgeType, QueryRes } from 'components/InfiniteScroll';
 import ShortRecipe from 'components/ShortRecipe'
 
 interface RecipeFeedProps {}
 
 const RecipeFeed: NextPage<RecipeFeedProps> = ({}) => {
 
-  const queryDataInit: AllRecipesData = {
+  const queryDataInit: QueryRes<ShortRecipeInfoType> = {
     result: {
       pageInfo: {
         hasNextPage: true,

@@ -2,7 +2,7 @@ import * as React from 'react';
 import Skeleton from 'react-loading-skeleton';
 
 import { EdgeType } from 'components/InfiniteScroll';
-import {ShortRecipeInfoType} from 'requests/recipes';
+import { ShortRecipeInfoType } from 'requests/recipes';
 
 interface ShortRecipeProps {
   edge: EdgeType<ShortRecipeInfoType>;

@@ -11,7 +11,7 @@ export interface EdgeType<NodeType> {
   __typename: string;
 }
 
-interface QueryRes<NodeType> {
+export interface QueryRes<NodeType> {
   result: {
     pageInfo: {
       hasNextPage: boolean;

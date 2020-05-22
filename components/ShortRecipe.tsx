@@ -15,7 +15,7 @@ const ShortRecipe: React.FC<ShortRecipeProps> = ({
   const { id, by, title, description, servings } = node;
   return(
     <li
-      className="my-5 p-5 bg-gray-100 rounded-lg shadow-lg"
+      className="my-5 p-5 bg-white rounded-lg shadow-lg"
     >
       <h3 className="font-bold text-xl">{title || <Skeleton height={30} />}</h3>
       <div>Chef: {by.username || <Skeleton width={150} />}</div>

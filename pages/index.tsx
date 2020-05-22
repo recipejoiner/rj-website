@@ -4,6 +4,7 @@ import Link from 'next/link';
 import React from 'react';
 
 import Banner from 'components/homepage/Banner';
+import RecipeFeed from 'components/homepage/RecipeFeed';
 
 type Props = {}
 
@@ -19,7 +20,7 @@ const Home: NextPage<Props> = ({}) => (
 			/>
 		</Head>
     <Banner />
-		<div className="w-screen h-screen bg-red-900"/>
+		<RecipeFeed />
 	</React.Fragment>
 );
 

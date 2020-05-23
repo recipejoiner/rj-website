@@ -31,7 +31,12 @@ const LoginPage: NextPage<LoginPageProps> = ({}) => {
     }).then((res) => {
       const { data }: { data?: UserLoginType} = res || {};
       console.log("token", data?.login.user.token)
-
+      if (!!data) {
+        setCookie("UserToken", data?.login.user.token);
+      }
+      else {
+        throw "Data is missing!";
+      }
     }).catch((err) => {
       err.graphQLErrors.map((gqlErr: gqlError) => console.log(gqlErr.message))
     });

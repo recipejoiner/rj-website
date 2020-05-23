@@ -4,6 +4,7 @@ import { useForm } from 'react-hook-form';
 
 import client, { gqlError } from 'requests/client';
 import { UserLoginType, LoginVarsType, LOGIN } from 'requests/auth';
+import { setCookie, getCookie, deleteCookie } from 'helpers/methods';
 
 interface LoginPageProps {}
 
@@ -30,7 +31,7 @@ const LoginPage: NextPage<LoginPageProps> = ({}) => {
     }).then((res) => {
       const { data }: { data?: UserLoginType} = res || {};
       console.log("token", data?.login.user.token)
-      
+
     }).catch((err) => {
       err.graphQLErrors.map((gqlErr: gqlError) => console.log(gqlErr.message))
     });

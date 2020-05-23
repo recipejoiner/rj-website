@@ -13,6 +13,8 @@ const LoginPage: NextPage<LoginPageProps> = ({}) => {
 
   const [ loginErrs, setLoginErrs ] = React.useState<Array<gqlError>>([]);
 
+  // on first load, window will be undefined. this is what the onLoad/useEvent handler is for. 
+  // on navigation, window WILL be defined, so the onLoad handler will never fire.
   const [ loggedIn, setLoggedIn] = React.useState(typeof window !== 'undefined' ? !!getCookie('UserToken') : false);
 
   const onLoad = () => {

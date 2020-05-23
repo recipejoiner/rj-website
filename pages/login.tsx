@@ -9,7 +9,7 @@ const LoginPage: NextPage<LoginPageProps> = ({}) => {
 
   return(
     <React.Fragment>
-      <div className="w-screen">
+      <div className="w-screen bg-gray-100 h-screen fixed">
         <h1 className="header-text pt-20">
           Welcome back!
         </h1>
@@ -28,7 +28,7 @@ const LoginPage: NextPage<LoginPageProps> = ({}) => {
               <label className="block text-gray-700 text-sm font-bold mb-2" htmlFor="password">
                 Password
               </label>
-              <input className="shadow appearance-none border border-red-500 rounded w-full py-2 px-3 text-gray-700 mb-3 leading-tight focus:outline-none focus:shadow-outline" id="password" type="password" placeholder="******************" />
+              <input className="shadow appearance-none border border-red-500 rounded w-full py-2 px-3 text-gray-700 mb-3 leading-tight focus:outline-none focus:shadow-outline" id="password" type="password" placeholder="••••••••" />
               <p className="text-red-500 text-xs italic">Please choose a password.</p>
             </div>
             <div className="flex items-center justify-between">

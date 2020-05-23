@@ -6,4 +6,8 @@
 @tailwind components;
 /* Add all custom component classes here */
 
+.header-text {
+  @apply text-2xl text-center
+}
+
 @tailwind utilities;

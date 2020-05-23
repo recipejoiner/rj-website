@@ -1,16 +1,32 @@
 import React from 'react';
 import { NextPage } from 'next';
+import Router from 'next/router';
 import { useForm } from 'react-hook-form';
 
 import client, { gqlError } from 'requests/client';
 import { UserLoginType, LoginVarsType, LOGIN } from 'requests/auth';
-import { setCookie, getCookie, deleteCookie } from 'helpers/methods';
+import { useEvent, setCookie, getCookie, deleteCookie } from 'helpers/methods';
 
 interface LoginPageProps {}
 
 const LoginPage: NextPage<LoginPageProps> = ({}) => {
 
   const [ loginErrs, setLoginErrs ] = React.useState<Array<gqlError>>([]);
+
+  const [ loggedIn, setLoggedIn] = React.useState(typeof window !== 'undefined' ? !!getCookie('UserToken') : false);
+
+  const onLoad = () => {
+    setLoggedIn(!!getCookie('UserToken'));
+  };
+
+  useEvent('load', onLoad);
+
+  React.useEffect(() => {
+    if (loggedIn) {
+      Router.push('/');
+    }
+  }, [loggedIn]); // only re-run this if 'loggedIn' changes
+  
 
   interface FormData {
     email: string;
@@ -35,6 +51,7 @@ const LoginPage: NextPage<LoginPageProps> = ({}) => {
       const { data }: { data?: UserLoginType} = res || {};
       if (!!data) {
         setCookie("UserToken", data?.login.user.token);
+        setLoggedIn(true);
       }
       else {
         throw "Data is missing!";

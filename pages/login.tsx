@@ -9,6 +9,7 @@ import { setCookie, getCookie, deleteCookie } from 'helpers/methods';
 interface LoginPageProps {}
 
 const LoginPage: NextPage<LoginPageProps> = ({}) => {
+  const [ loginErrs, setLoginErrs ] = React.useState<Array<gqlError>>([]);
   interface FormData {
     email: string;
     password: string;
@@ -30,7 +31,6 @@ const LoginPage: NextPage<LoginPageProps> = ({}) => {
       }
     }).then((res) => {
       const { data }: { data?: UserLoginType} = res || {};
-      console.log("token", data?.login.user.token)
       if (!!data) {
         setCookie("UserToken", data?.login.user.token);
       }
@@ -38,7 +38,8 @@ const LoginPage: NextPage<LoginPageProps> = ({}) => {
         throw "Data is missing!";
       }
     }).catch((err) => {
-      err.graphQLErrors.map((gqlErr: gqlError) => console.log(gqlErr.message))
+      setLoginErrs(err.graphQLErrors);
+      console.log(loginErrs);
     });
   });
 
@@ -81,6 +82,20 @@ const LoginPage: NextPage<LoginPageProps> = ({}) => {
                 placeholder="••••••••"
                 ref={register}
               />
+              <ul className="pt-2">
+                {
+                  loginErrs.map((err) => {
+                    return(
+                      <li
+                        key={err.message}
+                        className="text-red-500 font-bold text-sm italic"
+                      >
+                        {err.message}
+                      </li>
+                    )
+                  })
+                }
+              </ul>
               {/* <p className="text-red-500 text-xs italic">Please choose a password.</p> */}
             </div>
             <div className="flex items-center justify-between">

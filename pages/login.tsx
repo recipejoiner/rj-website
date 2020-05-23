@@ -9,7 +9,9 @@ import { setCookie, getCookie, deleteCookie } from 'helpers/methods';
 interface LoginPageProps {}
 
 const LoginPage: NextPage<LoginPageProps> = ({}) => {
+
   const [ loginErrs, setLoginErrs ] = React.useState<Array<gqlError>>([]);
+
   interface FormData {
     email: string;
     password: string;

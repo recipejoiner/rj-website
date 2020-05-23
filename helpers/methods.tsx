@@ -1,4 +1,5 @@
-import { useEffect } from 'react';
+import React, { useEffect } from 'react';
+import Router from 'next/router';
 
 export function useEvent(event: string, handler: () => void, passive=false) {
   useEffect(() => {
@@ -40,4 +41,25 @@ export function deleteCookie(name: string) {
 
   // the cookie
   document.cookie = `${name}=;expires=${date.toUTCString()};path=/`;
+}
+
+export function redirectTo(path: string) {
+  Router.push(path);
+}
+
+export function areLoggedIn() {
+  // on first load, window will be undefined. this is what the onLoad/useEvent handler is for. 
+  // on navigation, window WILL be defined, so the onLoad handler will never fire.
+  const [ loggedIn, setLoggedIn] = React.useState(typeof window !== 'undefined' ? !!getCookie('UserToken') : false);
+  const onLoad = () => {
+    setLoggedIn(!!getCookie('UserToken'));
+  };
+  useEvent('load', onLoad);
+  return loggedIn;
+}
+
+export function ifLoggedInRedirectTo(path: string) {
+  if (areLoggedIn()) {
+    redirectTo(path)
+  }
 }

@@ -1,11 +1,20 @@
 import React from 'react';
 import { NextPage } from 'next';
+import { useForm } from 'react-hook-form';
 
 import { UserLoginType, LoginVarsType, LOGIN } from 'requests/auth';
 
 interface LoginPageProps {}
 
 const LoginPage: NextPage<LoginPageProps> = ({}) => {
+  interface FormData {
+    email: string;
+    password: string;
+  }
+  const { register, handleSubmit, watch, errors } = useForm<FormData>();
+  const onSubmit = handleSubmit(({ email, password }) => {
+    console.log(email, password);
+  });
 
   return(
     <React.Fragment>
@@ -17,16 +26,21 @@ const LoginPage: NextPage<LoginPageProps> = ({}) => {
           Please sign in below.
         </div>
         <div className="w-full max-w-xs m-auto pt-20">
-          <form className="bg-white shadow-md rounded px-8 pt-6 pb-8 mb-4">
+          <form
+            onSubmit={onSubmit}
+            className="bg-white shadow-md rounded px-8 pt-6 pb-8 mb-4"
+          >
             <div className="mb-4">
-              <label className="block text-gray-700 text-sm font-bold mb-2" htmlFor="username">
-                Username
+              <label className="block text-gray-700 text-sm font-bold mb-2" htmlFor="email">
+                Email
               </label>
               <input
                 className="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
-                id="username"
+                id="email"
+                name="email"
                 type="text"
-                placeholder="Username" 
+                placeholder="you@example.com"
+                ref={register}
               />
             </div>
             <div className="mb-6">
@@ -36,12 +50,18 @@ const LoginPage: NextPage<LoginPageProps> = ({}) => {
               <input 
                 className="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
                 id="password"
+                name="password"
                 type="password"
-                placeholder="••••••••" />
+                placeholder="••••••••"
+                ref={register}
+              />
               {/* <p className="text-red-500 text-xs italic">Please choose a password.</p> */}
             </div>
             <div className="flex items-center justify-between">
-              <button className="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded focus:outline-none focus:shadow-outline" type="button">
+              <button
+                className="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded focus:outline-none focus:shadow-outline"
+                type="submit"
+              >
                 Sign In
               </button>
               <a className="inline-block align-baseline font-bold text-sm text-blue-500 hover:text-blue-800" href="#">

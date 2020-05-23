@@ -2,6 +2,7 @@ import React from 'react';
 import { NextPage } from 'next';
 import { useForm } from 'react-hook-form';
 
+import client, { gqlError } from 'requests/client';
 import { UserLoginType, LoginVarsType, LOGIN } from 'requests/auth';
 
 interface LoginPageProps {}
@@ -13,7 +14,26 @@ const LoginPage: NextPage<LoginPageProps> = ({}) => {
   }
   const { register, handleSubmit, watch, errors } = useForm<FormData>();
   const onSubmit = handleSubmit(({ email, password }) => {
-    console.log(email, password);
+    const token = process.env.NEXT_PUBLIC_RJ_API_TOKEN || ""
+    client.mutate({
+      mutation: LOGIN,
+      variables: {
+        email: email,
+        password: password
+      },
+      context: {
+        // example of setting the headers with context per operation
+        headers: {
+          authorization: `Bearer ${token}`
+        }
+      }
+    }).then((res) => {
+      const { data }: { data?: UserLoginType} = res || {};
+      console.log("token", data?.login.user.token)
+      
+    }).catch((err) => {
+      err.graphQLErrors.map((gqlErr: gqlError) => console.log(gqlErr.message))
+    });
   });
 
   return(

@@ -3,7 +3,7 @@ import gql from 'graphql-tag';
 export interface UserLoginType {
   login: {
     user: {
-      token: String;
+      token: string;
     }
   }
 }
@@ -12,7 +12,7 @@ export interface LoginVarsType {
   password: string;
 }
 export const LOGIN = gql`
-  mutation login($email: String, $password: String) {
+  mutation login($email: String!, $password: String!) {
     login(email: $email, password: $password) {
       user {
         token

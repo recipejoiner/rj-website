@@ -20,11 +20,15 @@ const Header: React.FC<HeaderProps> = ({}) => {
             src={require('images/logos/rj-logo-outline-nobg.svg')}
           />
         </h2>
-        <div
+        <Link
+          href="/login"
+        >
+        <a
           className="table-cell align-middle text-right w-1/3"
         >
           Log In
-        </div>
+        </a>
+        </Link>
       </header>
       <div className="bg-white opacity-95 w-screen h-14 fixed z-40 inset-x-0 top-0"/>
     </div>

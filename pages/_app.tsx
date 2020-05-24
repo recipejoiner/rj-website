@@ -12,21 +12,31 @@ import '../styles/tailwind.css';
 
 import { detect } from 'detect-browser';
 
+import UserContext from 'helpers/UserContext';
+import { getCookie, useEvent } from 'helpers/methods'; 
 import Header from 'components/layout/Header';
 
 
 
 interface AppState {
-  // add state variables
+  loggedIn: boolean;
 }
 
 class MyApp extends App<{}, {}, AppState> {
   constructor(AppProps: any) {
     super(AppProps);
 
-    // this.state = {
-    //   // global state variables
-    // }
+    this.state = {
+      loggedIn: typeof window !== 'undefined' ? !!getCookie('UserToken') : false
+    }
+
+    this.setLoggedIn = this.setLoggedIn.bind(this);
+  }
+
+  setLoggedIn(state: boolean) {
+    this.setState({
+      loggedIn: state
+    })
   }
 
   fullSite() {
@@ -57,11 +67,21 @@ class MyApp extends App<{}, {}, AppState> {
         </Head>
         {/* Flex col to allow for putting a header and footer above and below the page */}
         <div className="min-h-screen flex flex-col">
-          <Header />
-          {/* This div exists solely for applying styles, eg giving the page padding */}
-          <div className="pt-14 flex-grow antialiased bg-white text-gray-900 w-full relative mx-auto max-w-12xl">
-            <Component {...pageProps} />
-          </div>
+          {/* UserContext.Provider allows us to provide whatever we set as the value here to all components contained within */}
+          <UserContext.Provider
+            value={
+              {
+                isLoggedIn: this.state.loggedIn,
+                setLoggedIn: this.setLoggedIn
+              }
+            }
+          >
+            <Header />
+            {/* This div exists solely for applying styles, eg giving the page padding */}
+            <div className="pt-14 flex-grow antialiased bg-white text-gray-900 w-full relative mx-auto max-w-12xl">
+              <Component {...pageProps} />
+            </div>
+          </UserContext.Provider>
         </div>
       </div>
     );

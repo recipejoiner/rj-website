@@ -24,6 +24,14 @@ export function setCookie(name: string, val: string) {
   document.cookie = `${name}=${val};expires=${date.toUTCString()};path=/`;
 }
 
+export function getCookieFromCookies(cookies: string, name: string) {
+  const val = `; ${cookies}`;
+  const parts = val.split(`; ${name}=`);
+  if (parts.length === 2) {
+    return parts.pop()?.split(';').shift();
+  }
+}
+
 export function getCookie(name: string) {
   const val = `; ${document.cookie}`;
   const parts = val.split(`; ${name}=`);

@@ -7,13 +7,14 @@ typically found in an index file.
 
 import App from 'next/app';
 import Head from 'next/head';
+// import { NextContext } from 'next';
 import * as React from 'react';
 import '../styles/tailwind.css';
 
 import { detect } from 'detect-browser';
 
 import UserContext from 'helpers/UserContext';
-import { getCookie, useEvent } from 'helpers/methods'; 
+import { getCookie, getCookieFromCookies } from 'helpers/methods'; 
 import Header from 'components/layout/Header';
 
 
@@ -27,7 +28,7 @@ class MyApp extends App<{}, {}, AppState> {
     super(AppProps);
 
     this.state = {
-      loggedIn: typeof window !== 'undefined' ? !!getCookie('UserToken') : false
+      loggedIn: false
     }
 
     this.setLoggedIn = this.setLoggedIn.bind(this);
@@ -132,6 +133,17 @@ class MyApp extends App<{}, {}, AppState> {
         );
     }
 	}
+}
+
+MyApp.getInitialProps = async ({ ctx }) => {
+  if (typeof window === 'undefined') {;
+    console.log(getCookieFromCookies(ctx.req?.headers.cookie || "", 'UserToken'))
+  }
+  else {
+    console.log(getCookie('UserToken'));
+  }
+
+  return { pageProps: {}}
 }
 
 export default MyApp;

@@ -6,15 +6,17 @@ typically found in an index file.
 */
 
 import App from 'next/app';
+import { AppContext } from 'next/app';
 import Head from 'next/head';
-// import { NextContext } from 'next';
 import * as React from 'react';
 import '../styles/tailwind.css';
 
 import { detect } from 'detect-browser';
 
 import UserContext from 'helpers/UserContext';
-import { getCookie, getCookieFromCookies } from 'helpers/methods'; 
+import client from 'requests/client';
+import { CurrentUserLoginCheckType, CURRENT_USER_LOGIN_CHECK } from 'requests/auth';
+import { getCookie, getCookieFromCookies } from 'helpers/methods';
 import Header from 'components/layout/Header';
 
 
@@ -23,12 +25,14 @@ interface AppState {
   loggedIn: boolean;
 }
 
-class MyApp extends App<{}, {}, AppState> {
+class MyApp extends App<{ loggedIn: boolean }, {}, AppState> {
   constructor(AppProps: any) {
     super(AppProps);
+    const { loggedIn } = this.props;
+    console.log("loggedIn", loggedIn)
 
     this.state = {
-      loggedIn: false
+      loggedIn: loggedIn
     }
 
     this.setLoggedIn = this.setLoggedIn.bind(this);
@@ -120,6 +124,63 @@ class MyApp extends App<{}, {}, AppState> {
     )
   }
 
+  static async getInitialProps({ Component, AppTree, ctx }: AppContext) {
+    let pageProps = {}
+
+    if (Component.getInitialProps) {
+      pageProps = await Component.getInitialProps(ctx)
+    }
+
+    let loggedIn: boolean;
+
+    // on first load (during which this will run server-side, and thus window will be undefined),
+    // want to make an API call to verify that,
+    // if there's a current token, it's valid
+
+    // on navigation, this will run in the server. here, we assume that if there's a token, the user is logged in
+    // validating the token will then rely on pages that attempt to make queries 
+    if (typeof window === 'undefined') {
+      const token = getCookieFromCookies(ctx.req?.headers.cookie || "", 'UserToken')
+      try {
+        console.log("starting query");
+        await client.query({
+          query: CURRENT_USER_LOGIN_CHECK,
+          context: {
+            // example of setting the headers with context per operation
+            headers: {
+              authorization: `Bearer ${token}`
+            }
+          }
+        }).then((res) => {
+          console.log("finished query");
+          const { data }: { data?: CurrentUserLoginCheckType } = res || {};
+          if (!!data) {
+            loggedIn = true;
+          }
+          else {
+            console.log("Data is missing!");
+          }
+        })
+      }
+      catch (err) {
+        console.log("error!", err);
+        loggedIn = false;
+      }
+    }
+    else {
+      const token = getCookie('UserToken');
+      if (!!token) {
+        console.log("starting query");
+        loggedIn = true;
+      }
+      else {
+        console.log("No user token!");
+        loggedIn = false;
+      }
+    }
+    return { pageProps, loggedIn }
+  }
+
 	render() {
     const browser = detect();
     switch (browser && browser.name) {
@@ -133,17 +194,6 @@ class MyApp extends App<{}, {}, AppState> {
         );
     }
 	}
-}
-
-MyApp.getInitialProps = async ({ ctx }) => {
-  if (typeof window === 'undefined') {;
-    console.log(getCookieFromCookies(ctx.req?.headers.cookie || "", 'UserToken'))
-  }
-  else {
-    console.log(getCookie('UserToken'));
-  }
-
-  return { pageProps: {}}
 }
 
 export default MyApp;

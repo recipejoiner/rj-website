@@ -20,3 +20,16 @@ export const LOGIN = gql`
     }
   }
 `;
+
+export interface CurrentUserLoginCheckType {
+  me: {
+    username: string;
+  }
+}
+export const CURRENT_USER_LOGIN_CHECK = gql`
+  query {
+    me {
+      username
+    }
+  }
+`;

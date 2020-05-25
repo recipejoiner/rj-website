@@ -23,6 +23,8 @@ import Header from 'components/layout/Header';
 
 interface AppState {
   loggedIn: boolean;
+  menuOpen: boolean;
+  yPos: number;
 }
 
 interface UserProps {
@@ -34,7 +36,9 @@ class MyApp extends App<UserProps, {}, AppState> {
     super(AppProps);
     this.props
     this.state = {
-      loggedIn: false // default state
+      loggedIn: false,
+      menuOpen: false,
+      yPos: 0
     }
     this.setLoggedIn = this.setLoggedIn.bind(this);
   }

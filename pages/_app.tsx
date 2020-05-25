@@ -145,30 +145,28 @@ class MyApp extends App<{ loggedIn: boolean }, {}, AppState> {
     else {
       const token = getCookie('UserToken');
     }
-    try {
-      console.log("starting query");
-      await client.query({
-        query: CURRENT_USER_LOGIN_CHECK,
-        context: {
-          // example of setting the headers with context per operation
-          headers: {
-            authorization: `Bearer ${token}`
-          }
+    loggedIn = await client.query({
+      query: CURRENT_USER_LOGIN_CHECK,
+      context: {
+        // example of setting the headers with context per operation
+        headers: {
+          authorization: `Bearer ${token}`
         }
-      }).then((res) => {
-        console.log("finished query");
-        const { data }: { data?: CurrentUserLoginCheckType } = res || {};
-        if (!!data) {
-          loggedIn = true;
-        }
-        else {
-          console.log("Data is missing!");
-        }
-      })
-    }
-    catch {
-      loggedIn = false;
-    }
+      }
+    })
+    .then((res) => {
+      console.log("finished query");
+      const { data }: { data?: CurrentUserLoginCheckType } = res || {};
+      if (!!data) {
+        return true;
+      }
+      else {
+        return false;
+      }
+    })
+    .catch(() => {
+      return false;
+    });
     return { pageProps, loggedIn }
   }
 

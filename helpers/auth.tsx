@@ -26,7 +26,13 @@ const redirectBasedOnLogin = async (
   route: string,
   redirectIfAuthed: boolean
 ): Promise<boolean> => {
-  const token = getCookieFromCookies(ctx.req?.headers.cookie || "", 'UserToken')
+  let token: string;
+  if (typeof window === 'undefined') {
+    token = getCookieFromCookies(ctx.req?.headers.cookie || "", 'UserToken') || "";
+  }
+  else {
+    token = getCookie('UserToken') || "";
+  }
   const isLoggedIn = await client.query({
       query: CURRENT_USER_LOGIN_CHECK,
       context: {

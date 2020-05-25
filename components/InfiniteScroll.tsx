@@ -1,6 +1,7 @@
 import * as React from 'react';
 
 import client from 'requests/client';
+import { getToken } from 'helpers/auth';
 import { useQuery } from '@apollo/react-hooks';
 import { useEvent } from 'helpers/methods';
 import { DocumentNode } from 'graphql';
@@ -57,15 +58,13 @@ const InfiniteScroll: React.FC<InfiniteScrollProps<any, any>> = ({
   children
 }) => {
 
-  const token = process.env.NEXT_PUBLIC_RJ_API_TOKEN || ""
-
   const { loading, data, error, fetchMore } = useQuery<typeof QueryData, typeof QueryVars>(
     QUERY,
     {
       client: client,
       context: {
         headers: {
-          authorization: `Bearer ${token}`,
+          authorization: `Bearer ${getToken()}`,
           'content-type': 'application/json',
         }
       }

@@ -7,7 +7,7 @@ import client from 'requests/client';
 import { LOGOUT, LogoutReturnType } from 'requests/auth';
 import { CurrentUserLoginCheckType, CURRENT_USER_LOGIN_CHECK } from 'requests/auth';
 
-const getUserToken = (ctx?: NextPageContext) => {
+export const getUserToken = (ctx?: NextPageContext) => {
   if (!!ctx && typeof window === 'undefined') {
     return getCookieFromCookies(ctx.req?.headers.cookie || "", 'UserToken') || "";
   }
@@ -16,12 +16,12 @@ const getUserToken = (ctx?: NextPageContext) => {
   }
 }
 
-const logoutLocally = () => {
+export const logoutLocally = () => {
   deleteCookie("UserToken");
   return true;
 }
 
-const logoutEverywhere = async () => {
+export const logoutEverywhere = async () => {
   const loggedOut = await client.mutate({
     mutation: LOGOUT,
     context: {

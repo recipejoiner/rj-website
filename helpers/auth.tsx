@@ -6,6 +6,7 @@ import { getCookie, getCookieFromCookies, deleteCookie } from 'helpers/methods';
 import client from 'requests/client';
 import { LogoutReturnType, LOGOUT } from 'requests/auth';
 import { CurrentUserLoginCheckType, CURRENT_USER_LOGIN_CHECK } from 'requests/auth';
+import UserContext from 'helpers/UserContext';
 
 export const getUserToken = (ctx?: NextPageContext) => {
   if (!!ctx && typeof window === 'undefined') {
@@ -16,31 +17,39 @@ export const getUserToken = (ctx?: NextPageContext) => {
   }
 }
 
-export const logoutLocally = () => {
-  deleteCookie("UserToken");
-  return true;
-}
-
-export const logoutEverywhere = async () => {
-  const loggedOut = await client.mutate({
-    mutation: LOGOUT,
-    context: {
-      headers: {
-        authorization: `Bearer ${getUserToken()}`
-      }
-    }
-  })
-  .then((res) => {
-    const { data }: { data?: LogoutReturnType } = res || {};
-    if (!data) {
-      return false;
+export const logout = (everywhere: boolean) => {
+  const { setLoggedIn } = React.useContext(UserContext);
+  const localLogout = () => {
+    if (!!setLoggedIn) {
+      setLoggedIn(false);
     }
     deleteCookie("UserToken");
     return true;
-  })
-  .catch(() => {
-    return false;
-  });
+  }
+  if (everywhere) {
+    const loggedOut = client.mutate({
+      mutation: LOGOUT,
+      context: {
+        headers: {
+          authorization: `Bearer ${getUserToken()}`
+        }
+      }
+    })
+    .then((res) => {
+      const { data }: { data?: LogoutReturnType } = res || {};
+      if (!data) {
+        return false;
+      }
+      localLogout()
+      return true;
+    })
+    .catch(() => {
+      return false;
+    });
+  }
+  else {
+    localLogout()
+  }
 }
 
 // based on https://reactgraphql.github.io/auth-redirect-next-js/

@@ -80,6 +80,7 @@ class MyApp extends App<UserProps, {}, AppState> {
 
   fullSite() {
     const { Component, pageProps } = this.props;
+    const { menuOpen } = this.state;
     return (
       // 'min-h-screen flex flex-col' are for making it easier to make the footer sticky
       <div className="min-h-screen flex flex-col font-sans">
@@ -105,7 +106,7 @@ class MyApp extends App<UserProps, {}, AppState> {
           {/* OpenGraph tags end */}
         </Head>
         {/* Flex col to allow for putting a header and footer above and below the page */}
-        <div className="min-h-screen flex flex-col">
+        <div className={`min-h-screen flex flex-col ${menuOpen ? "overflow-hidden max-h-screen fixed lg:overflow-auto lg:static lg:max-h-full" : ""}`}>
           {/* UserContext.Provider allows us to provide whatever we set as the value here to all components contained within */}
           <UserContext.Provider
             value={

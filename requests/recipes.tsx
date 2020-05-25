@@ -50,6 +50,37 @@ export const ALL_RECIPES = gql`
   }
 `;
 
+export interface UserRecipeFeedData {
+  result: AllRecipesData;
+}
+export interface UserRecipeFeedVarsType {
+  cursor: string | null;
+}
+export const USER_RECIPE_FEED = gql`
+  query getAllRecipes($cursor: String) {
+    result: me {
+      connection: recipeFeed(first: 10, after: $cursor) {
+        pageInfo {
+          hasNextPage
+        }
+        edges {
+          cursor
+          node {
+            id
+            by {
+              username
+            }
+            title
+            handle
+            description
+            servings
+          }
+        }
+      }
+    }
+  }
+`;
+
 export interface IngredientType {
   ingredientInfo: {
     name: string;

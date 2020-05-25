@@ -4,14 +4,14 @@ import * as React from 'react';
 
 import {ALL_RECIPES, AllRecipesVarsType, ShortRecipeInfoType} from 'requests/recipes';
 
-import InfiniteScroll, { EdgeType, QueryRes } from 'components/InfiniteScroll';
+import InfiniteScroll, { EdgeType, QueryConnectionRes } from 'components/InfiniteScroll';
 import ShortRecipe from 'components/ShortRecipe'
 
 interface RecipeFeedProps {}
 
 const RecipeFeed: React.FC<RecipeFeedProps> = ({}) => {
 
-  const queryDataInit: QueryRes<ShortRecipeInfoType> = {
+  const queryDataInit: QueryConnectionRes<ShortRecipeInfoType> = {
     connection: {
       pageInfo: {
         hasNextPage: true,

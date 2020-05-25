@@ -11,7 +11,24 @@ export interface EdgeType<NodeType> {
   __typename: string;
 }
 
-export interface QueryRes<NodeType> {
+/*
+This supports two types of queries:
+One of this structure:
+data {
+  connection {
+    ...
+  }
+}
+and one of this structure:
+data {
+  result {
+    connection {
+      ...
+    }
+  }
+}
+*/
+export interface QueryConnectionRes<NodeType> {
   connection: {
     pageInfo: {
       hasNextPage: boolean;
@@ -22,9 +39,13 @@ export interface QueryRes<NodeType> {
   }
 }
 
+export interface QueryResultRes<NodeType> {
+  result: QueryConnectionRes<NodeType>
+}
+
 interface InfiniteScrollProps<NodeType, QueryVarsType> {
   QUERY: DocumentNode;
-  QueryData: QueryRes<NodeType>;
+  QueryData: QueryResultRes<NodeType> | QueryConnectionRes<NodeType>;
   QueryVars: QueryVarsType;
   children: (edges: Array<EdgeType<NodeType>>) => React.ReactNode;
 }
@@ -57,7 +78,9 @@ const InfiniteScroll: React.FC<InfiniteScrollProps<any, any>> = ({
 
   const onLoadMore = () => {
     setActivelyFetching(true);
-    const { edges } = infiniteScrollData.connection;
+    const { result } = infiniteScrollData as QueryResultRes<any> || {};
+    const { connection } = result || infiniteScrollData;
+    const { edges } = connection;
     const lastCursor = edges[edges.length - 1].cursor;
     fetchMore({
       variables: {
@@ -65,14 +88,31 @@ const InfiniteScroll: React.FC<InfiniteScrollProps<any, any>> = ({
       },
       updateQuery: (prev, { fetchMoreResult }) => {
         if (fetchMoreResult) {
-          let combinedData: typeof QueryData = {
-            connection: {
-              pageInfo: fetchMoreResult.connection.pageInfo,
-              edges: [...infiniteScrollData.connection.edges, ...fetchMoreResult.connection.edges],
-              __typename: "RecipeConnection"
+          if ("result" in fetchMoreResult && "result" in infiniteScrollData) {
+            let combinedData: QueryResultRes<any> = {
+              result: {
+                connection: {
+                  pageInfo: fetchMoreResult.result.connection.pageInfo,
+                  edges: [...infiniteScrollData.result.connection.edges, ...fetchMoreResult.result.connection.edges],
+                  __typename: "RecipeConnection"
+                }
+              }
             }
+            setInfiniteScrollData(combinedData);
           }
-          setInfiniteScrollData(combinedData);
+          else if("connection" in fetchMoreResult && "connection" in infiniteScrollData) {
+              let combinedData: QueryConnectionRes<any> = {
+              connection: {
+                pageInfo: fetchMoreResult.connection.pageInfo,
+                edges: [...infiniteScrollData.connection.edges, ...fetchMoreResult.connection.edges],
+                __typename: "RecipeConnection"
+              }
+            }
+            setInfiniteScrollData(combinedData);
+          }
+          else {
+            throw("There's something wrong with the return types.");
+          }
         }
         return(infiniteScrollData);
       }
@@ -93,14 +133,17 @@ const InfiniteScroll: React.FC<InfiniteScrollProps<any, any>> = ({
   if(loaded === false && data){
 		setInfiniteScrollData(data);
 		setLoad(true);
-	}
+  }
+  const { result } = infiniteScrollData as QueryResultRes<any> || {};
+  const { connection } = result || infiniteScrollData;
+  const { edges } = connection;
   return(
     <React.Fragment>
       <div
         id="_infinitescroll"
       >
         {
-          children(infiniteScrollData.connection.edges)
+          children(edges)
         }
       </div>
     </React.Fragment>

@@ -5,26 +5,39 @@ import React from 'react';
 import { GetServerSideProps } from 'next';
 
 import Banner from 'components/homepage/Banner';
-import { AllRecipesFeed } from 'components/homepage/RecipeFeed';
+import { AllRecipesFeed, UserRecipesFeed } from 'components/homepage/RecipeFeed';
 import { getCookieFromCookies } from 'helpers/methods';
 import UserContext from 'helpers/UserContext';
 
 type Props = {}
 
-const Home: NextPage<Props> = ({}) => (
-	<React.Fragment>
-		<Head>
-			<script key="data-layer" dangerouslySetInnerHTML={{
-				__html: `
-					dataLayer = [{
-						'ecomm_pagetype' : 'home'
-					}]      
-				`}}
-			/>
-		</Head>
-    <Banner />
-		<AllRecipesFeed />
-	</React.Fragment>
-);
+const Home: NextPage<Props> = ({}) => {
+	const { isLoggedIn } = React.useContext(UserContext);
+	return(
+		<React.Fragment>
+			<Head>
+				<script key="data-layer" dangerouslySetInnerHTML={{
+					__html: `
+						dataLayer = [{
+							'ecomm_pagetype' : 'home'
+						}]      
+					`}}
+				/>
+			</Head>
+			{
+				isLoggedIn
+				?
+				<React.Fragment>
+					<UserRecipesFeed />
+				</React.Fragment>
+				:
+				<React.Fragment>
+					<Banner />
+					<AllRecipesFeed />
+				</React.Fragment>
+			}
+		</React.Fragment>
+	);
+}
 
 export default Home;

@@ -38,10 +38,12 @@ export interface QueryConnectionRes<NodeType> {
     edges: Array<EdgeType<NodeType>>;
     __typename: string;
   }
+  __typename: string;
 }
 
 export interface QueryResultRes<NodeType> {
-  result: QueryConnectionRes<NodeType>
+  result: QueryConnectionRes<NodeType>;
+  __typename: string;
 }
 
 interface InfiniteScrollProps<NodeType, QueryVarsType> {
@@ -93,9 +95,11 @@ const InfiniteScroll: React.FC<InfiniteScrollProps<any, any>> = ({
                 connection: {
                   pageInfo: fetchMoreResult.result.connection.pageInfo,
                   edges: [...infiniteScrollData.result.connection.edges, ...fetchMoreResult.result.connection.edges],
-                  __typename: "RecipeConnection"
-                }
-              }
+                  __typename: fetchMoreResult.result.connection.__typename
+                },
+                __typename: fetchMoreResult.result.__typename
+              },
+              __typename: fetchMoreResult.__typename
             }
             setInfiniteScrollData(combinedData);
           }
@@ -104,8 +108,9 @@ const InfiniteScroll: React.FC<InfiniteScrollProps<any, any>> = ({
               connection: {
                 pageInfo: fetchMoreResult.connection.pageInfo,
                 edges: [...infiniteScrollData.connection.edges, ...fetchMoreResult.connection.edges],
-                __typename: "RecipeConnection"
-              }
+                __typename: fetchMoreResult.connection.__typename
+              },
+              __typename: fetchMoreResult.__typename
             }
             setInfiniteScrollData(combinedData);
           }

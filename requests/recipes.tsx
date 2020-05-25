@@ -52,11 +52,12 @@ export const ALL_RECIPES = gql`
 
 export interface UserRecipeFeedData {
   result: AllRecipesData;
+  __typename: string;
 }
 export interface UserRecipeFeedVarsType {
   cursor: string | null;
 }
-export const USER_RECIPE_FEED = gql`
+export const USER_RECIPES_FEED = gql`
   query getAllRecipes($cursor: String) {
     result: me {
       connection: recipeFeed(first: 10, after: $cursor) {

@@ -6,7 +6,6 @@ import { getCookie, getCookieFromCookies, deleteCookie } from 'helpers/methods';
 import client from 'requests/client';
 import { LogoutReturnType, LOGOUT } from 'requests/auth';
 import { CurrentUserLoginCheckType, CURRENT_USER_LOGIN_CHECK } from 'requests/auth';
-import UserContext from 'helpers/UserContext';
 
 export const getUserToken = (ctx?: NextPageContext) => {
   if (!!ctx && typeof window === 'undefined') {
@@ -18,12 +17,9 @@ export const getUserToken = (ctx?: NextPageContext) => {
 }
 
 export const logout = (everywhere: boolean) => {
-  const { setLoggedIn } = React.useContext(UserContext);
   const localLogout = () => {
-    if (!!setLoggedIn) {
-      setLoggedIn(false);
-    }
     deleteCookie("UserToken");
+    location.reload();
     return true;
   }
   if (everywhere) {

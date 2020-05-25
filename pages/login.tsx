@@ -5,6 +5,7 @@ import { useForm } from 'react-hook-form';
 import client, { gqlError } from 'requests/client';
 import { UserLoginType, LoginVarsType, LOGIN } from 'requests/auth';
 import { setCookie, redirectTo } from 'helpers/methods';
+import { withHomeRedirect } from 'helpers/auth';
 import UserContext from 'helpers/UserContext';
 
 interface LoginPageProps {}
@@ -14,10 +15,6 @@ const LoginPage: NextPage<LoginPageProps> = ({}) => {
   const { isLoggedIn, setLoggedIn } = React.useContext(UserContext);
 
   const [ loginErrs, setLoginErrs ] = React.useState<Array<gqlError>>([]);
-
-  if (isLoggedIn) {
-    redirectTo("/");
-  }
 
   interface FormData {
     email: string;
@@ -43,7 +40,7 @@ const LoginPage: NextPage<LoginPageProps> = ({}) => {
       if (!!data) {
         setCookie("UserToken", data?.login.user.token);
         if (!!setLoggedIn) {
-          setLoggedIn(true)
+          setLoggedIn(true);
         }
         redirectTo('/');
       }
@@ -132,4 +129,4 @@ const LoginPage: NextPage<LoginPageProps> = ({}) => {
   );
 }
 
-export default LoginPage;
+export default withHomeRedirect(LoginPage);

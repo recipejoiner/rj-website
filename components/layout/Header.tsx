@@ -4,8 +4,12 @@ import Link from 'next/link';
 import UserContext from 'helpers/UserContext';
 import { logout } from 'helpers/auth';
 
-interface LoggedInHeaderProps {}
-const LoggedInHeader: React.FC<LoggedInHeaderProps> = ({}) => {
+interface LoggedInHeaderProps {
+  setMenuOpen(menuOpenStatus: boolean): void;
+}
+const LoggedInHeader: React.FC<LoggedInHeaderProps> = ({
+  setMenuOpen
+}) => {
   return(
     <React.Fragment>
       <button
@@ -62,9 +66,13 @@ const NoUserHeader: React.FC<NoUserHeaderProps> = ({}) => {
   )
 }
 
-interface HeaderProps {}
+interface HeaderProps {
+	setMenuOpen(menuOpenStatus: boolean): void;
+}
 
-const Header: React.FC<HeaderProps> = ({}) => {
+const Header: React.FC<HeaderProps> = ({
+  setMenuOpen
+}) => {
   const { isLoggedIn } = React.useContext(UserContext);
   return(
     <div>
@@ -72,7 +80,9 @@ const Header: React.FC<HeaderProps> = ({}) => {
         className="px-5 w-screen h-14 border-b border-gray-300 table text-gray-900 flex-row justify-between content-center font-light lowercase tracking-wide text-sm fixed z-50 inset-x-0 top-0"
       >
         { isLoggedIn ?
-          <LoggedInHeader />
+          <LoggedInHeader
+            setMenuOpen={setMenuOpen}
+          />
         :
           <NoUserHeader />
         }

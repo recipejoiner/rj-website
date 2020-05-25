@@ -115,7 +115,9 @@ class MyApp extends App<UserProps, {}, AppState> {
               }
             }
           >
-            <Header />
+            <Header
+              setMenuOpen={this.setMenuOpen}
+            />
             {/* This div exists solely for applying styles, eg giving the page padding */}
             <div className="pt-14 flex-grow antialiased bg-white text-gray-900 w-full relative mx-auto max-w-12xl">
               <Component {...pageProps} />

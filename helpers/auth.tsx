@@ -7,12 +7,13 @@ import client from 'requests/client';
 import { LogoutReturnType, LOGOUT } from 'requests/auth';
 import { CurrentUserLoginCheckType, CURRENT_USER_LOGIN_CHECK } from 'requests/auth';
 
-export const getUserToken = (ctx?: NextPageContext) => {
+// Return the user's token if one exists, else the API token
+export const getToken = (ctx?: NextPageContext) => {
   if (!!ctx && typeof window === 'undefined') {
-    return getCookieFromCookies(ctx.req?.headers.cookie || "", 'UserToken') || "";
+    return getCookieFromCookies(ctx.req?.headers.cookie || "", 'UserToken') || process.env.NEXT_PUBLIC_RJ_API_TOKEN;
   }
   else {
-    return getCookie('UserToken') || "";
+    return getCookie('UserToken') || process.env.NEXT_PUBLIC_RJ_API_TOKEN;
   }
 }
 
@@ -27,7 +28,7 @@ export const logout = (everywhere: boolean) => {
       mutation: LOGOUT,
       context: {
         headers: {
-          authorization: `Bearer ${getUserToken()}`
+          authorization: `Bearer ${getToken()}`
         }
       }
     })
@@ -37,7 +38,7 @@ export const logout = (everywhere: boolean) => {
         return false;
       }
       localLogout()
-      return true;
+      return data.logout; // Will be false if, for example, the token used is the API token
     })
     .catch(() => {
       return false;
@@ -68,7 +69,7 @@ const redirectBasedOnLogin = async (
   route: string,
   redirectIfAuthed: boolean
 ): Promise<boolean> => {
-  const token = getUserToken(ctx);
+  const token = getToken(ctx);
   const isLoggedIn = await client.query({
       query: CURRENT_USER_LOGIN_CHECK,
       context: {
@@ -81,10 +82,10 @@ const redirectBasedOnLogin = async (
     })
     .then((res) => {
       const { data }: { data?: CurrentUserLoginCheckType } = res || {};
-      if (!data) {
-        return false;
+      if (data && data.me.email) {
+        return true;
       }
-      return true;
+      return false;
     })
     .catch(() => {
       return false;

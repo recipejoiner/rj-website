@@ -17,6 +17,7 @@ import UserContext from 'helpers/UserContext';
 import client from 'requests/client';
 import { CurrentUserLoginCheckType, CURRENT_USER_LOGIN_CHECK } from 'requests/auth';
 import { getCookie, getCookieFromCookies } from 'helpers/methods';
+import { getToken } from 'helpers/auth';
 import Header from 'components/layout/Header';
 
 
@@ -29,7 +30,6 @@ class MyApp extends App<{ loggedIn: boolean }, {}, AppState> {
   constructor(AppProps: any) {
     super(AppProps);
     const { loggedIn } = this.props;
-    console.log("loggedIn", loggedIn)
 
     this.state = {
       loggedIn: loggedIn
@@ -131,37 +131,21 @@ class MyApp extends App<{ loggedIn: boolean }, {}, AppState> {
       pageProps = await Component.getInitialProps(ctx)
     }
 
-    // on first load (during which this will run server-side, and thus window will be undefined),
-    // want to make an API call to verify that,
-    // if there's a current token, it's valid
-
-    // on navigation, this will run in the server. here, we assume that if there's a token, the user is logged in
-    // validating the token will then rely on pages that attempt to make queries
-    let token: string;
-    if (typeof window === 'undefined') {
-      token = getCookieFromCookies(ctx.req?.headers.cookie || "", 'UserToken') || "";
-    }
-    else {
-      token = getCookie('UserToken') || "";
-    }
     const loggedIn = await client.query({
       query: CURRENT_USER_LOGIN_CHECK,
       context: {
         // example of setting the headers with context per operation
         headers: {
-          authorization: `Bearer ${token}`
+          authorization: `Bearer ${getToken(ctx)}`
         }
       }
     })
     .then((res) => {
-      console.log("finished query");
       const { data }: { data?: CurrentUserLoginCheckType } = res || {};
-      if (!!data) {
+      if (data && data.me.email) {
         return true;
       }
-      else {
-        return false;
-      }
+      return false;
     })
     .catch(() => {
       return false;

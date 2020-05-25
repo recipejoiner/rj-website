@@ -12,7 +12,7 @@ interface RecipeFeedProps {}
 const RecipeFeed: React.FC<RecipeFeedProps> = ({}) => {
 
   const queryDataInit: QueryRes<ShortRecipeInfoType> = {
-    result: {
+    connection: {
       pageInfo: {
         hasNextPage: true,
         __typename: ""

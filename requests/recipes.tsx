@@ -15,7 +15,7 @@ export interface ShortRecipeInfoType {
   __typename: string;
 }
 export interface AllRecipesData {
-  result: {
+  connection: {
     pageInfo: {
       hasNextPage: boolean;
       __typename: string;
@@ -29,7 +29,7 @@ export interface AllRecipesVarsType {
 }
 export const ALL_RECIPES = gql`
   query getAllRecipes($cursor: String) {
-    result: allRecipes(first: 10, after: $cursor) {
+    connection: allRecipes(first: 10, after: $cursor) {
       pageInfo {
         hasNextPage
       }

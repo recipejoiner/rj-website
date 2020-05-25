@@ -12,7 +12,7 @@ export interface EdgeType<NodeType> {
 }
 
 export interface QueryRes<NodeType> {
-  result: {
+  connection: {
     pageInfo: {
       hasNextPage: boolean;
       __typename: string;
@@ -57,7 +57,7 @@ const InfiniteScroll: React.FC<InfiniteScrollProps<any, any>> = ({
 
   const onLoadMore = () => {
     setActivelyFetching(true);
-    const { edges } = infiniteScrollData.result;
+    const { edges } = infiniteScrollData.connection;
     const lastCursor = edges[edges.length - 1].cursor;
     fetchMore({
       variables: {
@@ -66,9 +66,9 @@ const InfiniteScroll: React.FC<InfiniteScrollProps<any, any>> = ({
       updateQuery: (prev, { fetchMoreResult }) => {
         if (fetchMoreResult) {
           let combinedData: typeof QueryData = {
-            result: {
-              pageInfo: fetchMoreResult.result.pageInfo,
-              edges: [...infiniteScrollData.result.edges, ...fetchMoreResult.result.edges],
+            connection: {
+              pageInfo: fetchMoreResult.connection.pageInfo,
+              edges: [...infiniteScrollData.connection.edges, ...fetchMoreResult.connection.edges],
               __typename: "RecipeConnection"
             }
           }
@@ -100,7 +100,7 @@ const InfiniteScroll: React.FC<InfiniteScrollProps<any, any>> = ({
         id="_infinitescroll"
       >
         {
-          children(infiniteScrollData.result.edges)
+          children(infiniteScrollData.connection.edges)
         }
       </div>
     </React.Fragment>

@@ -7,9 +7,9 @@ import {ALL_RECIPES, AllRecipesVarsType, ShortRecipeInfoType} from 'requests/rec
 import InfiniteScroll, { EdgeType, QueryConnectionRes } from 'components/InfiniteScroll';
 import ShortRecipe from 'components/ShortRecipe'
 
-interface RecipeFeedProps {}
+interface AllRecipesFeedProps {}
 
-const RecipeFeed: React.FC<RecipeFeedProps> = ({}) => {
+export const AllRecipesFeed: React.FC<AllRecipesFeedProps> = ({}) => {
 
   const queryDataInit: QueryConnectionRes<ShortRecipeInfoType> = {
     connection: {
@@ -73,5 +73,3 @@ const RecipeFeed: React.FC<RecipeFeedProps> = ({}) => {
     </div>
   );
 }
-
-export default RecipeFeed;

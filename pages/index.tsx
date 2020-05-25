@@ -5,7 +5,7 @@ import React from 'react';
 import { GetServerSideProps } from 'next';
 
 import Banner from 'components/homepage/Banner';
-import RecipeFeed from 'components/homepage/RecipeFeed';
+import { AllRecipesFeed } from 'components/homepage/RecipeFeed';
 import { getCookieFromCookies } from 'helpers/methods';
 import UserContext from 'helpers/UserContext';
 
@@ -23,7 +23,7 @@ const Home: NextPage<Props> = ({}) => (
 			/>
 		</Head>
     <Banner />
-		<RecipeFeed />
+		<AllRecipesFeed />
 	</React.Fragment>
 );
 

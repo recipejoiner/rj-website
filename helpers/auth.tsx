@@ -4,7 +4,7 @@ import Router from 'next/router';
 
 import { getCookie, getCookieFromCookies, deleteCookie } from 'helpers/methods';
 import client from 'requests/client';
-import { LOGOUT, LogoutReturnType } from 'requests/auth';
+import { LogoutReturnType, LOGOUT } from 'requests/auth';
 import { CurrentUserLoginCheckType, CURRENT_USER_LOGIN_CHECK } from 'requests/auth';
 
 export const getUserToken = (ctx?: NextPageContext) => {
@@ -30,6 +30,17 @@ export const logoutEverywhere = async () => {
       }
     }
   })
+  .then((res) => {
+    const { data }: { data?: LogoutReturnType } = res || {};
+    if (!data) {
+      return false;
+    }
+    deleteCookie("UserToken");
+    return true;
+  })
+  .catch(() => {
+    return false;
+  });
 }
 
 // based on https://reactgraphql.github.io/auth-redirect-next-js/

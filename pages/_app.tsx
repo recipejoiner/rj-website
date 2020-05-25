@@ -131,21 +131,20 @@ class MyApp extends App<{ loggedIn: boolean }, {}, AppState> {
       pageProps = await Component.getInitialProps(ctx)
     }
 
-    let loggedIn: boolean;
-
     // on first load (during which this will run server-side, and thus window will be undefined),
     // want to make an API call to verify that,
     // if there's a current token, it's valid
 
     // on navigation, this will run in the server. here, we assume that if there's a token, the user is logged in
-    // validating the token will then rely on pages that attempt to make queries 
+    // validating the token will then rely on pages that attempt to make queries
+    let token: string;
     if (typeof window === 'undefined') {
-      const token = getCookieFromCookies(ctx.req?.headers.cookie || "", 'UserToken')
+      token = getCookieFromCookies(ctx.req?.headers.cookie || "", 'UserToken') || "";
     }
     else {
-      const token = getCookie('UserToken');
+      token = getCookie('UserToken') || "";
     }
-    loggedIn = await client.query({
+    const loggedIn = await client.query({
       query: CURRENT_USER_LOGIN_CHECK,
       context: {
         // example of setting the headers with context per operation

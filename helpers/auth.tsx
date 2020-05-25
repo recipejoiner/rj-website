@@ -2,9 +2,35 @@ import React from 'react';
 import { NextComponentType, NextPageContext } from 'next';
 import Router from 'next/router';
 
-import { getCookie, getCookieFromCookies } from 'helpers/methods';
+import { getCookie, getCookieFromCookies, deleteCookie } from 'helpers/methods';
 import client from 'requests/client';
+import { LOGOUT, LogoutReturnType } from 'requests/auth';
 import { CurrentUserLoginCheckType, CURRENT_USER_LOGIN_CHECK } from 'requests/auth';
+
+const getUserToken = (ctx?: NextPageContext) => {
+  if (!!ctx && typeof window === 'undefined') {
+    return getCookieFromCookies(ctx.req?.headers.cookie || "", 'UserToken') || "";
+  }
+  else {
+    return getCookie('UserToken') || "";
+  }
+}
+
+const logoutLocally = () => {
+  deleteCookie("UserToken");
+  return true;
+}
+
+const logoutEverywhere = async () => {
+  const loggedOut = await client.mutate({
+    mutation: LOGOUT,
+    context: {
+      headers: {
+        authorization: `Bearer ${getUserToken()}`
+      }
+    }
+  })
+}
 
 // based on https://reactgraphql.github.io/auth-redirect-next-js/
 
@@ -26,13 +52,7 @@ const redirectBasedOnLogin = async (
   route: string,
   redirectIfAuthed: boolean
 ): Promise<boolean> => {
-  let token: string;
-  if (typeof window === 'undefined') {
-    token = getCookieFromCookies(ctx.req?.headers.cookie || "", 'UserToken') || "";
-  }
-  else {
-    token = getCookie('UserToken') || "";
-  }
+  const token = getUserToken(ctx);
   const isLoggedIn = await client.query({
       query: CURRENT_USER_LOGIN_CHECK,
       context: {

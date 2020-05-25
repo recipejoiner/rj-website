@@ -33,3 +33,12 @@ export const CURRENT_USER_LOGIN_CHECK = gql`
     }
   }
 `;
+
+export interface LogoutReturnType {
+  logout: boolean;
+}
+export const LOGOUT = gql`
+  mutation logout{
+    logout
+  }
+`;

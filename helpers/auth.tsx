@@ -12,7 +12,7 @@ export const getToken = (ctx?: NextPageContext) => {
   if (!!ctx && typeof window === 'undefined') {
     return getCookieFromCookies(ctx.req?.headers.cookie || "", 'UserToken') || process.env.NEXT_PUBLIC_RJ_API_TOKEN;
   }
-  else {
+  else if (typeof window !== 'undefined') {
     return getCookie('UserToken') || process.env.NEXT_PUBLIC_RJ_API_TOKEN;
   }
 }

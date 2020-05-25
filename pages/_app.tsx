@@ -6,7 +6,7 @@ typically found in an index file.
 */
 
 import App from 'next/app';
-import { AppContext } from 'next/app';
+import { AppContext, AppProps } from 'next/app';
 import Head from 'next/head';
 import * as React from 'react';
 import '../styles/tailwind.css';
@@ -25,16 +25,30 @@ interface AppState {
   loggedIn: boolean;
 }
 
-class MyApp extends App<{ loggedIn: boolean }, {}, AppState> {
+interface UserProps {
+  loggedIn: boolean
+}
+
+class MyApp extends App<UserProps, {}, AppState> {
   constructor(AppProps: any) {
     super(AppProps);
-    const { loggedIn } = this.props;
-
+    this.props
     this.state = {
-      loggedIn: loggedIn
+      loggedIn: false // default state
     }
-
     this.setLoggedIn = this.setLoggedIn.bind(this);
+  }
+
+  static getDerivedStateFromProps(props: UserProps & AppProps, state: AppState) {
+    // Any time the user's logged-in state changes,
+    // reset any parts of state that are tied to that.
+    // Here, it's just a boolean. Might add more user info in the future.
+    if (props.loggedIn !== state.loggedIn) {
+      return {
+        loggedIn: props.loggedIn
+      };
+    }
+    return null;
   }
 
   setLoggedIn(state: boolean) {
@@ -137,7 +151,9 @@ class MyApp extends App<{ loggedIn: boolean }, {}, AppState> {
         headers: {
           authorization: `Bearer ${getToken(ctx)}`
         }
-      }
+      },
+      // Prevent caching issues when logging in/out without refresh.
+      fetchPolicy: 'network-only',
     })
     .then((res) => {
       const { data }: { data?: CurrentUserLoginCheckType } = res || {};

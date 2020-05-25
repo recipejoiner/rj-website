@@ -39,9 +39,6 @@ const LoginPage: NextPage<LoginPageProps> = ({}) => {
       const { data }: { data?: UserLoginType} = res || {};
       if (!!data) {
         setCookie("UserToken", data?.login.user.token);
-        if (!!setLoggedIn) {
-          setLoggedIn(true);
-        }
         redirectTo('/');
       }
       else {

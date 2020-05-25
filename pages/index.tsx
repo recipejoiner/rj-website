@@ -27,15 +27,4 @@ const Home: NextPage<Props> = ({}) => (
 	</React.Fragment>
 );
 
-// export const getServerSideProps: GetServerSideProps = async (context) => {
-// 	// const cookies = context.req.headers.cookie;
-// 	// const { setLoggedIn } = React.useContext(UserContext);
-// 	// if (cookies && setLoggedIn) {
-
-// 	// 	// setLoggedIn(true);
-// 	// 	console.log(getCookieFromCookies(cookies, 'UserToken'));
-// 	// }
-//   return { props: {} }
-// }
-
 export default Home;

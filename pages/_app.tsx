@@ -16,7 +16,6 @@ import { detect } from 'detect-browser';
 import UserContext from 'helpers/UserContext';
 import client from 'requests/client';
 import { CurrentUserLoginCheckType, CURRENT_USER_LOGIN_CHECK } from 'requests/auth';
-import { getCookie, getCookieFromCookies } from 'helpers/methods';
 import { getToken } from 'helpers/auth';
 import Header from 'components/layout/Header';
 

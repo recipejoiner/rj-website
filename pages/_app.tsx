@@ -141,42 +141,33 @@ class MyApp extends App<{ loggedIn: boolean }, {}, AppState> {
     // validating the token will then rely on pages that attempt to make queries 
     if (typeof window === 'undefined') {
       const token = getCookieFromCookies(ctx.req?.headers.cookie || "", 'UserToken')
-      try {
-        console.log("starting query");
-        await client.query({
-          query: CURRENT_USER_LOGIN_CHECK,
-          context: {
-            // example of setting the headers with context per operation
-            headers: {
-              authorization: `Bearer ${token}`
-            }
-          }
-        }).then((res) => {
-          console.log("finished query");
-          const { data }: { data?: CurrentUserLoginCheckType } = res || {};
-          if (!!data) {
-            loggedIn = true;
-          }
-          else {
-            console.log("Data is missing!");
-          }
-        })
-      }
-      catch (err) {
-        console.log("error!", err);
-        loggedIn = false;
-      }
     }
     else {
       const token = getCookie('UserToken');
-      if (!!token) {
-        console.log("starting query");
-        loggedIn = true;
-      }
-      else {
-        console.log("No user token!");
-        loggedIn = false;
-      }
+    }
+    try {
+      console.log("starting query");
+      await client.query({
+        query: CURRENT_USER_LOGIN_CHECK,
+        context: {
+          // example of setting the headers with context per operation
+          headers: {
+            authorization: `Bearer ${token}`
+          }
+        }
+      }).then((res) => {
+        console.log("finished query");
+        const { data }: { data?: CurrentUserLoginCheckType } = res || {};
+        if (!!data) {
+          loggedIn = true;
+        }
+        else {
+          console.log("Data is missing!");
+        }
+      })
+    }
+    catch {
+      loggedIn = false;
     }
     return { pageProps, loggedIn }
   }

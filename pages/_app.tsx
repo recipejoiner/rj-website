@@ -41,6 +41,7 @@ class MyApp extends App<UserProps, {}, AppState> {
       yPos: 0
     }
     this.setLoggedIn = this.setLoggedIn.bind(this);
+    this.setMenuOpen = this.setMenuOpen.bind(this);
   }
 
   static getDerivedStateFromProps(props: UserProps & AppProps, state: AppState) {
@@ -59,6 +60,22 @@ class MyApp extends App<UserProps, {}, AppState> {
     this.setState({
       loggedIn: state
     })
+  }
+
+  setMenuOpen(menuOpenStatus: boolean) {
+    // Opening the menu: save the current scroll position
+    if (menuOpenStatus === true) {
+      this.setState({
+        menuOpen: menuOpenStatus,
+        yPos: window.pageYOffset
+      });
+    }
+    // Closing the menu: set the previous scroll position
+    else {
+      this.setState({
+        menuOpen: menuOpenStatus
+      }, () => window.scrollTo(0, this.state.yPos));
+    }
   }
 
   fullSite() {

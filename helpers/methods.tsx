@@ -71,3 +71,15 @@ export function ifLoggedInRedirectTo(path: string) {
     redirectTo(path)
   }
 }
+
+// EXPERIMENTAL METHOD
+export function ensureVarIsSet(variable: any) {
+  return new Promise(function (resolve, reject) {
+      (function waitForVar(){
+          if (variable) {
+            return resolve(variable);
+          }
+          setTimeout(waitForVar, 30);
+      })();
+  });
+}

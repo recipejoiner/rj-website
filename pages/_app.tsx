@@ -82,7 +82,7 @@ class MyApp extends App<UserProps, {}, AppState> {
     const { Component, pageProps } = this.props;
     const { menuOpen } = this.state;
     return (
-      // 'min-h-screen flex flex-col' are for making it easier to make the footer sticky
+      // 'min-h-screen flex flex-col' are for making it easier to make the footer (if we add one) sticky
       <div className="min-h-screen flex flex-col font-sans">
         <Head>
           {/* Favicons */}
@@ -105,26 +105,26 @@ class MyApp extends App<UserProps, {}, AppState> {
           <meta key="og:type" property="og:type" content="website" />
           {/* OpenGraph tags end */}
         </Head>
-        {/* Flex col to allow for putting a header and footer above and below the page */}
-        <div className={`min-h-screen flex flex-col ${menuOpen ? "overflow-hidden max-h-screen fixed lg:overflow-auto lg:static lg:max-h-full" : ""}`}>
-          {/* UserContext.Provider allows us to provide whatever we set as the value here to all components contained within */}
-          <UserContext.Provider
-            value={
-              {
-                isLoggedIn: this.state.loggedIn,
-                setLoggedIn: this.setLoggedIn
-              }
+        <UserContext.Provider
+          value={
+            {
+              isLoggedIn: this.state.loggedIn,
+              setLoggedIn: this.setLoggedIn
             }
-          >
-            <Header
-              setMenuOpen={this.setMenuOpen}
-            />
-            {/* This div exists solely for applying styles, eg giving the page padding */}
-            <div className="pt-14 flex-grow antialiased bg-white text-gray-900 w-full relative mx-auto max-w-12xl">
-              <Component {...pageProps} />
-            </div>
-          </UserContext.Provider>
-        </div>
+          }
+        >
+          {/* Flex col to allow for putting a header and footer above and below the page */}
+          <div className={`min-h-screen flex flex-col ${menuOpen ? "overflow-hidden max-h-screen fixed lg:overflow-auto lg:static lg:max-h-full" : ""}`}>
+            {/* UserContext.Provider allows us to provide whatever we set as the value here to all components contained within */}
+              <Header
+                setMenuOpen={this.setMenuOpen}
+              />
+              {/* This div exists solely for applying styles, eg giving the page padding */}
+              <div className="pt-14 flex-grow antialiased bg-white text-gray-900 w-full relative mx-auto max-w-12xl">
+                <Component {...pageProps} />
+              </div>
+          </div>
+        </UserContext.Provider>
       </div>
     );
   }

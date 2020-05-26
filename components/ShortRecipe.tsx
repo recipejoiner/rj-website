@@ -4,7 +4,6 @@ import Skeleton from 'react-loading-skeleton';
 
 import { EdgeType } from 'components/InfiniteScroll';
 import { ShortRecipeInfoType } from 'requests/recipes';
-import { ensureVarIsSet } from 'helpers/methods';
 
 interface ShortRecipeProps {
   edge: EdgeType<ShortRecipeInfoType>;

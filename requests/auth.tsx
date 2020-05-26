@@ -43,3 +43,27 @@ export const LOGOUT = gql`
     logout
   }
 `;
+
+export const SIGN_UP = gql`
+  mutation signUp(
+    $email: String!,
+    $firstName: String!,
+    $lastName: String!,
+    $username: String!,
+    $password: String!,
+    $passwordConfirmation: String!,
+    ){
+    signUp(attributes: {
+      email: $email
+      firstName: $firstName
+      lastName: $lastName
+      username: $username
+      password: $password
+      passwordConfirmation: $passwordConfirmation
+    }) {
+      user {
+        token
+      }
+    }
+  }
+`;

@@ -4,15 +4,15 @@ import * as React from 'react';
 
 import {ALL_RECIPES, AllRecipesVarsType, ShortRecipeInfoType} from 'requests/recipes';
 
-import InfiniteScroll, { EdgeType, QueryRes } from 'components/InfiniteScroll';
+import InfiniteScroll, { EdgeType, QueryConnectionRes } from 'components/InfiniteScroll';
 import ShortRecipe from 'components/ShortRecipe'
 
 interface RecipeFeedProps {}
 
 const RecipeFeed: NextPage<RecipeFeedProps> = ({}) => {
 
-  const queryDataInit: QueryRes<ShortRecipeInfoType> = {
-    result: {
+  const queryDataInit: QueryConnectionRes<ShortRecipeInfoType> = {
+    connection: {
       pageInfo: {
         hasNextPage: true,
         __typename: ""
@@ -36,7 +36,8 @@ const RecipeFeed: NextPage<RecipeFeedProps> = ({}) => {
         }
       ],
       __typename: ""
-    }
+    },
+    __typename: ""
   }
 
   const AllRecipesVars: AllRecipesVarsType = {
@@ -58,7 +59,7 @@ const RecipeFeed: NextPage<RecipeFeedProps> = ({}) => {
           content={description}
         />
         {/* OpenGraph tags */}
-        <meta key="og:url" property="og:url" content={`${process.env.NEXT_PUBLIC_BASE_URL}/recipefeed`} />
+        <meta key="og:url" property="og:url" content={`${process.env.NEXT_PUBLIC_BASE_URL}/recipes`} />
         <meta key="og:title" property="og:title" content={title} />
         <meta key="og:description" property="og:description" content={description} />
         {/* OpenGraph tags end */}

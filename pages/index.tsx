@@ -2,11 +2,8 @@ import { NextPage } from 'next';
 import Head from 'next/head';
 import React from 'react';
 
-import { GetServerSideProps } from 'next';
-
 import Banner from 'components/homepage/Banner';
 import { AllRecipesFeed, UserRecipesFeed } from 'components/homepage/RecipeFeed';
-import { getCookieFromCookies } from 'helpers/methods';
 import UserContext from 'helpers/UserContext';
 
 type Props = {}

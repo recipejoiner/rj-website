@@ -44,6 +44,21 @@ export const LOGOUT = gql`
   }
 `;
 
+export interface SignUpReturnType {
+  signUp: {
+    user: {
+      token: string;
+    }
+  }
+}
+export interface SignUpVarsType {
+  email: string;
+  firstName: string;
+  lastName: string;
+  username: string;
+  password: string;
+  passwordConfirmation: string;
+}
 export const SIGN_UP = gql`
   mutation signUp(
     $email: String!,

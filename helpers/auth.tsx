@@ -1,14 +1,15 @@
 import React from 'react';
-import { NextComponentType, NextPageContext } from 'next';
+import { NextComponentType, NextPageContext, GetServerSidePropsContext } from 'next';
 import Router from 'next/router';
 
 import { getCookie, getCookieFromCookies, deleteCookie } from 'helpers/methods';
 import client from 'requests/client';
 import { LogoutReturnType, LOGOUT } from 'requests/auth';
 import { CurrentUserLoginCheckType, CURRENT_USER_LOGIN_CHECK } from 'requests/auth';
+import { ParsedUrlQuery } from 'querystring';
 
 // Return the user's token if one exists, else the API token
-export const getToken = (ctx?: NextPageContext) => {
+export const getToken = (ctx?: NextPageContext | GetServerSidePropsContext<ParsedUrlQuery>) => {
   if (!!ctx && typeof window === 'undefined') {
     return getCookieFromCookies(ctx.req?.headers.cookie || "", 'UserToken') || process.env.NEXT_PUBLIC_RJ_API_TOKEN;
   }

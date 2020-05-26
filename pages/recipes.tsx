@@ -2,48 +2,11 @@ import Head from 'next/head';
 import { NextPage } from 'next';
 import * as React from 'react';
 
-import {ALL_RECIPES, AllRecipesVarsType, ShortRecipeInfoType} from 'requests/recipes';
-
-import InfiniteScroll, { EdgeType, QueryConnectionRes } from 'components/InfiniteScroll';
-import ShortRecipe from 'components/ShortRecipe'
+import { AllRecipesFeed } from 'components/homepage/RecipeFeed';
 
 interface RecipeFeedProps {}
 
 const RecipeFeed: NextPage<RecipeFeedProps> = ({}) => {
-
-  const queryDataInit: QueryConnectionRes<ShortRecipeInfoType> = {
-    connection: {
-      pageInfo: {
-        hasNextPage: true,
-        __typename: ""
-      },
-      edges: [
-        {
-          cursor: "",
-          node: {
-            id: "",
-            by: {
-              username: "",
-              __typename: ""
-            },
-            title: "",
-            handle: "",
-            description: "",
-            servings: "",
-            __typename: ""
-          },
-          __typename: ""
-        }
-      ],
-      __typename: ""
-    },
-    __typename: ""
-  }
-
-  const AllRecipesVars: AllRecipesVarsType = {
-    cursor: null
-  }
-
   const title = "Recipe Feed - RecipeJoiner";
   const description = "All of our chefs' recipes!";
 
@@ -64,28 +27,7 @@ const RecipeFeed: NextPage<RecipeFeedProps> = ({}) => {
         <meta key="og:description" property="og:description" content={description} />
         {/* OpenGraph tags end */}
       </Head>
-      <InfiniteScroll
-        QUERY={ALL_RECIPES}
-        QueryData={queryDataInit}
-        QueryVars={AllRecipesVars}
-      >
-        { (edges: Array<EdgeType<ShortRecipeInfoType>>) =>
-          <ul
-            className="p-10"
-          >
-            {
-              edges.map((edge) => {
-                return(
-                  <ShortRecipe
-                    edge={edge}
-                    key={edge.cursor}
-                  />
-                );
-              })
-            }
-          </ul>
-        }
-      </InfiniteScroll>
+      <AllRecipesFeed />
     </React.Fragment>
   );
 }

@@ -6,13 +6,10 @@ import client, { gqlError } from 'requests/client';
 import { UserLoginType, LoginVarsType, LOGIN } from 'requests/auth';
 import { setCookie, redirectTo } from 'helpers/methods';
 import { withHomeRedirect } from 'helpers/auth';
-import UserContext from 'helpers/UserContext';
 
 interface LoginPageProps {}
 
 const LoginPage: NextPage<LoginPageProps> = ({}) => {
-
-  const { isLoggedIn, setLoggedIn } = React.useContext(UserContext);
 
   const [ loginErrs, setLoginErrs ] = React.useState<Array<gqlError>>([]);
 

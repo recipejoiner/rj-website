@@ -35,6 +35,33 @@ export const CURRENT_USER_LOGIN_CHECK = gql`
   }
 `;
 
+export interface UserInfoType {
+  result: {
+    id: string;
+    username: string;
+    followerCount: number;
+    followingCount: number;
+    firstName: string | null;
+    lastName: string | null;
+  }
+}
+export interface UserByUsernameVarsType {
+  username: string;
+}
+export const USER_INFO_BY_USERNAME = gql`
+  query userByUsername($username: String!) {
+    result: userByUsername(username: $username) {
+      id
+      username
+      followerCount
+      followingCount
+      firstName
+      lastName
+      createdAt
+    }
+  }
+`;
+
 export interface LogoutReturnType {
   logout: boolean;
 }

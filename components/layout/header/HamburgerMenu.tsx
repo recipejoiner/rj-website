@@ -19,7 +19,7 @@ const HamburgerMenu: React.FC<HamburgerMenuProps> = ({
         drawerOpen ? closeMenus() : (closeMenus(), setDrawerOpen(true))
       }
     >
-      <svg className="h-8 w-8 fill-current" viewBox="0 0 24 24">
+      <svg className="w-10 fill-current" viewBox="0 0 24 24">
         {/* If the drawer is open, display the X. Otherwise, display the hamburger. */}
         {drawerOpen ? (
           <path d="M18.278 16.864a1 1 0 0 1-1.414 1.414l-4.829-4.828-4.828 4.828a1 1 0 0 1-1.414-1.414l4.828-4.829-4.828-4.828a1 1 0 0 1 1.414-1.414l4.829 4.828 4.828-4.828a1 1 0 1 1 1.414 1.414l-4.828 4.829 4.828 4.828z" />

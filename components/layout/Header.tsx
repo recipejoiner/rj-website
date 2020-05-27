@@ -4,6 +4,7 @@ import Link from 'next/link'
 import UserContext from 'helpers/UserContext'
 import { logout } from 'helpers/auth'
 import Logo from 'components/layout/header/Logo'
+import NewRecipeLink from 'components/layout/header/NewRecipeLink'
 import HamburgerMenu from 'components/layout/header/HamburgerMenu'
 import NavMenuMobile from 'components/layout/header/NavMenuMobile'
 
@@ -39,6 +40,7 @@ const LoggedInHeader: React.FC<LoggedInHeaderProps> = ({ setMenuOpen }) => {
             closeMenus={closeMenus}
           />
           <Logo closeMenus={closeMenus} />
+          <NewRecipeLink closeMenus={closeMenus} />
           {/* <button
             className="table-cell h-full align-middle text-right w-1/3"
             onClick={() => logout(true)}

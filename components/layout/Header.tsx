@@ -6,11 +6,16 @@ import Logo from 'components/layout/header/Logo'
 import NewRecipeLink from 'components/layout/header/NewRecipeLink'
 import HamburgerMenu from 'components/layout/header/HamburgerMenu'
 import NavMenuMobile from 'components/layout/header/NavMenuMobile'
+import { CurrentUserLoginCheckType } from 'requests/auth'
 
 interface LoggedInHeaderProps {
   setMenuOpen(menuOpenStatus: boolean): void
+  currentUserInfo: CurrentUserLoginCheckType
 }
-const LoggedInHeader: React.FC<LoggedInHeaderProps> = ({ setMenuOpen }) => {
+const LoggedInHeader: React.FC<LoggedInHeaderProps> = ({
+  setMenuOpen,
+  currentUserInfo,
+}) => {
   // Partial because the full one also calls setMenuOpen
   const [drawerOpen, setDrawerOpenPartial] = React.useState(false)
   const setDrawerOpen = (status: boolean) => {
@@ -42,6 +47,7 @@ const LoggedInHeader: React.FC<LoggedInHeaderProps> = ({ setMenuOpen }) => {
           closeMenus={closeMenus}
           testDropdownOpen={testDropdownOpen}
           setTestDropdownOpen={setTestDropdownOpen}
+          currentUserInfo={currentUserInfo}
         />
       </div>
     </div>
@@ -73,9 +79,14 @@ interface HeaderProps {
 }
 
 const Header: React.FC<HeaderProps> = ({ setMenuOpen }) => {
-  const { isLoggedIn } = React.useContext(UserContext)
-  if (isLoggedIn) {
-    return <LoggedInHeader setMenuOpen={setMenuOpen} />
+  const { isLoggedIn, currentUserInfo } = React.useContext(UserContext)
+  if (isLoggedIn && currentUserInfo) {
+    return (
+      <LoggedInHeader
+        setMenuOpen={setMenuOpen}
+        currentUserInfo={currentUserInfo}
+      />
+    )
   } else {
     return <NoUserHeader />
   }

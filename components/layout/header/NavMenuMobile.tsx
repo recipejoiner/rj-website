@@ -1,17 +1,20 @@
 import Link from 'next/link'
 import MobileDropdown from 'components/layout/header/mobile/MobileDropdown'
 import { logout } from 'helpers/auth'
+import { CurrentUserLoginCheckType } from 'requests/auth'
 
 type NavMenuMobileProps = {
   closeMenus(): void
   testDropdownOpen: boolean
   setTestDropdownOpen: React.Dispatch<React.SetStateAction<boolean>>
+  currentUserInfo: CurrentUserLoginCheckType
 }
 
 const NavMenuMobile: React.FC<NavMenuMobileProps> = ({
   closeMenus,
   testDropdownOpen,
   setTestDropdownOpen,
+  currentUserInfo,
 }) => {
   const linkStyle =
     'w-full px-8 py-4 block font-semibold hover:text-gray-700 uppercase text-sm tracking-widest border-b border-gray-300'
@@ -27,14 +30,14 @@ const NavMenuMobile: React.FC<NavMenuMobileProps> = ({
           Home
         </a>
       </Link>
-      <Link href="/#" as="/#">
+      <Link href="/[username]" as={`/${currentUserInfo.me.username}`}>
         <a
           onClick={() => {
             closeMenus()
           }}
           className={linkStyle}
         >
-          Test Link 1
+          My Recipes
         </a>
       </Link>
       <MobileDropdown

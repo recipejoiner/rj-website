@@ -19,7 +19,7 @@ const NavMenuMobile: React.FC<NavMenuMobileProps> = ({
   const linkStyle =
     'w-full px-8 py-4 block font-semibold hover:text-gray-700 uppercase text-sm tracking-widest border-b border-gray-300'
   return (
-    <nav className="pt-14 bg-gray-100 md:bg-white md:flex fixed inset-0 h-full md:h-6 z-90 overflow-auto scrolling-auto scrolling-touch">
+    <nav className="pt-14 bg-gray-100 fixed inset-0 h-full z-90 overflow-auto scrolling-auto scrolling-touch">
       <Link href="/">
         <a
           onClick={() => {

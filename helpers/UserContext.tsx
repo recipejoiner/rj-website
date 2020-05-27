@@ -4,7 +4,7 @@ import { CurrentUserLoginCheckType } from 'requests/auth'
 interface ContextProps {
   isLoggedIn: boolean
   setLoggedIn: (state: boolean) => void
-  currentUserInfo: CurrentUserLoginCheckType | null
+  currentUserInfo: CurrentUserLoginCheckType | undefined
 }
 const UserContext = createContext<Partial<ContextProps>>({})
 

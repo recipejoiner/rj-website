@@ -26,7 +26,7 @@ interface AppState {
   loggedIn: boolean
   menuOpen: boolean
   yPos: number
-  currentUserInfo: CurrentUserLoginCheckType | null
+  currentUserInfo: CurrentUserLoginCheckType | undefined
 }
 
 interface UserProps {
@@ -41,7 +41,7 @@ class MyApp extends App<UserProps, {}, AppState> {
     this.state = {
       loggedIn: false,
       menuOpen: false,
-      currentUserInfo: null,
+      currentUserInfo: undefined,
       yPos: 0,
     }
     this.setLoggedIn = this.setLoggedIn.bind(this)
@@ -223,10 +223,10 @@ class MyApp extends App<UserProps, {}, AppState> {
         if (data && data.me.email) {
           return data
         }
-        return null
+        return undefined
       })
       .catch(() => {
-        return null
+        return undefined
       })
     return {
       pageProps,

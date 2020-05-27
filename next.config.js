@@ -1,7 +1,7 @@
-const withCSS = require('@zeit/next-css');
-const optimizedImages = require('next-optimized-images');
-const withPlugins = require('next-compose-plugins');
-const webpack = require('webpack');
+const withCSS = require('@zeit/next-css')
+const optimizedImages = require('next-optimized-images')
+const withPlugins = require('next-compose-plugins')
+const webpack = require('webpack')
 
 const nextConfiguration = {
   env: {
@@ -15,13 +15,13 @@ const nextConfiguration = {
     // Fixes npm packages that depend on `fs` module
     if (!isServer) {
       config.node = {
-        fs: 'empty'
+        fs: 'empty',
       }
     }
 
-    return config;
+    return config
   },
-};
+}
 
 const optImgConfiguration = {
   optimizeImagesInDev: true,
@@ -33,13 +33,13 @@ const optImgConfiguration = {
         loader: 'responsive-loader',
         options: {
           adapter: require('responsive-loader/sharp'),
-        }
+        },
       },
-    ]
-  }
-};
+    ],
+  },
+}
 
 module.exports = withPlugins([
   [withCSS, nextConfiguration],
   [optimizedImages, optImgConfiguration],
-]);
+])

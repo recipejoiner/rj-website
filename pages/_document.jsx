@@ -1,21 +1,19 @@
 // This page literally just exists so that we can set the language in the HTML tag and things like GTM
 // _document is only rendered on the server side and not on the client side
 // Event handlers like onClick can't be added to this file
-import Document, { Html, Head, Main, NextScript } from 'next/document';
+import Document, { Html, Head, Main, NextScript } from 'next/document'
 
 export default class MyDocument extends Document {
   render() {
     return (
       <Html lang="en">
-        <Head>
-          {/* put any head tags here, eg Google Tag Manager */}
-        </Head>
+        <Head>{/* put any head tags here, eg Google Tag Manager */}</Head>
         <body>
           <Main />
           <NextScript />
         </body>
       </Html>
-    );
+    )
   }
 }
 
@@ -44,9 +42,9 @@ MyDocument.getInitialProps = async (ctx) => {
   // 3. app.render
   // 4. page.render
 
-  const initialProps = await Document.getInitialProps(ctx);
+  const initialProps = await Document.getInitialProps(ctx)
 
   return {
     ...initialProps,
-  };
-};
+  }
+}

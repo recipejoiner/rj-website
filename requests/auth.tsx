@@ -1,15 +1,15 @@
-import gql from 'graphql-tag';
+import gql from 'graphql-tag'
 
 export interface UserLoginType {
   login: {
     user: {
-      token: string;
+      token: string
     }
   }
 }
 export interface LoginVarsType {
-  email: string;
-  password: string;
+  email: string
+  password: string
 }
 export const LOGIN = gql`
   mutation login($email: String!, $password: String!) {
@@ -19,12 +19,12 @@ export const LOGIN = gql`
       }
     }
   }
-`;
+`
 
 // check for email, as only a logged-in user can access their email (API users will just get null)
 export interface CurrentUserLoginCheckType {
   me: {
-    email: string;
+    email: string
   }
 }
 export const CURRENT_USER_LOGIN_CHECK = gql`
@@ -33,20 +33,20 @@ export const CURRENT_USER_LOGIN_CHECK = gql`
       email
     }
   }
-`;
+`
 
 export interface UserInfoType {
   result: {
-    id: string;
-    username: string;
-    followerCount: number;
-    followingCount: number;
-    firstName: string | null;
-    lastName: string | null;
+    id: string
+    username: string
+    followerCount: number
+    followingCount: number
+    firstName: string | null
+    lastName: string | null
   }
 }
 export interface UserByUsernameVarsType {
-  username: string;
+  username: string
 }
 export const USER_INFO_BY_USERNAME = gql`
   query userByUsername($username: String!) {
@@ -60,52 +60,54 @@ export const USER_INFO_BY_USERNAME = gql`
       createdAt
     }
   }
-`;
+`
 
 export interface LogoutReturnType {
-  logout: boolean;
+  logout: boolean
 }
 export const LOGOUT = gql`
-  mutation logout{
+  mutation logout {
     logout
   }
-`;
+`
 
 export interface SignUpReturnType {
   signUp: {
     user: {
-      token: string;
+      token: string
     }
   }
 }
 export interface SignUpVarsType {
-  email: string;
-  firstName: string;
-  lastName: string;
-  username: string;
-  password: string;
-  passwordConfirmation: string;
+  email: string
+  firstName: string
+  lastName: string
+  username: string
+  password: string
+  passwordConfirmation: string
 }
 export const SIGN_UP = gql`
   mutation signUp(
-    $email: String!,
-    $firstName: String!,
-    $lastName: String!,
-    $username: String!,
-    $password: String!,
-    $passwordConfirmation: String!,
-    ){
-    signUp(attributes: {
-      email: $email
-      firstName: $firstName
-      lastName: $lastName
-      username: $username
-      password: $password
-      passwordConfirmation: $passwordConfirmation
-    }) {
+    $email: String!
+    $firstName: String!
+    $lastName: String!
+    $username: String!
+    $password: String!
+    $passwordConfirmation: String!
+  ) {
+    signUp(
+      attributes: {
+        email: $email
+        firstName: $firstName
+        lastName: $lastName
+        username: $username
+        password: $password
+        passwordConfirmation: $passwordConfirmation
+      }
+    ) {
       user {
         token
       }
     }
   }
-`;
+`

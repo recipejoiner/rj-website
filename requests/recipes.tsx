@@ -1,31 +1,31 @@
-import gql from 'graphql-tag';
+import gql from 'graphql-tag'
 
-import { EdgeType } from 'components/InfiniteScroll';
+import { EdgeType } from 'components/InfiniteScroll'
 
 export interface ShortRecipeInfoType {
-  id: string;
+  id: string
   by: {
-    username: string;
-    __typename: string;
+    username: string
+    __typename: string
   }
-  title: string;
-  handle: string;
-  description: string;
-  servings: string;
-  __typename: string;
+  title: string
+  handle: string
+  description: string
+  servings: string
+  __typename: string
 }
 export interface AllRecipesData {
   connection: {
     pageInfo: {
-      hasNextPage: boolean;
-      __typename: string;
+      hasNextPage: boolean
+      __typename: string
     }
-    edges: Array<EdgeType<ShortRecipeInfoType>>;
-    __typename: string;
+    edges: Array<EdgeType<ShortRecipeInfoType>>
+    __typename: string
   }
 }
 export interface AllRecipesVarsType {
-  cursor: string | null;
+  cursor: string | null
 }
 export const ALL_RECIPES = gql`
   query getAllRecipes($cursor: String) {
@@ -48,14 +48,14 @@ export const ALL_RECIPES = gql`
       }
     }
   }
-`;
+`
 
 export interface UserRecipeFeedData {
-  result: AllRecipesData;
-  __typename: string;
+  result: AllRecipesData
+  __typename: string
 }
 export interface UserRecipeFeedVarsType {
-  cursor: string | null;
+  cursor: string | null
 }
 export const USER_RECIPES_FEED = gql`
   query getAllRecipes($cursor: String) {
@@ -80,37 +80,37 @@ export const USER_RECIPES_FEED = gql`
       }
     }
   }
-`;
+`
 
 export interface IngredientType {
   ingredientInfo: {
-    name: string;
+    name: string
   }
-  quantity: number;
+  quantity: number
   unit: {
-    name: string;
+    name: string
   }
 }
 
 export interface RecipeStepType {
-  stepNum: number;
-  stepTime: number;
-  description: string;
-  ingredients: Array<IngredientType>;
+  stepNum: number
+  stepTime: number
+  description: string
+  ingredients: Array<IngredientType>
 }
 
 export interface RecipeType {
   result: {
     by: {
-      username: string;
+      username: string
     }
-    id: string;
-    title: string;
-    handle: string;
-    description: string;
-    servings: string;
-    ingredients: Array<IngredientType>;
-    steps: Array<RecipeStepType>;
+    id: string
+    title: string
+    handle: string
+    description: string
+    servings: string
+    ingredients: Array<IngredientType>
+    steps: Array<RecipeStepType>
   }
 }
 
@@ -150,7 +150,7 @@ export const RECIPE_BY_USERNAME_AND_HANDLE = gql`
       }
     }
   }
-`;
+`
 
 export const RECIPE_BY_ID = gql`
   query getRecipeByID($id: ID) {
@@ -188,4 +188,4 @@ export const RECIPE_BY_ID = gql`
       }
     }
   }
-`;
+`

@@ -12,7 +12,7 @@ const Logo: React.FC<LogoProps> = ({ closeMenus }) => {
         {/* Need to close any open menus when navigating to another page, hence the onClick */}
         <a aria-label="RecipeJoiner home page" onClick={() => closeMenus()}>
           <svg
-            className="h-12 p-1 text-gray-900 hover:text-gray-700 fill-current"
+            className="h-12 p-2 text-gray-900 hover:text-gray-700 fill-current"
             viewBox="0 0 138 180"
             version="1.1"
           >

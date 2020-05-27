@@ -1,5 +1,6 @@
 import Link from 'next/link'
 import MobileDropdown from 'components/layout/header/mobile/MobileDropdown'
+import { logout } from 'helpers/auth'
 
 type NavMenuMobileProps = {
   closeMenus(): void
@@ -16,7 +17,7 @@ const NavMenuMobile: React.FC<NavMenuMobileProps> = ({
     'w-full px-8 py-4 block font-semibold hover:text-gray-700 uppercase text-sm tracking-widest border-b border-gray-300'
   return (
     <nav
-      className={`mt-14 bg-gray-100 md:bg-white md:flex fixed inset-0 h-full md:h-6 z-90 overflow-auto scrolling-auto inset-0 scrolling-touch`}
+      className={`pt-14 bg-gray-100 md:bg-white md:flex fixed inset-0 h-full md:h-6 z-90 overflow-auto scrolling-auto scrolling-touch`}
     >
       <Link href="/">
         <a
@@ -60,6 +61,11 @@ const NavMenuMobile: React.FC<NavMenuMobileProps> = ({
             link: '/#',
             title: 'Test Link 3',
           },
+          {
+            href: '/#',
+            link: '/#',
+            title: 'Test Link 4',
+          },
         ]}
       />
       <Link href="/#" as="/#">
@@ -82,6 +88,14 @@ const NavMenuMobile: React.FC<NavMenuMobileProps> = ({
           Test Link 3
         </a>
       </Link>
+      <div className="pt-20">
+        <button className={linkStyle} onClick={() => logout(false)}>
+          log out
+        </button>
+        <button className={linkStyle} onClick={() => logout(true)}>
+          log out everywhere
+        </button>
+      </div>
     </nav>
   )
 }

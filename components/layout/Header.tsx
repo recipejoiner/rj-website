@@ -2,7 +2,6 @@ import * as React from 'react'
 import Link from 'next/link'
 
 import UserContext from 'helpers/UserContext'
-import { logout } from 'helpers/auth'
 import Logo from 'components/layout/header/Logo'
 import NewRecipeLink from 'components/layout/header/NewRecipeLink'
 import HamburgerMenu from 'components/layout/header/HamburgerMenu'
@@ -28,12 +27,6 @@ const LoggedInHeader: React.FC<LoggedInHeaderProps> = ({ setMenuOpen }) => {
     <div>
       <header className="bg-white opacity-95 border-b border-gray-500 w-full fixed z-100 inset-x-0 top-0">
         <div className="flex items-center justify-between p-4 relative max-w-12xl mx-auto h-14">
-          {/* <button
-            className="table-cell h-full align-middle text-left w-1/3"
-            onClick={() => logout(false)}
-          >
-            log out
-          </button> */}
           <HamburgerMenu
             drawerOpen={drawerOpen}
             setDrawerOpen={setDrawerOpen}
@@ -41,12 +34,6 @@ const LoggedInHeader: React.FC<LoggedInHeaderProps> = ({ setMenuOpen }) => {
           />
           <Logo closeMenus={closeMenus} />
           <NewRecipeLink closeMenus={closeMenus} />
-          {/* <button
-            className="table-cell h-full align-middle text-right w-1/3"
-            onClick={() => logout(true)}
-          >
-            log out everywhere
-          </button> */}
         </div>
       </header>
       {/* The mobile navigation menu */}

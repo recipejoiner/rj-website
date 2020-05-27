@@ -16,9 +16,7 @@ const NavMenuMobile: React.FC<NavMenuMobileProps> = ({
   const linkStyle =
     'w-full px-8 py-4 block font-semibold hover:text-gray-700 uppercase text-sm tracking-widest border-b border-gray-300'
   return (
-    <nav
-      className={`pt-14 bg-gray-100 md:bg-white md:flex fixed inset-0 h-full md:h-6 z-90 overflow-auto scrolling-auto scrolling-touch`}
-    >
+    <nav className="pt-14 bg-gray-100 md:bg-white md:flex fixed inset-0 h-full md:h-6 z-90 overflow-auto scrolling-auto scrolling-touch">
       <Link href="/">
         <a
           onClick={() => {
@@ -88,11 +86,17 @@ const NavMenuMobile: React.FC<NavMenuMobileProps> = ({
           Test Link 3
         </a>
       </Link>
-      <div className="pt-20">
-        <button className={linkStyle} onClick={() => logout(false)}>
+      <div className="pt-10">
+        <button
+          className={`${linkStyle} text-red-700`}
+          onClick={() => logout(false)}
+        >
           log out
         </button>
-        <button className={linkStyle} onClick={() => logout(true)}>
+        <button
+          className={`${linkStyle} text-red-700 border-none`}
+          onClick={() => logout(true)}
+        >
           log out everywhere
         </button>
       </div>

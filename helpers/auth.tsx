@@ -33,6 +33,7 @@ export const logout = (everywhere: boolean) => {
   const localLogout = () => {
     deleteCookie('UserToken')
     location.reload()
+    client.resetStore()
     return true
   }
   if (everywhere) {
@@ -50,8 +51,8 @@ export const logout = (everywhere: boolean) => {
         if (!data) {
           return false
         }
-        localLogout()
-        return data.logout // Will be false if, for example, the token used is the API token
+        const locallyLoggedOut = localLogout()
+        return locallyLoggedOut && data.logout // Will be false if, for example, the token used is the API token
       })
       .catch(() => {
         return false

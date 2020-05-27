@@ -26,10 +26,12 @@ interface AppState {
   loggedIn: boolean
   menuOpen: boolean
   yPos: number
+  currentUserInfo: CurrentUserLoginCheckType | null
 }
 
 interface UserProps {
   loggedIn: boolean
+  currentUserInfo: CurrentUserLoginCheckType
 }
 
 class MyApp extends App<UserProps, {}, AppState> {
@@ -39,6 +41,7 @@ class MyApp extends App<UserProps, {}, AppState> {
     this.state = {
       loggedIn: false,
       menuOpen: false,
+      currentUserInfo: null,
       yPos: 0,
     }
     this.setLoggedIn = this.setLoggedIn.bind(this)
@@ -55,6 +58,7 @@ class MyApp extends App<UserProps, {}, AppState> {
     if (props.loggedIn !== state.loggedIn) {
       return {
         loggedIn: props.loggedIn,
+        currentUserInfo: props.currentUserInfo,
       }
     }
     return null
@@ -201,7 +205,7 @@ class MyApp extends App<UserProps, {}, AppState> {
       pageProps = await Component.getInitialProps(ctx)
     }
 
-    const loggedIn = await client
+    const currentUserInfo = await client
       .query({
         query: CURRENT_USER_LOGIN_CHECK,
         context: {
@@ -216,14 +220,18 @@ class MyApp extends App<UserProps, {}, AppState> {
       .then((res) => {
         const { data }: { data?: CurrentUserLoginCheckType } = res || {}
         if (data && data.me.email) {
-          return true
+          return data
         }
-        return false
+        return null
       })
       .catch(() => {
-        return false
+        return null
       })
-    return { pageProps, loggedIn }
+    return {
+      pageProps,
+      loggedIn: !!currentUserInfo,
+      currentUserInfo,
+    }
   }
 
   render() {

@@ -24,12 +24,14 @@ export const LOGIN = gql`
 // check for email, as only a logged-in user can access their email (API users will just get null)
 export interface CurrentUserLoginCheckType {
   me: {
+    username: string
     email: string
   }
 }
 export const CURRENT_USER_LOGIN_CHECK = gql`
   query {
     me {
+      username
       email
     }
   }

@@ -77,7 +77,9 @@ const NoUserHeader: React.FC<NoUserHeaderProps> = ({}) => {
   return (
     <header className="bg-white border-b border-gray-500 w-full fixed z-100 lg:z-90 inset-x-0 top-0">
       <div className="flex items-center justify-between p-4 relative max-w-12xl mx-auto h-14 md:h-16">
-        <div className="table-cell align-middle w-1/3">Sign Up</div>
+        <Link href="/signup">
+          <a className="table-cell align-middle text-left w-1/3">Sign Up</a>
+        </Link>
         <Logo closeMenus={() => null} />
         <Link href="/login">
           <a className="table-cell align-middle text-right w-1/3">Log In</a>

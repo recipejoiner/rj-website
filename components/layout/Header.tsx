@@ -4,6 +4,7 @@ import Link from 'next/link'
 import UserContext from 'helpers/UserContext'
 import Logo from 'components/layout/header/Logo'
 import NewRecipeLink from 'components/layout/header/NewRecipeLink'
+import ProfileLink from 'components/layout/header/ProfileLink'
 import HamburgerMenu from 'components/layout/header/HamburgerMenu'
 import NavMenuMobile from 'components/layout/header/NavMenuMobile'
 import NavMenuDesktop from 'components/layout/header/NavMenuDesktop'
@@ -47,7 +48,15 @@ const LoggedInHeader: React.FC<LoggedInHeaderProps> = ({
             setTestDropdownOpen={setTestDropdownOpen}
             currentUserInfo={currentUserInfo}
           />
-          <NewRecipeLink closeMenus={closeMenus} />
+          <div className="flex flex-row">
+            <div className="hidden md:block">
+              <ProfileLink
+                closeMenus={closeMenus}
+                currentUserInfo={currentUserInfo}
+              />
+            </div>
+            <NewRecipeLink closeMenus={closeMenus} />
+          </div>
         </div>
         {/* The mobile navigation menu */}
         <div className={`${drawerOpen ? 'block' : 'hidden'}`}>

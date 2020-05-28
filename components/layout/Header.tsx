@@ -48,7 +48,7 @@ const LoggedInHeader: React.FC<LoggedInHeaderProps> = ({
             setTestDropdownOpen={setTestDropdownOpen}
             currentUserInfo={currentUserInfo}
           />
-          <div className="flex flex-row">
+          <div className="flex flex-row items-center">
             <div className="hidden md:block">
               <ProfileLink
                 closeMenus={closeMenus}

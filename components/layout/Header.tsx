@@ -6,6 +6,7 @@ import Logo from 'components/layout/header/Logo'
 import NewRecipeLink from 'components/layout/header/NewRecipeLink'
 import HamburgerMenu from 'components/layout/header/HamburgerMenu'
 import NavMenuMobile from 'components/layout/header/NavMenuMobile'
+import NavMenuDesktop from 'components/layout/header/NavMenuDesktop'
 import { CurrentUserLoginCheckType } from 'requests/auth'
 
 interface LoggedInHeaderProps {
@@ -31,25 +32,33 @@ const LoggedInHeader: React.FC<LoggedInHeaderProps> = ({
   return (
     <div>
       <header className="bg-white opacity-95 border-b border-gray-500 w-full fixed z-100 inset-x-0 top-0">
-        <div className="flex items-center justify-between p-4 relative max-w-12xl mx-auto h-14">
-          <HamburgerMenu
-            drawerOpen={drawerOpen}
-            setDrawerOpen={setDrawerOpen}
-            closeMenus={closeMenus}
-          />
+        <div className="flex items-center justify-between p-4 relative max-w-12xl mx-auto h-14 md:h-16">
+          <div className="md:hidden">
+            <HamburgerMenu
+              drawerOpen={drawerOpen}
+              setDrawerOpen={setDrawerOpen}
+              closeMenus={closeMenus}
+            />
+          </div>
           <Logo closeMenus={closeMenus} />
+          <NavMenuDesktop
+            closeMenus={closeMenus}
+            testDropdownOpen={testDropdownOpen}
+            setTestDropdownOpen={setTestDropdownOpen}
+            currentUserInfo={currentUserInfo}
+          />
           <NewRecipeLink closeMenus={closeMenus} />
         </div>
+        {/* The mobile navigation menu */}
+        <div className={`${drawerOpen ? 'block' : 'hidden'}`}>
+          <NavMenuMobile
+            closeMenus={closeMenus}
+            testDropdownOpen={testDropdownOpen}
+            setTestDropdownOpen={setTestDropdownOpen}
+            currentUserInfo={currentUserInfo}
+          />
+        </div>
       </header>
-      {/* The mobile navigation menu */}
-      <div className={`${drawerOpen ? 'block' : 'hidden'}`}>
-        <NavMenuMobile
-          closeMenus={closeMenus}
-          testDropdownOpen={testDropdownOpen}
-          setTestDropdownOpen={setTestDropdownOpen}
-          currentUserInfo={currentUserInfo}
-        />
-      </div>
     </div>
   )
 }

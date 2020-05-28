@@ -1,14 +1,17 @@
 import Link from 'next/link'
 
+import { CurrentUserLoginCheckType } from 'requests/auth'
+
 type LogoProps = {
   closeMenus(): void
+  currentUserInfo: CurrentUserLoginCheckType
 }
 
-const Logo: React.FC<LogoProps> = ({ closeMenus }) => {
+const Logo: React.FC<LogoProps> = ({ closeMenus, currentUserInfo }) => {
   return (
     // Logo, wrapped in an h2 tag
     <h2>
-      <Link href="/recipes/new">
+      <Link href="/[username]" as={`/${currentUserInfo.me.username}`}>
         {/* Need to close any open menus when navigating to another page, hence the onClick */}
         <a
           aria-label="RecipeJoiner create new recipe page"

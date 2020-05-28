@@ -33,7 +33,7 @@ const LoggedInHeader: React.FC<LoggedInHeaderProps> = ({
   return (
     <div>
       <header className="bg-white opacity-95 border-b border-gray-500 w-full fixed z-100 inset-x-0 top-0">
-        <div className="flex items-center justify-between p-4 relative max-w-12xl mx-auto h-14 md:h-16">
+        <div className="flex items-center justify-between p-4 relative max-w-12xl z-100 mx-auto h-14 md:h-16">
           <div className="md:hidden">
             <HamburgerMenu
               drawerOpen={drawerOpen}

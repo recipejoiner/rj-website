@@ -12,11 +12,7 @@ interface LoginPageProps {}
 const LoginPage: NextPage<LoginPageProps> = ({}) => {
   const [loginErrs, setLoginErrs] = React.useState<Array<gqlError>>([])
 
-  interface FormData {
-    email: string
-    password: string
-  }
-  const { register, handleSubmit, watch, errors } = useForm<FormData>()
+  const { register, handleSubmit, watch, errors } = useForm<LoginVarsType>()
   const onSubmit = handleSubmit(({ email, password }) => {
     const token = process.env.NEXT_PUBLIC_RJ_API_TOKEN || ''
     client

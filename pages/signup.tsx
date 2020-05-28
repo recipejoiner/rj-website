@@ -13,15 +13,12 @@ const SignUpPage: NextPage<SignUpPageProps> = ({}) => {
   const [loginErrs, setLoginErrs] = React.useState<Array<gqlError>>([])
 
   const { register, handleSubmit, watch, errors } = useForm<SignUpVarsType>()
-  const onSubmit = handleSubmit(({ email, password }) => {
+  const onSubmit = handleSubmit((variables: SignUpVarsType) => {
     const token = process.env.NEXT_PUBLIC_RJ_API_TOKEN || ''
     client
       .mutate({
         mutation: SIGN_UP,
-        variables: {
-          email: email,
-          password: password,
-        },
+        variables: variables,
         context: {
           // example of setting the headers with context per operation
           headers: {

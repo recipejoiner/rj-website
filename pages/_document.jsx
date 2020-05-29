@@ -7,7 +7,14 @@ export default class MyDocument extends Document {
   render() {
     return (
       <Html lang="en">
-        <Head>{/* put any head tags here, eg Google Tag Manager */}</Head>
+        <Head>
+          <meta
+            http-equiv="Cache-Control"
+            content="no-cache, no-store, must-revalidate"
+          />
+          <meta http-equiv="Pragma" content="no-cache" />
+          <meta http-equiv="Expires" content="0" />
+        </Head>
         <body>
           <Main />
           <NextScript />

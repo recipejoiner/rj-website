@@ -7,12 +7,15 @@ import { UserLoginType, LoginVarsType, LOGIN } from 'requests/auth'
 import { setCookie, redirectTo } from 'helpers/methods'
 import { withHomeRedirect } from 'helpers/auth'
 
+import { TextFormItem, PasswordFormItem } from 'components/forms/Fields'
+
 interface LoginPageProps {}
 
 const LoginPage: NextPage<LoginPageProps> = ({}) => {
   const [loginErrs, setLoginErrs] = React.useState<Array<gqlError>>([])
 
   const { register, handleSubmit, watch, errors } = useForm<LoginVarsType>()
+
   const onSubmit = handleSubmit(({ email, password }) => {
     const token = process.env.NEXT_PUBLIC_RJ_API_TOKEN || ''
     client
@@ -54,51 +57,29 @@ const LoginPage: NextPage<LoginPageProps> = ({}) => {
             onSubmit={onSubmit}
             className="sm:bg-white sm:shadow-md rounded px-8 pt-6 pb-8 mb-4"
           >
-            <div className="mb-4">
-              <label
-                className="block text-gray-700 text-sm font-bold mb-2"
-                htmlFor="email"
-              >
-                Email
-              </label>
-              <input
-                className="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
-                id="email"
-                name="email"
-                type="text"
-                placeholder="you@example.com"
-                ref={register}
-              />
-            </div>
-            <div className="mb-6">
-              <label
-                className="block text-gray-700 text-sm font-bold mb-2"
-                htmlFor="password"
-              >
-                Password
-              </label>
-              <input
-                className="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
-                id="password"
-                name="password"
-                type="password"
-                placeholder="••••••••"
-                ref={register}
-              />
-              <ul className="pt-2">
-                {loginErrs.map((err) => {
-                  return (
-                    <li
-                      key={err.message}
-                      className="text-red-500 font-bold text-sm italic"
-                    >
-                      {err.message}
-                    </li>
-                  )
-                })}
-              </ul>
-              {/* <p className="text-red-500 text-xs italic">Please choose a password.</p> */}
-            </div>
+            <TextFormItem
+              label="Email"
+              returnVar="email"
+              placeholder="you@example.com"
+              register={register}
+            />
+            <PasswordFormItem
+              label="Password"
+              returnVar="password"
+              register={register}
+            />
+            <ul className="p-2">
+              {loginErrs.map((err) => {
+                return (
+                  <li
+                    key={err.message}
+                    className="text-red-500 font-bold text-sm italic"
+                  >
+                    {err.message}
+                  </li>
+                )
+              })}
+            </ul>
             <div className="flex items-center justify-between">
               <button
                 className="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded focus:outline-none focus:shadow-outline"

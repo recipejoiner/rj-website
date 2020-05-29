@@ -9,11 +9,11 @@ export default class MyDocument extends Document {
       <Html lang="en">
         <Head>
           <meta
-            http-equiv="Cache-Control"
+            httpEquiv="Cache-Control"
             content="no-cache, no-store, must-revalidate"
           />
-          <meta http-equiv="Pragma" content="no-cache" />
-          <meta http-equiv="Expires" content="0" />
+          <meta httpEquiv="Pragma" content="no-cache" />
+          <meta httpEquiv="Expires" content="0" />
         </Head>
         <body>
           <Main />

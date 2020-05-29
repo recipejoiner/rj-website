@@ -59,7 +59,6 @@ export const getServerSideProps: GetServerSideProps = async (ctx) => {
           username: username,
         },
         context: {
-          // example of setting the headers with context per operation
           headers: {
             authorization: `Bearer ${getToken(ctx)}`,
           },

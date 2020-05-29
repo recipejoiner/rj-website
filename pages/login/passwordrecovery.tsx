@@ -1,5 +1,5 @@
 import React from 'react'
-import { NextPage } from 'next'
+import { NextPage, GetServerSideProps } from 'next'
 import { useForm } from 'react-hook-form'
 
 import client, { gqlError } from 'requests/client'
@@ -26,38 +26,35 @@ const PasswordRecoveryPage: NextPage<PasswordRecoveryPageProps> = ({
   const { register, handleSubmit, watch, errors } = useForm<
     PasswordResetVarsType
   >()
-  const onSubmit = handleSubmit(
-    ({ password, passwordConfirmation, resetPasswordToken }) => {
-      const token = process.env.NEXT_PUBLIC_RJ_API_TOKEN || ''
-      client
-        .mutate({
-          mutation: RESET_PASSWORD,
-          variables: {
-            password: password,
-            passwordConfirmation: passwordConfirmation,
-            resetPasswordToken: resetPasswordToken,
+  const onSubmit = handleSubmit(({ password, passwordConfirmation }) => {
+    const token = process.env.NEXT_PUBLIC_RJ_API_TOKEN || ''
+    client
+      .mutate({
+        mutation: RESET_PASSWORD,
+        variables: {
+          password: password,
+          passwordConfirmation: passwordConfirmation,
+          resetPasswordToken: resetPasswordToken,
+        },
+        context: {
+          headers: {
+            authorization: `Bearer ${token}`,
           },
-          context: {
-            headers: {
-              authorization: `Bearer ${token}`,
-            },
-          },
-        })
-        .then((res) => {
-          const { data }: { data?: UserLoginType } = res || {}
-          if (!!data) {
-            setCookie('UserToken', data?.result.user.token)
-            redirectTo('/')
-          } else {
-            throw 'Data is missing!'
-          }
-        })
-        .catch((err) => {
-          setPwRecoveryErrs(err.graphQLErrors)
-          console.log(pwRecoveryErrs)
-        })
-    }
-  )
+        },
+      })
+      .then((res) => {
+        const { data }: { data?: UserLoginType } = res || {}
+        if (!!data) {
+          setCookie('UserToken', data?.result.user.token)
+          redirectTo('/')
+        } else {
+          throw 'Data is missing!'
+        }
+      })
+      .catch((err) => {
+        setPwRecoveryErrs(err.graphQLErrors)
+      })
+  })
 
   return (
     <React.Fragment>
@@ -95,17 +92,11 @@ const PasswordRecoveryPage: NextPage<PasswordRecoveryPageProps> = ({
             </ul>
             <div className="flex items-center justify-between">
               <button
-                className="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded focus:outline-none focus:shadow-outline"
+                className="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 w-full rounded focus:outline-none focus:shadow-outline"
                 type="submit"
               >
-                Sign In
+                Reset Password & Sign In
               </button>
-              <a
-                className="inline-block align-baseline font-bold text-sm text-blue-500 hover:text-blue-800"
-                href="#"
-              >
-                Forgot Password?
-              </a>
             </div>
           </form>
           <p className="text-center text-gray-500 text-xs">
@@ -117,4 +108,17 @@ const PasswordRecoveryPage: NextPage<PasswordRecoveryPageProps> = ({
   )
 }
 
-export default withHomeRedirect(PasswordRecoveryPage)
+export const getServerSideProps: GetServerSideProps = async (context) => {
+  const { res } = context
+  // For searching with a classic query param, a la Google
+  const resetPasswordToken = context.query.reset_password_token
+  if (resetPasswordToken == undefined) {
+    res.writeHead(303, { Location: `/` })
+    res.end()
+  }
+  return {
+    props: { resetPasswordToken: resetPasswordToken },
+  }
+}
+
+export default PasswordRecoveryPage

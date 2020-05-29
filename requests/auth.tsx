@@ -21,6 +21,18 @@ export const LOGIN = gql`
   }
 `
 
+export interface SendResetPasswordType {
+  result: boolean
+}
+export interface SendResetPasswordVarsType {
+  email: string
+}
+export const SEND_RESET_PASS_INSTRUCTIONS = gql`
+  mutation sendResetPasswordInstructions($email: String!) {
+    result: sendResetPasswordInstructions(email: $email)
+  }
+`
+
 // return type is same as UserLoginType
 export interface PasswordResetVarsType {
   password: string

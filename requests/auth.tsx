@@ -1,7 +1,7 @@
 import gql from 'graphql-tag'
 
 export interface UserLoginType {
-  login: {
+  result: {
     user: {
       token: string
     }
@@ -13,7 +13,31 @@ export interface LoginVarsType {
 }
 export const LOGIN = gql`
   mutation login($email: String!, $password: String!) {
-    login(email: $email, password: $password) {
+    result: login(email: $email, password: $password) {
+      user {
+        token
+      }
+    }
+  }
+`
+
+// return type is same as UserLoginType
+export interface PasswordResetVarsType {
+  password: string
+  passwordConfirmation: string
+  resetPasswordToken: string
+}
+export const RESET_PASSWORD = gql`
+  mutation resetPassword(
+    $password: String!
+    $passwordConfirmation: String!
+    $resetPasswordToken: String!
+  ) {
+    result: resetPassword(
+      password: $password
+      passwordConfirmation: $passwordConfirmation
+      resetPasswordToken: $resetPasswordToken
+    ) {
       user {
         token
       }

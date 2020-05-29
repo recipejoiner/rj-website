@@ -32,7 +32,7 @@ const LoginPage: NextPage<LoginPageProps> = ({}) => {
       .then((res) => {
         const { data }: { data?: UserLoginType } = res || {}
         if (!!data) {
-          setCookie('UserToken', data?.login.user.token)
+          setCookie('UserToken', data?.result.user.token)
           redirectTo('/')
         } else {
           throw 'Data is missing!'

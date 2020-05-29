@@ -18,7 +18,6 @@ const UserPage: NextPage<UserPageProps> = ({ userInfo }) => {
   const { result } = userInfo || {}
   const { id, username, recipeCount, followerCount, followingCount } =
     result || {}
-  console.log('recipecount', recipeCount)
   const title = `chef ${username} - RecipeJoiner`
   const description = `Check out all recipes by chef ${username}!`
 

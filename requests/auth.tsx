@@ -41,6 +41,7 @@ export interface UserInfoType {
   result: {
     id: string
     username: string
+    recipeCount: number
     followerCount: number
     followingCount: number
     firstName: string | null
@@ -55,6 +56,7 @@ export const USER_INFO_BY_USERNAME = gql`
     result: userByUsername(username: $username) {
       id
       username
+      recipeCount
       followerCount
       followingCount
       firstName

@@ -16,7 +16,9 @@ interface UserPageProps {
 
 const UserPage: NextPage<UserPageProps> = ({ userInfo }) => {
   const { result } = userInfo || {}
-  const { id, username, followerCount, followingCount } = result || {}
+  const { id, username, recipeCount, followerCount, followingCount } =
+    result || {}
+  console.log('recipecount', recipeCount)
   const title = `chef ${username} - RecipeJoiner`
   const description = `Check out all recipes by chef ${username}!`
 
@@ -41,7 +43,14 @@ const UserPage: NextPage<UserPageProps> = ({ userInfo }) => {
         />
         {/* OpenGraph tags end */}
       </Head>
-      <div>User page will go here</div>
+      <div className="flex flex-col">
+        <header className="p-2">
+          <h1 className="text-xl">{username}</h1>
+        </header>
+        <div>
+          <div>{recipeCount} recipes</div>
+        </div>
+      </div>
     </React.Fragment>
   )
 }

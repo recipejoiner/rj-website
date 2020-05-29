@@ -7,6 +7,8 @@ import { SignUpReturnType, SignUpVarsType, SIGN_UP } from 'requests/auth'
 import { setCookie, redirectTo } from 'helpers/methods'
 import { withHomeRedirect } from 'helpers/auth'
 
+import { TextFormItem, PasswordFormItem } from 'components/forms/Fields'
+
 interface SignUpPageProps {}
 
 const SignUpPage: NextPage<SignUpPageProps> = ({}) => {
@@ -41,66 +43,6 @@ const SignUpPage: NextPage<SignUpPageProps> = ({}) => {
       })
   })
 
-  interface TextFormItemProps {
-    label: string
-    returnVar: string
-    placeholder: string
-  }
-
-  const TextFormItem: React.FC<TextFormItemProps> = ({
-    label,
-    returnVar,
-    placeholder,
-  }) => {
-    return (
-      <div className="mb-4">
-        <label
-          className="block text-gray-700 text-sm font-bold mb-2"
-          htmlFor={returnVar}
-        >
-          {label}
-        </label>
-        <input
-          className="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
-          id={returnVar}
-          name={returnVar}
-          type="text"
-          placeholder={placeholder}
-          ref={register}
-        />
-      </div>
-    )
-  }
-
-  interface PasswordFormItemProps {
-    label: string
-    returnVar: string
-  }
-
-  const PasswordFormItem: React.FC<PasswordFormItemProps> = ({
-    label,
-    returnVar,
-  }) => {
-    return (
-      <div className="mb-4">
-        <label
-          className="block text-gray-700 text-sm font-bold mb-2"
-          htmlFor={returnVar}
-        >
-          {label}
-        </label>
-        <input
-          className="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
-          id={returnVar}
-          name={returnVar}
-          type="password"
-          placeholder="••••••••"
-          ref={register}
-        />
-      </div>
-    )
-  }
-
   return (
     <React.Fragment>
       <div className="w-screen bg-gray-100 min-h-screen -mt-14 md:-mt-16">
@@ -115,26 +57,35 @@ const SignUpPage: NextPage<SignUpPageProps> = ({}) => {
               label="Email"
               returnVar="email"
               placeholder="you@example.com"
+              register={register}
             />
             <TextFormItem
               label="First Name"
               returnVar="firstName"
               placeholder="Ari"
+              register={register}
             />
             <TextFormItem
               label="Last Name"
               returnVar="lastName"
               placeholder="Mendelow"
+              register={register}
             />
             <TextFormItem
               label="Usernane"
               returnVar="username"
               placeholder="arimendelow"
+              register={register}
             />
-            <PasswordFormItem label="Password" returnVar="password" />
+            <PasswordFormItem
+              label="Password"
+              returnVar="password"
+              register={register}
+            />
             <PasswordFormItem
               label="Password Confirmation"
               returnVar="passwordConfirmation"
+              register={register}
             />
             <ul className="pt-2">
               {loginErrs.map((err) => {

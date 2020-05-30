@@ -1,4 +1,5 @@
 import React from 'react'
+import Head from 'next/head'
 import { NextPage, GetServerSideProps } from 'next'
 import { useForm } from 'react-hook-form'
 
@@ -61,8 +62,29 @@ const PasswordRecoveryPage: NextPage<PasswordRecoveryPageProps> = ({
       })
   })
 
+  const title = 'Forgot your password? - RecipeJoiner'
+  const description = 'RecipeJoiner password reset request form'
   return (
     <React.Fragment>
+      <Head>
+        {/* Give the title a key so that it's not duplicated - this allows me to change the page title on other pages */}
+        <title key="title">{title}</title>
+        <meta charSet="utf-8" />
+        <meta key="description" name="description" content={description} />
+        {/* OpenGraph tags */}
+        <meta
+          key="og:url"
+          property="og:url"
+          content={`${process.env.NEXT_PUBLIC_BASE_URL}/login/forgotpassword`}
+        />
+        <meta key="og:title" property="og:title" content={title} />
+        <meta
+          key="og:description"
+          property="og:description"
+          content={description}
+        />
+        {/* OpenGraph tags end */}
+      </Head>
       <div className="w-screen bg-gray-100 h-screen fixed">
         <h1 className="header-text pt-10 sm:pt-20">Forgot your password?</h1>
         <div className="text-center">

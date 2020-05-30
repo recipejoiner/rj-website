@@ -1,4 +1,5 @@
 import React from 'react'
+import Head from 'next/head'
 import { NextPage, GetServerSideProps } from 'next'
 import { useForm } from 'react-hook-form'
 
@@ -12,11 +13,11 @@ import { setCookie, redirectTo } from 'helpers/methods'
 import { withHomeRedirect } from 'helpers/auth'
 import { PasswordFormItem } from 'components/forms/Fields'
 
-interface PasswordRecoveryPageProps {
+interface PasswordResetPageProps {
   resetPasswordToken: string
 }
 
-const PasswordRecoveryPage: NextPage<PasswordRecoveryPageProps> = ({
+const PasswordResetPage: NextPage<PasswordResetPageProps> = ({
   resetPasswordToken,
 }) => {
   const [pwRecoveryErrs, setPwRecoveryErrs] = React.useState<Array<gqlError>>(
@@ -56,8 +57,29 @@ const PasswordRecoveryPage: NextPage<PasswordRecoveryPageProps> = ({
       })
   })
 
+  const title = 'Password Reset - RecipeJoiner'
+  const description = 'RecipeJoiner password reset form'
   return (
     <React.Fragment>
+      <Head>
+        {/* Give the title a key so that it's not duplicated - this allows me to change the page title on other pages */}
+        <title key="title">{title}</title>
+        <meta charSet="utf-8" />
+        <meta key="description" name="description" content={description} />
+        {/* OpenGraph tags */}
+        <meta
+          key="og:url"
+          property="og:url"
+          content={`${process.env.NEXT_PUBLIC_BASE_URL}/login/passwordreset`}
+        />
+        <meta key="og:title" property="og:title" content={title} />
+        <meta
+          key="og:description"
+          property="og:description"
+          content={description}
+        />
+        {/* OpenGraph tags end */}
+      </Head>
       <div className="w-screen bg-gray-100 h-screen fixed">
         <h1 className="header-text pt-10 sm:pt-20">Password Reset</h1>
         <div className="text-center">
@@ -121,4 +143,4 @@ export const getServerSideProps: GetServerSideProps = async (context) => {
   }
 }
 
-export default PasswordRecoveryPage
+export default PasswordResetPage

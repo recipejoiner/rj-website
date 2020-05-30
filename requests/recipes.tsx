@@ -260,18 +260,18 @@ interface RecipeInputStep {
   description: string
   ingredients: Array<RecipeInputIngredient> // not required
 }
-interface RecipeInputAttributes {
+export interface RecipeInput {
   title: string
   description: string
   servings: string
   steps: Array<RecipeInputStep>
 }
-interface CreateRecipeVars {
-  attributes: RecipeInputAttributes
+export interface CreateRecipeVars {
+  attributes: RecipeInput
 }
 // return type is RecipeType
 export const CREATE_RECIPE = gql`
-  mutation createRecipe($attributes: RecipeInputAttributes!) {
+  mutation createRecipe($attributes: RecipeInput!) {
     createOrEditRecipe(attributes: $attributes) {
       result: recipe {
         by {
@@ -312,14 +312,11 @@ export const CREATE_RECIPE = gql`
 
 interface EditRecipeVars {
   existingRecipeId: number
-  attributes: RecipeInputAttributes
+  attributes: RecipeInput
 }
 // uses same types as CREATE_RECIPE
 export const EDIT_RECIPE = gql`
-  mutation editRecipe(
-    $existingRecipeId: ID!
-    $attributes: RecipeInputAttributes!
-  ) {
+  mutation editRecipe($existingRecipeId: ID!, $attributes: RecipeInput!) {
     createOrEditRecipe(
       existingRecipeId: $existingRecipeId
       attributes: $attributes

@@ -64,6 +64,7 @@ const InfiniteScroll: React.FC<InfiniteScrollProps<any, any>> = ({
     typeof QueryVars
   >(QUERY, {
     client: client,
+    variables: QueryVars,
     context: {
       headers: {
         authorization: `Bearer ${getToken()}`,
@@ -84,10 +85,10 @@ const InfiniteScroll: React.FC<InfiniteScrollProps<any, any>> = ({
     const { connection } = result || infiniteScrollData
     const { edges } = connection
     const lastCursor = edges[edges.length - 1].cursor
+    let newVars = QueryVars
+    newVars.cursor = lastCursor
     fetchMore({
-      variables: {
-        cursor: lastCursor,
-      },
+      variables: newVars,
       updateQuery: (prev, { fetchMoreResult }) => {
         if (fetchMoreResult) {
           if ('result' in fetchMoreResult && 'result' in infiniteScrollData) {

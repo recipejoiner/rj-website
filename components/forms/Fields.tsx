@@ -35,7 +35,6 @@ export const TextFormItem: React.FC<TextFormItemProps> = ({
 }
 
 interface TextAreaFormItemProps {
-  defaultHeight: number
   label: string
   returnVar: string
   placeholder: string
@@ -43,15 +42,11 @@ interface TextAreaFormItemProps {
 }
 
 export const TextAreaFormItem: React.FC<TextAreaFormItemProps> = ({
-  defaultHeight,
   label,
   returnVar,
   placeholder,
   register,
 }) => {
-  const [height, setHeight] = React.useState(defaultHeight)
-  const [value, setValue] = React.useState('')
-  function setFilledTextareaHeight() {}
   return (
     <div className="mb-4">
       <label

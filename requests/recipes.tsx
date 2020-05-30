@@ -2,6 +2,35 @@ import gql from 'graphql-tag'
 
 import { EdgeType } from 'components/InfiniteScroll'
 
+export const recipeConnectionDataInit = {
+  connection: {
+    pageInfo: {
+      hasNextPage: true,
+      __typename: '',
+    },
+    edges: [
+      {
+        cursor: '',
+        node: {
+          id: '',
+          by: {
+            username: '',
+            __typename: '',
+          },
+          title: '',
+          handle: '',
+          description: '',
+          servings: '',
+          __typename: '',
+        },
+        __typename: '',
+      },
+    ],
+    __typename: '',
+  },
+  __typename: '',
+}
+
 export interface ShortRecipeInfoType {
   id: string
   by: {
@@ -61,6 +90,35 @@ export const USER_RECIPES_FEED = gql`
   query recipeFeed($cursor: String) {
     result: me {
       connection: recipeFeed(first: 10, after: $cursor) {
+        pageInfo {
+          hasNextPage
+        }
+        edges {
+          cursor
+          node {
+            id
+            by {
+              username
+            }
+            title
+            handle
+            description
+            servings
+          }
+        }
+      }
+    }
+  }
+`
+
+export interface UserByUsernameVarsType {
+  username: string
+  cursor: string | null
+}
+export const ALL_USER_RECIPES_BY_USERNAME = gql`
+  query userRecipesByUsername($username: String!) {
+    result: userByUsername(username: $username) {
+      connection: recipes(first: 10, after: $cursor) {
         pageInfo {
           hasNextPage
         }

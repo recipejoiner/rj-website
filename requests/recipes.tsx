@@ -248,3 +248,63 @@ export const RECIPE_BY_ID = gql`
     }
   }
 `
+
+interface RecipeInputIngredient {
+  name: string
+  amount: number
+  unit: string
+}
+
+interface RecipeInputStep {
+  stepNum: number
+  stepTime: number
+  description: string
+  ingredients: Array<RecipeInputIngredient> // not required
+}
+
+interface RecipeInputAttributes {
+  title: string
+  description: string
+  servings: string
+  steps: Array<RecipeInputStep>
+}
+// return type is RecipeType
+export const CREATE_RECIPE = gql`
+  mutation createRecipe($attributes: RecipeInputAttributes) {
+    createOrEditRecipe(attributes: $attributes) {
+      result: recipe {
+        by {
+          username
+        }
+        id
+        title
+        handle
+        description
+        servings
+        ingredients {
+          ingredientInfo {
+            name
+          }
+          quantity
+          unit {
+            name
+          }
+        }
+        steps {
+          stepNum
+          stepTime
+          description
+          ingredients {
+            ingredientInfo {
+              name
+            }
+            quantity
+            unit {
+              name
+            }
+          }
+        }
+      }
+    }
+  }
+`

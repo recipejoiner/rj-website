@@ -14,7 +14,11 @@ import {
   CREATE_RECIPE,
 } from 'requests/recipes'
 
-import { TextFormItem, TextAreaFormItem } from 'components/forms/Fields'
+import {
+  TextFormItem,
+  NumFormItem,
+  TextAreaFormItem,
+} from 'components/forms/Fields'
 
 interface NewRecipePageProps {}
 
@@ -49,6 +53,33 @@ const NewRecipePage: NextPage<NewRecipePageProps> = ({}) => {
         console.log(newRecipeErrs)
       })
   })
+
+  const [numOfSteps, setNumOfSteps] = React.useState(1)
+
+  const addStep = () => {
+    if (numOfSteps < 50) {
+      setNumOfSteps(numOfSteps + 1)
+    } else {
+      setNewRecipeErrs(
+        newRecipeErrs.concat({
+          message: "You've hit the maximum number of steps!",
+        })
+      )
+    }
+  }
+
+  const removeStep = () => {
+    if (numOfSteps > 1) {
+      setNumOfSteps(numOfSteps - 1)
+    } else {
+      setNewRecipeErrs(
+        newRecipeErrs.concat({
+          message: 'Your recipe must have at least one step!',
+        })
+      )
+    }
+  }
+
   const title = 'New Recipe - RecipeJoiner'
   const description =
     'Create a new recipe, and share it with your fellow chefs!'
@@ -98,6 +129,26 @@ const NewRecipePage: NextPage<NewRecipePageProps> = ({}) => {
               placeholder="This yummy recipe should make about 4 servings. 2, if you're really hungry."
               register={register}
             />
+            <div className="w-full border-b" />
+            <h3 className="text-gray-900 font-bold text-center p-2">Steps</h3>
+            <ul>
+              {[...Array(numOfSteps).keys()].map((stepInd) => {
+                const stepNum = stepInd + 1
+                return (
+                  <li>
+                    <h4 className="text-gray-900">{`Step ${stepNum}`}</h4>
+                    <NumFormItem
+                      label="Step Number"
+                      returnVar={`attributes.steps[${stepInd}].stepNum`}
+                      placeholder={stepNum}
+                      register={register}
+                    />
+                  </li>
+                )
+              })}
+              <button onClick={addStep}>Add Next Step</button>
+              <button onClick={removeStep}>Remove Last Step</button>
+            </ul>
             <ul className="pt-2">
               {newRecipeErrs.map((err) => {
                 return (

@@ -87,10 +87,15 @@ const NewRecipePage: NextPage<NewRecipePageProps> = ({}) => {
               register={register}
             />
             <TextAreaFormItem
-              defaultHeight={20}
               label="Description"
               returnVar="attributes.description"
               placeholder="A staple in my Grandma's house, this recipe is really good served with apple pie."
+              register={register}
+            />
+            <TextAreaFormItem
+              label="Servings"
+              returnVar="attributes.servings"
+              placeholder="This yummy recipe should make about 4 servings. 2, if you're really hungry."
               register={register}
             />
             <ul className="pt-2">

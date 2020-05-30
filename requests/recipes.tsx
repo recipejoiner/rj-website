@@ -58,7 +58,7 @@ export interface UserRecipeFeedVarsType {
   cursor: string | null
 }
 export const USER_RECIPES_FEED = gql`
-  query getAllRecipes($cursor: String) {
+  query recipeFeed($cursor: String) {
     result: me {
       connection: recipeFeed(first: 10, after: $cursor) {
         pageInfo {

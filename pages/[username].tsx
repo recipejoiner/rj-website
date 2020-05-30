@@ -9,6 +9,19 @@ import {
   UserByUsernameVarsType,
   USER_INFO_BY_USERNAME,
 } from 'requests/auth'
+import { recipeConnectionDataInit } from 'requests/recipes'
+import {
+  UserRecipeFeedData,
+  UserRecipesByUsernameVarsType,
+  ShortRecipeInfoType,
+  ALL_USER_RECIPES_BY_USERNAME,
+} from 'requests/recipes'
+import InfiniteScroll, {
+  EdgeType,
+  QueryResultRes,
+  QueryConnectionRes,
+} from 'components/InfiniteScroll'
+import ShortRecipe from 'components/ShortRecipe'
 
 interface UserPageProps {
   userInfo: UserInfoType
@@ -26,6 +39,15 @@ const UserPage: NextPage<UserPageProps> = ({ userInfo }) => {
     { name: 'followers', count: followerCount },
     { name: 'following', count: followingCount },
   ]
+
+  const queryDataInit: QueryResultRes<ShortRecipeInfoType> = {
+    result: recipeConnectionDataInit,
+    __typename: '',
+  }
+  const UsersRecipesVars: UserRecipesByUsernameVarsType = {
+    username: username,
+    cursor: null,
+  }
 
   return (
     <React.Fragment>
@@ -55,7 +77,7 @@ const UserPage: NextPage<UserPageProps> = ({ userInfo }) => {
         <ul className="flex flex-row text-gray-500 font-semibold text-sm leading-tight border-t border-b py-3">
           {stats.map((stat) => {
             return (
-              <li className="text-center w-1/3">
+              <li className="text-center w-1/3" key={stat.name}>
                 <span className="block text-gray-900 font-bold">
                   {stat.count}
                 </span>
@@ -64,6 +86,21 @@ const UserPage: NextPage<UserPageProps> = ({ userInfo }) => {
             )
           })}
         </ul>
+        <InfiniteScroll
+          QUERY={ALL_USER_RECIPES_BY_USERNAME}
+          QueryData={queryDataInit}
+          QueryVars={UsersRecipesVars}
+        >
+          {(edges: Array<EdgeType<ShortRecipeInfoType>>) => {
+            return (
+              <ul>
+                {edges.map((edge) => {
+                  return <ShortRecipe edge={edge} key={edge.cursor} />
+                })}
+              </ul>
+            )
+          }}
+        </InfiniteScroll>
       </div>
     </React.Fragment>
   )

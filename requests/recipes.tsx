@@ -111,12 +111,13 @@ export const USER_RECIPES_FEED = gql`
   }
 `
 
-export interface UserByUsernameVarsType {
+// uses same return type as UserRecipeFeedData
+export interface UserRecipesByUsernameVarsType {
   username: string
   cursor: string | null
 }
 export const ALL_USER_RECIPES_BY_USERNAME = gql`
-  query userRecipesByUsername($username: String!) {
+  query userRecipesByUsername($username: String!, $cursor: String) {
     result: userByUsername(username: $username) {
       connection: recipes(first: 10, after: $cursor) {
         pageInfo {

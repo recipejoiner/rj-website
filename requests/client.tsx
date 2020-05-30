@@ -26,9 +26,9 @@ interface errLoc {
 }
 
 export interface gqlError {
-  locations: Array<errLoc>
+  locations?: Array<errLoc>
   message: string
-  path: Array<string>
+  path?: Array<string>
 }
 
 export default client

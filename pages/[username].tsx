@@ -52,7 +52,7 @@ const UserPage: NextPage<UserPageProps> = ({ userInfo }) => {
         <header className="p-2">
           <h1 className="text-xl">{username}</h1>
         </header>
-        <ul className="flex flex-row text-gray-500 font-semibold text-sm leading-tight border-t border-b py-4">
+        <ul className="flex flex-row text-gray-500 font-semibold text-sm leading-tight border-t border-b py-3">
           {stats.map((stat) => {
             return (
               <li className="text-center w-1/3">

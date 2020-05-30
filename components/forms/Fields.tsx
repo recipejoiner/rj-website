@@ -1,4 +1,5 @@
 import * as React from 'react'
+import TextareaAutosize from 'react-textarea-autosize'
 
 interface TextFormItemProps {
   label: string
@@ -28,6 +29,44 @@ export const TextFormItem: React.FC<TextFormItemProps> = ({
         type="text"
         placeholder={placeholder}
         ref={register}
+      />
+    </div>
+  )
+}
+
+interface TextAreaFormItemProps {
+  defaultHeight: number
+  label: string
+  returnVar: string
+  placeholder: string
+  register: any
+}
+
+export const TextAreaFormItem: React.FC<TextAreaFormItemProps> = ({
+  defaultHeight,
+  label,
+  returnVar,
+  placeholder,
+  register,
+}) => {
+  const [height, setHeight] = React.useState(defaultHeight)
+  const [value, setValue] = React.useState('')
+  function setFilledTextareaHeight() {}
+  return (
+    <div className="mb-4">
+      <label
+        className="block text-gray-700 text-sm font-bold mb-2"
+        htmlFor={returnVar}
+      >
+        {label}
+      </label>
+      <TextareaAutosize
+        className="shadow block overflow-hidden resize-none appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
+        id={returnVar}
+        name={returnVar}
+        placeholder={placeholder}
+        ref={register}
+        minRows={3}
       />
     </div>
   )

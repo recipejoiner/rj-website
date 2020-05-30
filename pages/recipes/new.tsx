@@ -1,16 +1,57 @@
 import Head from 'next/head'
 import { NextPage } from 'next'
+import { useForm } from 'react-hook-form'
 import * as React from 'react'
 
 import { withLoginRedirect } from 'helpers/auth'
 
+import client, { gqlError } from 'requests/client'
+
+import {
+  RecipeType,
+  RecipeInput,
+  CreateRecipeVars,
+  CREATE_RECIPE,
+} from 'requests/recipes'
+
+import { TextFormItem, TextAreaFormItem } from 'components/forms/Fields'
+
 interface NewRecipePageProps {}
 
 const NewRecipePage: NextPage<NewRecipePageProps> = ({}) => {
+  const [newRecipeErrs, setNewRecipeErrs] = React.useState<Array<gqlError>>([])
+
+  const { register, handleSubmit, watch, errors } = useForm<CreateRecipeVars>()
+  console.log(watch('attributes'))
+  const onSubmit = handleSubmit((variables: CreateRecipeVars) => {
+    const token = process.env.NEXT_PUBLIC_RJ_API_TOKEN || ''
+    client
+      .mutate({
+        mutation: CREATE_RECIPE,
+        variables: variables,
+        context: {
+          // example of setting the headers with context per operation
+          headers: {
+            authorization: `Bearer ${token}`,
+          },
+        },
+      })
+      .then((res) => {
+        const { data }: { data?: RecipeType } = res || {}
+        if (!!data) {
+          // do something on success
+        } else {
+          throw 'Data is missing!'
+        }
+      })
+      .catch((err) => {
+        setNewRecipeErrs(err.graphQLErrors)
+        console.log(newRecipeErrs)
+      })
+  })
   const title = 'New Recipe - RecipeJoiner'
   const description =
     'Create a new recipe, and share it with your fellow chefs!'
-
   return (
     <React.Fragment>
       <Head>
@@ -32,7 +73,52 @@ const NewRecipePage: NextPage<NewRecipePageProps> = ({}) => {
         />
         {/* OpenGraph tags end */}
       </Head>
-      <div>New recipe form will go here</div>
+      <div className="w-screen bg-gray-100 min-h-screen -mt-14 md:-mt-16">
+        <h1 className="header-text pt-24 sm:pt-26">Create a new recipe!</h1>
+        <div className="w-full max-w-lg m-auto pt-10 sm:pt-20">
+          <form
+            onSubmit={onSubmit}
+            className="sm:bg-white sm:shadow-md rounded px-8 pt-6 pb-8 mb-4"
+          >
+            <TextFormItem
+              label="Title"
+              returnVar="attributes.title"
+              placeholder="A really yummy recipe"
+              register={register}
+            />
+            <TextAreaFormItem
+              defaultHeight={20}
+              label="Description"
+              returnVar="attributes.description"
+              placeholder="A staple in my Grandma's house, this recipe is really good served with apple pie."
+              register={register}
+            />
+            <ul className="pt-2">
+              {newRecipeErrs.map((err) => {
+                return (
+                  <li
+                    key={err.message}
+                    className="text-red-500 font-bold text-sm italic"
+                  >
+                    {err.message}
+                  </li>
+                )
+              })}
+            </ul>
+            <div className="flex flex-col items-center justify-between">
+              <button
+                className="bg-blue-500 hover:bg-blue-700 w-full text-white font-bold py-2 px-4 rounded focus:outline-none focus:shadow-outline"
+                type="submit"
+              >
+                Create Recipe
+              </button>
+            </div>
+          </form>
+          <p className="text-center text-gray-500 text-xs">
+            &copy;2020 RecipeJoiner. All rights reserved.
+          </p>
+        </div>
+      </div>
     </React.Fragment>
   )
 }

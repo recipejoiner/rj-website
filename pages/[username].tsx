@@ -22,6 +22,7 @@ import InfiniteScroll, {
   QueryConnectionRes,
 } from 'components/InfiniteScroll'
 import ShortRecipe from 'components/ShortRecipe'
+import UserContext from 'helpers/UserContext'
 
 interface UserPageProps {
   userInfo: UserInfoType
@@ -49,6 +50,17 @@ const UserPage: NextPage<UserPageProps> = ({ userInfo }) => {
     cursor: null,
   }
 
+  const [onOwnPage, setOnOwnPage] = React.useState(false)
+  const { isLoggedIn, currentUserInfo } = React.useContext(UserContext)
+  if (
+    isLoggedIn &&
+    currentUserInfo &&
+    !onOwnPage &&
+    currentUserInfo.me.username == username
+  ) {
+    setOnOwnPage(true)
+  }
+
   return (
     <React.Fragment>
       <Head>
@@ -73,6 +85,7 @@ const UserPage: NextPage<UserPageProps> = ({ userInfo }) => {
       <div className="flex flex-col">
         <header className="p-2">
           <h1 className="text-xl">{username}</h1>
+          {onOwnPage ? <span>On own page!</span> : null}
         </header>
         <ul className="flex flex-row text-gray-500 font-semibold text-sm leading-tight border-t border-b py-3">
           {stats.map((stat) => {

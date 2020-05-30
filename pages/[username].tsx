@@ -23,6 +23,7 @@ import InfiniteScroll, {
 } from 'components/InfiniteScroll'
 import ShortRecipe from 'components/ShortRecipe'
 import UserContext from 'helpers/UserContext'
+import SettingsBtn from 'components/SettingsBtn'
 
 interface UserPageProps {
   userInfo: UserInfoType
@@ -32,8 +33,6 @@ const UserPage: NextPage<UserPageProps> = ({ userInfo }) => {
   const { result } = userInfo || {}
   const { id, username, recipeCount, followerCount, followingCount } =
     result || {}
-  const title = `chef ${username} - RecipeJoiner`
-  const description = `Check out all recipes by chef ${username}!`
 
   const stats = [
     { name: 'recipes', count: recipeCount },
@@ -61,6 +60,8 @@ const UserPage: NextPage<UserPageProps> = ({ userInfo }) => {
     setOnOwnPage(true)
   }
 
+  const title = `chef ${username} - RecipeJoiner`
+  const description = `Check out all recipes by chef ${username}!`
   return (
     <React.Fragment>
       <Head>
@@ -84,8 +85,14 @@ const UserPage: NextPage<UserPageProps> = ({ userInfo }) => {
       </Head>
       <div className="flex flex-col">
         <header className="p-2">
-          <h1 className="text-xl">{username}</h1>
-          {onOwnPage ? <span>On own page!</span> : null}
+          {onOwnPage ? (
+            <div className="flex flex-row justify-start">
+              <h1 className="text-3xl pr-1">{username}</h1>
+              <SettingsBtn />
+            </div>
+          ) : (
+            <h1 className="text-xl">{username}</h1>
+          )}
         </header>
         <ul className="flex flex-row text-gray-500 font-semibold text-sm leading-tight border-t border-b py-3">
           {stats.map((stat) => {

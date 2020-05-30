@@ -21,6 +21,12 @@ const UserPage: NextPage<UserPageProps> = ({ userInfo }) => {
   const title = `chef ${username} - RecipeJoiner`
   const description = `Check out all recipes by chef ${username}!`
 
+  const stats = [
+    { name: 'recipes', count: recipeCount },
+    { name: 'followers', count: followerCount },
+    { name: 'following', count: followingCount },
+  ]
+
   return (
     <React.Fragment>
       <Head>
@@ -46,9 +52,18 @@ const UserPage: NextPage<UserPageProps> = ({ userInfo }) => {
         <header className="p-2">
           <h1 className="text-xl">{username}</h1>
         </header>
-        <div>
-          <div>{recipeCount} recipes</div>
-        </div>
+        <ul className="flex flex-row text-gray-500 font-semibold text-sm leading-tight border-t border-b py-4">
+          {stats.map((stat) => {
+            return (
+              <li className="text-center w-1/3">
+                <span className="block text-gray-900 font-bold">
+                  {stat.count}
+                </span>
+                {stat.name}
+              </li>
+            )
+          })}
+        </ul>
       </div>
     </React.Fragment>
   )

@@ -89,20 +89,6 @@ const NavMenuMobile: React.FC<NavMenuMobileProps> = ({
           Test Link 3
         </a>
       </Link>
-      <div className="pt-10">
-        <button
-          className={`${linkStyle} text-red-700`}
-          onClick={() => logout(false)}
-        >
-          log out
-        </button>
-        <button
-          className={`${linkStyle} text-red-700 border-none`}
-          onClick={() => logout(true)}
-        >
-          log out everywhere
-        </button>
-      </div>
     </nav>
   )
 }

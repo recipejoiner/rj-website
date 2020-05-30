@@ -254,14 +254,12 @@ interface RecipeInputIngredient {
   amount: number
   unit: string
 }
-
 interface RecipeInputStep {
   stepNum: number
   stepTime: number
   description: string
   ingredients: Array<RecipeInputIngredient> // not required
 }
-
 interface RecipeInputAttributes {
   title: string
   description: string

@@ -18,6 +18,7 @@ import {
   TextFormItem,
   NumFormItem,
   TextAreaFormItem,
+  HiddenFormItem,
 } from 'components/forms/Fields'
 
 interface NewRecipePageProps {}
@@ -115,7 +116,12 @@ const NewRecipePage: NextPage<NewRecipePageProps> = ({}) => {
               label="Title"
               returnVar="attributes.title"
               placeholder="A really yummy recipe"
-              register={register}
+              register={register({
+                required: "What's a recipe without a title?",
+              })}
+              errorMessage={
+                errors.attributes?.title && errors.attributes.title.message
+              }
             />
             <TextAreaFormItem
               label="Description"
@@ -135,12 +141,23 @@ const NewRecipePage: NextPage<NewRecipePageProps> = ({}) => {
               {[...Array(numOfSteps).keys()].map((stepInd) => {
                 const stepNum = stepInd + 1
                 return (
-                  <li>
+                  <li key={stepInd}>
                     <h4 className="text-gray-900">{`Step ${stepNum}`}</h4>
-                    <NumFormItem
-                      label="Step Number"
+                    <HiddenFormItem
+                      value={stepNum}
                       returnVar={`attributes.steps[${stepInd}].stepNum`}
-                      placeholder={stepNum}
+                      register={register}
+                    />
+                    <NumFormItem
+                      label="Step Time (minutes)"
+                      returnVar={`attributes.steps[${stepInd}].stepTime`}
+                      placeholder="20"
+                      register={register}
+                    />
+                    <TextAreaFormItem
+                      label="Step Instructions"
+                      returnVar={`attributes.steps[${stepInd}].description`}
+                      placeholder="In this step..."
                       register={register}
                     />
                   </li>

@@ -67,6 +67,7 @@ interface NumFormItemProps {
   returnVar: string
   placeholder: string
   register: any
+  errorMessage?: any
 }
 
 export const NumFormItem: React.FC<NumFormItemProps> = ({
@@ -74,6 +75,7 @@ export const NumFormItem: React.FC<NumFormItemProps> = ({
   returnVar,
   placeholder,
   register,
+  errorMessage,
 }) => {
   return (
     <div className="mb-4">
@@ -84,14 +86,16 @@ export const NumFormItem: React.FC<NumFormItemProps> = ({
         {label}
       </label>
       <input
-        className="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
+        className={`shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline ${
+          !!errorMessage ? 'border-red-700' : ''
+        }`}
         id={returnVar}
         name={returnVar}
         type="number"
-        p
         placeholder={placeholder}
         ref={register}
       />
+      <p className="text-red-700 italic text-sm p-2">{errorMessage}</p>
     </div>
   )
 }
@@ -101,6 +105,7 @@ interface TextAreaFormItemProps {
   returnVar: string
   placeholder: string
   register: any
+  errorMessage?: any
 }
 
 export const TextAreaFormItem: React.FC<TextAreaFormItemProps> = ({
@@ -108,6 +113,7 @@ export const TextAreaFormItem: React.FC<TextAreaFormItemProps> = ({
   returnVar,
   placeholder,
   register,
+  errorMessage,
 }) => {
   return (
     <div className="mb-4">
@@ -125,6 +131,14 @@ export const TextAreaFormItem: React.FC<TextAreaFormItemProps> = ({
         ref={register}
         minRows={3}
       />
+      {console.log('errorMessage', errorMessage != undefined)}
+      <p
+        className={`${
+          errorMessage != undefined ? 'block ' : 'hidden '
+        }text-red-700 italic text-sm p-2`}
+      >
+        {errorMessage}
+      </p>
     </div>
   )
 }
@@ -133,12 +147,14 @@ interface PasswordFormItemProps {
   label: string
   returnVar: string
   register: any
+  errorMessage?: any
 }
 
 export const PasswordFormItem: React.FC<PasswordFormItemProps> = ({
   label,
   returnVar,
   register,
+  errorMessage,
 }) => {
   return (
     <div className="mb-4">
@@ -149,13 +165,16 @@ export const PasswordFormItem: React.FC<PasswordFormItemProps> = ({
         {label}
       </label>
       <input
-        className="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
+        className={`shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline ${
+          !!errorMessage ? 'border-red-700' : ''
+        }`}
         id={returnVar}
         name={returnVar}
         type="password"
         placeholder="••••••••"
         ref={register}
       />
+      <p className="text-red-700 italic text-sm p-2">{errorMessage}</p>
     </div>
   )
 }

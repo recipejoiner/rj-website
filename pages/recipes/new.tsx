@@ -29,7 +29,7 @@ const NewRecipePage: NextPage<NewRecipePageProps> = ({}) => {
   const { register, handleSubmit, watch, errors, control } = useForm<
     CreateRecipeVars
   >()
-  console.log('attributes', watch('attributes'))
+  // console.log('attributes', watch('attributes'))
   const onSubmit = handleSubmit((variables: CreateRecipeVars) => {
     const token = process.env.NEXT_PUBLIC_RJ_API_TOKEN || ''
     client

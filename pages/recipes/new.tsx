@@ -268,14 +268,6 @@ const NewRecipePage: NextPage<NewRecipePageProps> = ({}) => {
                                 }
                               })()}
                             </div>
-                            {/* // .map((ingrErr) => {
-                              //   console.log('ingrErr', ingrErr)
-                              //   return (
-                              //     <p className="text-red-700 italic text-sm px-2">
-                              //       {ingrErr.name?.message}
-                              //     </p>
-                              //   )
-                              // })} */}
                           </li>
                         )
                       })}

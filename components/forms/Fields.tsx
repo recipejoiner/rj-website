@@ -34,7 +34,13 @@ export const TextFormItem: React.FC<TextFormItemProps> = ({
         placeholder={placeholder}
         ref={register}
       />
-      <p className="text-red-700 italic text-sm p-2">{errorMessage}</p>
+      <p
+        className={`${
+          errorMessage != undefined ? 'block ' : 'hidden '
+        }text-red-700 italic text-sm px-2 pt-2`}
+      >
+        {errorMessage}
+      </p>
     </div>
   )
 }
@@ -62,6 +68,7 @@ export const HiddenFormItem: React.FC<HiddenFormItemProps> = ({
     />
   )
 }
+
 interface NumFormItemProps {
   label: string
   returnVar: string
@@ -95,7 +102,13 @@ export const NumFormItem: React.FC<NumFormItemProps> = ({
         placeholder={placeholder}
         ref={register}
       />
-      <p className="text-red-700 italic text-sm p-2">{errorMessage}</p>
+      <p
+        className={`${
+          errorMessage != undefined ? 'block ' : 'hidden '
+        }text-red-700 italic text-sm px-2`}
+      >
+        {errorMessage}
+      </p>
     </div>
   )
 }
@@ -124,7 +137,7 @@ export const TextAreaFormItem: React.FC<TextAreaFormItemProps> = ({
         {label}
       </label>
       <TextareaAutosize
-        className={`shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline ${
+        className={`resize-none shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline ${
           !!errorMessage ? 'border-red-700' : ''
         }`}
         id={returnVar}
@@ -137,7 +150,7 @@ export const TextAreaFormItem: React.FC<TextAreaFormItemProps> = ({
       <p
         className={`${
           errorMessage != undefined ? 'block ' : 'hidden '
-        }text-red-700 italic text-sm p-2`}
+        }text-red-700 italic text-sm px-2`}
       >
         {errorMessage}
       </p>
@@ -176,7 +189,13 @@ export const PasswordFormItem: React.FC<PasswordFormItemProps> = ({
         placeholder="••••••••"
         ref={register}
       />
-      <p className="text-red-700 italic text-sm p-2">{errorMessage}</p>
+      <p
+        className={`${
+          errorMessage != undefined ? 'block ' : 'hidden '
+        }text-red-700 italic text-sm px-2`}
+      >
+        {errorMessage}
+      </p>
     </div>
   )
 }

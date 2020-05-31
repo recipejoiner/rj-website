@@ -178,7 +178,14 @@ const NewRecipePage: NextPage<NewRecipePageProps> = ({}) => {
                       label="Step Instructions"
                       returnVar={`attributes.steps[${stepInd}].description`}
                       placeholder="In this step..."
-                      register={register}
+                      register={register({
+                        required: 'What are the instructions for this step?',
+                      })}
+                      errorMessage={
+                        errors.attributes?.steps &&
+                        errors.attributes?.steps[stepInd].description &&
+                        errors.attributes.steps[stepInd].description?.message
+                      }
                     />
                   </li>
                 )

@@ -166,7 +166,6 @@ export const TextAreaFormItem: React.FC<TextAreaFormItemProps> = ({
         ref={register}
         minRows={3}
       />
-      {console.log('errorMessage', errorMessage != undefined)}
       <p
         className={`${
           errorMessage != undefined ? 'block ' : 'hidden '

@@ -139,7 +139,13 @@ const NewRecipePage: NextPage<NewRecipePageProps> = ({}) => {
               label="Servings"
               returnVar="attributes.servings"
               placeholder="This yummy recipe should make about 4 servings. 2, if you're really hungry."
-              register={register}
+              register={register({
+                required: 'How many servings does your recipe make?',
+              })}
+              errorMessage={
+                errors.attributes?.servings &&
+                errors.attributes.servings.message
+              }
             />
             <div className="w-full border-b" />
             <h3 className="text-gray-900 font-bold text-center p-2">Steps</h3>
@@ -158,7 +164,15 @@ const NewRecipePage: NextPage<NewRecipePageProps> = ({}) => {
                       label="Step Time (minutes)"
                       returnVar={`attributes.steps[${stepInd}].stepTime`}
                       placeholder="20"
-                      register={register}
+                      register={register({
+                        required:
+                          'Surely this step must take some amount of time',
+                      })}
+                      errorMessage={
+                        errors.attributes?.steps &&
+                        errors.attributes?.steps[stepInd].stepTime &&
+                        errors.attributes.steps[stepInd].stepTime?.message
+                      }
                     />
                     <TextAreaFormItem
                       label="Step Instructions"

@@ -150,7 +150,7 @@ const NewRecipePage: NextPage<NewRecipePageProps> = ({}) => {
             <div className="w-full border-b" />
             <h3 className="text-gray-900 font-bold text-center p-2">Steps</h3>
             <ul>
-              {[...Array(numOfSteps).keys()].map((stepInd) => {
+              {[...Array(numOfSteps).keys()].map((stepInd: number) => {
                 const stepNum = stepInd + 1
                 return (
                   <li key={stepInd}>
@@ -165,11 +165,13 @@ const NewRecipePage: NextPage<NewRecipePageProps> = ({}) => {
                       returnVar={`attributes.steps[${stepInd}].stepTime`}
                       placeholder="20"
                       register={register({
+                        min: { value: 0, message: 'What is negative time?' },
                         required:
                           'Surely this step must take some amount of time',
                       })}
                       errorMessage={
                         errors.attributes?.steps &&
+                        errors.attributes?.steps[stepInd] &&
                         errors.attributes?.steps[stepInd].stepTime &&
                         errors.attributes.steps[stepInd].stepTime?.message
                       }
@@ -183,6 +185,7 @@ const NewRecipePage: NextPage<NewRecipePageProps> = ({}) => {
                       })}
                       errorMessage={
                         errors.attributes?.steps &&
+                        errors.attributes?.steps[stepInd] &&
                         errors.attributes?.steps[stepInd].description &&
                         errors.attributes.steps[stepInd].description?.message
                       }

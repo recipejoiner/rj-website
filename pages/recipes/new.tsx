@@ -53,21 +53,28 @@ const NewRecipePage: NextPage<NewRecipePageProps> = ({}) => {
       })
       .catch((err) => {
         setNewRecipeErrs(err.graphQLErrors)
-        console.log(newRecipeErrs)
       })
   })
 
   const [numOfSteps, setNumOfSteps] = React.useState(1)
+  // array where each index is the stepInd and the value is the number of ingredients at that step
+  const [numOfIngrs, setNumOfIngrs] = React.useState([0])
 
   const addStep = () => {
     if (numOfSteps < 50) {
       setNumOfSteps(numOfSteps + 1)
+      const newNums = numOfIngrs
+      newNums.push(0)
+      setNumOfIngrs(newNums)
     }
   }
 
   const removeStep = () => {
     if (numOfSteps > 1) {
       setNumOfSteps(numOfSteps - 1)
+      const newNums = numOfIngrs
+      newNums.pop()
+      setNumOfIngrs(newNums)
     }
   }
 
@@ -143,17 +150,19 @@ const NewRecipePage: NextPage<NewRecipePageProps> = ({}) => {
               {[...Array(numOfSteps).keys()].map((stepInd: number) => {
                 const stepNum = stepInd + 1
 
-                const [numOfIngrs, setNumOfIngrs] = React.useState(0)
-
                 const addIngr = () => {
-                  if (numOfIngrs < 50) {
-                    setNumOfIngrs(numOfIngrs + 1)
+                  if (numOfIngrs[stepInd] < 50) {
+                    const newNum = numOfIngrs
+                    newNum[stepInd] += 1
+                    setNumOfIngrs(newNum)
                   }
                 }
 
                 const removeIngr = () => {
-                  if (numOfIngrs > 0) {
-                    setNumOfIngrs(numOfIngrs - 1)
+                  if (numOfIngrs[stepInd] > 0) {
+                    const newNum = numOfIngrs
+                    newNum[stepInd] += 1
+                    setNumOfIngrs(newNum)
                   }
                 }
                 return (
@@ -193,84 +202,87 @@ const NewRecipePage: NextPage<NewRecipePageProps> = ({}) => {
                       Step {stepNum} Ingredients
                     </h3>
                     <ul>
-                      {[...Array(numOfIngrs).keys()].map((ingrInd: number) => {
-                        return (
-                          <li key={ingrInd}>
-                            <div className="flex flex-row">
-                              <div className="w-1/3 mx-2">
-                                <NumFormItem
-                                  label="Quantity"
-                                  returnVar={`attributes.steps[${stepInd}].ingredients[${ingrInd}].amount`}
-                                  placeholder="20"
-                                  control={control}
-                                  rules={{
-                                    min: {
-                                      value: 0,
-                                      message: "Can't have a negative amount",
-                                    },
-                                    required:
-                                      'Surely this ingredient has an amount',
-                                  }}
-                                />
+                      {[...Array(numOfIngrs[stepInd]).keys()].map(
+                        (ingrInd: number) => {
+                          return (
+                            <li key={ingrInd}>
+                              <div className="flex flex-row">
+                                <div className="w-1/3 mx-2">
+                                  <NumFormItem
+                                    label="Quantity"
+                                    returnVar={`attributes.steps[${stepInd}].ingredients[${ingrInd}].amount`}
+                                    placeholder="20"
+                                    control={control}
+                                    rules={{
+                                      min: {
+                                        value: 0,
+                                        message: "Can't have a negative amount",
+                                      },
+                                      required:
+                                        'Surely this ingredient has an amount',
+                                    }}
+                                  />
+                                </div>
+                                <div className="w-1/3 mx-2">
+                                  <TextFormItem
+                                    label="Unit"
+                                    returnVar={`attributes.steps[${stepInd}].ingredients[${ingrInd}].unit`}
+                                    placeholder="cups"
+                                    register={register({
+                                      required: 'Ingredients need a unit!',
+                                    })}
+                                  />
+                                </div>
+                                <div className="w-1/3 mx-2">
+                                  <TextFormItem
+                                    label="Name"
+                                    returnVar={`attributes.steps[${stepInd}].ingredients[${ingrInd}].name`}
+                                    placeholder="milk"
+                                    register={register({
+                                      required: 'Ingredients need a name!',
+                                    })}
+                                  />
+                                </div>
                               </div>
-                              <div className="w-1/3 mx-2">
-                                <TextFormItem
-                                  label="Unit"
-                                  returnVar={`attributes.steps[${stepInd}].ingredients[${ingrInd}].unit`}
-                                  placeholder="cups"
-                                  register={register({
-                                    required: 'Ingredients need a unit!',
-                                  })}
-                                />
+                              <div>
+                                {(() => {
+                                  const { steps } = errors.attributes || {}
+                                  const { ingredients } =
+                                    steps != undefined
+                                      ? steps[stepInd]
+                                      : { ingredients: undefined }
+                                  const ingrErrs =
+                                    ingredients != undefined
+                                      ? ingredients[ingrInd]
+                                      : undefined
+                                  if (ingrErrs) {
+                                    const { amount, unit, name } = ingrErrs
+                                    return (
+                                      <React.Fragment>
+                                        {amount ? (
+                                          <p className="text-red-700 italic text-sm px-2 whitespace-pre-line">
+                                            {amount.message}
+                                          </p>
+                                        ) : null}
+                                        {unit ? (
+                                          <p className="text-red-700 italic text-sm px-2 whitespace-pre-line">
+                                            {unit.message}
+                                          </p>
+                                        ) : null}
+                                        {name ? (
+                                          <p className="text-red-700 italic text-sm px-2 whitespace-pre-line">
+                                            {name.message}
+                                          </p>
+                                        ) : null}
+                                      </React.Fragment>
+                                    )
+                                  }
+                                })()}
                               </div>
-                              <div className="w-1/3 mx-2">
-                                <TextFormItem
-                                  label="Name"
-                                  returnVar={`attributes.steps[${stepInd}].ingredients[${ingrInd}].name`}
-                                  placeholder="milk"
-                                  register={register({
-                                    required: 'Ingredients need a name!',
-                                  })}
-                                />
-                              </div>
-                            </div>
-                            <div>
-                              {(() => {
-                                const { steps } = errors.attributes || {}
-                                const { ingredients } = steps
-                                  ? steps[stepInd]
-                                  : { ingredients: undefined }
-                                const ingrErrs = ingredients
-                                  ? ingredients[ingrInd]
-                                  : undefined
-                                console.log('ingrErrs', ingrErrs)
-                                if (ingrErrs) {
-                                  const { amount, unit, name } = ingrErrs
-                                  return (
-                                    <React.Fragment>
-                                      {amount ? (
-                                        <p className="text-red-700 italic text-sm px-2 whitespace-pre-line">
-                                          {amount.message}
-                                        </p>
-                                      ) : null}
-                                      {unit ? (
-                                        <p className="text-red-700 italic text-sm px-2 whitespace-pre-line">
-                                          {unit.message}
-                                        </p>
-                                      ) : null}
-                                      {name ? (
-                                        <p className="text-red-700 italic text-sm px-2 whitespace-pre-line">
-                                          {name.message}
-                                        </p>
-                                      ) : null}
-                                    </React.Fragment>
-                                  )
-                                }
-                              })()}
-                            </div>
-                          </li>
-                        )
-                      })}
+                            </li>
+                          )
+                        }
+                      )}
                       <button onClick={addIngr}>Add Next Ingredient</button>
                       <button onClick={removeIngr}>
                         Remove Last Ingredient

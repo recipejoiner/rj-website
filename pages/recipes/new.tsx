@@ -127,7 +127,13 @@ const NewRecipePage: NextPage<NewRecipePageProps> = ({}) => {
               label="Description"
               returnVar="attributes.description"
               placeholder="A staple in my Grandma's house, this recipe is really good served with apple pie."
-              register={register}
+              register={register({
+                required: 'Tell the world about your recipe!',
+              })}
+              errorMessage={
+                errors.attributes?.description &&
+                errors.attributes.description.message
+              }
             />
             <TextAreaFormItem
               label="Servings"

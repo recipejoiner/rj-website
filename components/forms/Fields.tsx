@@ -105,7 +105,7 @@ export const NumFormItem: React.FC<NumFormItemProps> = ({
       <p
         className={`${
           errorMessage != undefined ? 'block ' : 'hidden '
-        }text-red-700 italic text-sm px-2`}
+        }text-red-700 italic text-sm px-2 pt-2`}
       >
         {errorMessage}
       </p>

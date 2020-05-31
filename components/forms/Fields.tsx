@@ -6,6 +6,7 @@ interface TextFormItemProps {
   returnVar: string
   placeholder: string
   register: any
+  errorMessage?: any
 }
 
 export const TextFormItem: React.FC<TextFormItemProps> = ({
@@ -13,6 +14,7 @@ export const TextFormItem: React.FC<TextFormItemProps> = ({
   returnVar,
   placeholder,
   register,
+  errorMessage,
 }) => {
   return (
     <div className="mb-4">
@@ -23,17 +25,43 @@ export const TextFormItem: React.FC<TextFormItemProps> = ({
         {label}
       </label>
       <input
-        className="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
+        className={`shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline ${
+          !!errorMessage ? 'border-red-700' : ''
+        }`}
         id={returnVar}
         name={returnVar}
         type="text"
         placeholder={placeholder}
         ref={register}
       />
+      <p className="text-red-700 italic text-sm p-2">{errorMessage}</p>
     </div>
   )
 }
 
+interface HiddenFormItemProps {
+  value: string | number
+  returnVar: string
+  register: any
+}
+
+export const HiddenFormItem: React.FC<HiddenFormItemProps> = ({
+  value,
+  returnVar,
+  register,
+}) => {
+  return (
+    <input
+      readOnly={true}
+      className="hidden"
+      id={returnVar}
+      name={returnVar}
+      type="number"
+      value={value}
+      ref={register}
+    />
+  )
+}
 interface NumFormItemProps {
   label: string
   returnVar: string
@@ -60,6 +88,7 @@ export const NumFormItem: React.FC<NumFormItemProps> = ({
         id={returnVar}
         name={returnVar}
         type="number"
+        p
         placeholder={placeholder}
         ref={register}
       />

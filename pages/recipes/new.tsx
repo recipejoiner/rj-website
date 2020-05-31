@@ -161,8 +161,16 @@ const NewRecipePage: NextPage<NewRecipePageProps> = ({}) => {
                     <h4 className="text-gray-900">{`Step ${stepNum}`}</h4>
                     <HiddenFormItem
                       value={stepNum}
+                      type="number"
+                      handleChange={([e]) => {
+                        if (e.target.value == '') {
+                          return 0
+                        } else {
+                          return parseFloat(e.target.value)
+                        }
+                      }}
                       returnVar={`attributes.steps[${stepInd}].stepNum`}
-                      register={register}
+                      control={control}
                     />
                     <NumFormItem
                       label="Step Time (minutes)"

@@ -1,6 +1,6 @@
 import * as React from 'react'
 import TextareaAutosize from 'react-textarea-autosize'
-import { Controller } from 'react-hook-form'
+import { Controller, EventFunction } from 'react-hook-form'
 
 interface TextFormItemProps {
   label: string
@@ -49,23 +49,30 @@ export const TextFormItem: React.FC<TextFormItemProps> = ({
 interface HiddenFormItemProps {
   value: string | number
   returnVar: string
-  register: any
+  control: any
+  type: string
+  handleChange: EventFunction
 }
 
 export const HiddenFormItem: React.FC<HiddenFormItemProps> = ({
   value,
   returnVar,
-  register,
+  control,
+  type,
+  handleChange,
 }) => {
   return (
-    <input
+    <Controller
+      as={<input />}
       readOnly={true}
       className="hidden"
       id={returnVar}
       name={returnVar}
-      type="number"
+      type={type}
+      onChange={handleChange}
+      defaultValue={value}
       value={value}
-      ref={register}
+      control={control}
     />
   )
 }

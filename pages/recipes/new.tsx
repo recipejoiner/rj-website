@@ -26,9 +26,13 @@ interface NewRecipePageProps {}
 const NewRecipePage: NextPage<NewRecipePageProps> = ({}) => {
   const [newRecipeErrs, setNewRecipeErrs] = React.useState<Array<gqlError>>([])
 
-  const { register, handleSubmit, watch, errors } = useForm<CreateRecipeVars>()
+  const { register, handleSubmit, watch, errors, control } = useForm<
+    CreateRecipeVars
+  >()
   console.log(watch('attributes'))
   const onSubmit = handleSubmit((variables: CreateRecipeVars) => {
+    console.log('in onsubmit')
+    console.log('variables', variables)
     const token = process.env.NEXT_PUBLIC_RJ_API_TOKEN || ''
     client
       .mutate({
@@ -164,11 +168,12 @@ const NewRecipePage: NextPage<NewRecipePageProps> = ({}) => {
                       label="Step Time (minutes)"
                       returnVar={`attributes.steps[${stepInd}].stepTime`}
                       placeholder="20"
-                      register={register({
+                      control={control}
+                      rules={{
                         min: { value: 0, message: 'What is negative time?' },
                         required:
                           'Surely this step must take some amount of time',
-                      })}
+                      }}
                       errorMessage={
                         errors.attributes?.steps &&
                         errors.attributes?.steps[stepInd] &&

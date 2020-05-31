@@ -1,5 +1,6 @@
 import * as React from 'react'
 import TextareaAutosize from 'react-textarea-autosize'
+import { Controller } from 'react-hook-form'
 
 interface TextFormItemProps {
   label: string
@@ -73,16 +74,18 @@ interface NumFormItemProps {
   label: string
   returnVar: string
   placeholder: string
-  register: any
+  rules: any
   errorMessage?: any
+  control: any
 }
 
 export const NumFormItem: React.FC<NumFormItemProps> = ({
   label,
   returnVar,
   placeholder,
-  register,
+  rules,
   errorMessage,
+  control,
 }) => {
   return (
     <div className="mb-4">
@@ -92,7 +95,8 @@ export const NumFormItem: React.FC<NumFormItemProps> = ({
       >
         {label}
       </label>
-      <input
+      <Controller
+        as={<input />}
         className={`shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline ${
           !!errorMessage ? 'border-red-700' : ''
         }`}
@@ -100,7 +104,16 @@ export const NumFormItem: React.FC<NumFormItemProps> = ({
         name={returnVar}
         type="number"
         placeholder={placeholder}
-        ref={register}
+        rules={rules}
+        control={control}
+        onChange={([e]) => {
+          if (e.target.value == '') {
+            return 0
+          } else {
+            return parseFloat(e.target.value)
+          }
+        }}
+        defaultValue={0}
       />
       <p
         className={`${

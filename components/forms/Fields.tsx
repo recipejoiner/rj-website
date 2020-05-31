@@ -124,7 +124,9 @@ export const TextAreaFormItem: React.FC<TextAreaFormItemProps> = ({
         {label}
       </label>
       <TextareaAutosize
-        className="shadow block overflow-hidden resize-none appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
+        className={`shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline ${
+          !!errorMessage ? 'border-red-700' : ''
+        }`}
         id={returnVar}
         name={returnVar}
         placeholder={placeholder}

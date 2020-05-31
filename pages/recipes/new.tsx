@@ -29,10 +29,8 @@ const NewRecipePage: NextPage<NewRecipePageProps> = ({}) => {
   const { register, handleSubmit, watch, errors, control } = useForm<
     CreateRecipeVars
   >()
-  console.log(watch('attributes'))
+  console.log('attributes', watch('attributes'))
   const onSubmit = handleSubmit((variables: CreateRecipeVars) => {
-    console.log('in onsubmit')
-    console.log('variables', variables)
     const token = process.env.NEXT_PUBLIC_RJ_API_TOKEN || ''
     client
       .mutate({
@@ -64,24 +62,12 @@ const NewRecipePage: NextPage<NewRecipePageProps> = ({}) => {
   const addStep = () => {
     if (numOfSteps < 50) {
       setNumOfSteps(numOfSteps + 1)
-    } else {
-      setNewRecipeErrs(
-        newRecipeErrs.concat({
-          message: "You've hit the maximum number of steps!",
-        })
-      )
     }
   }
 
   const removeStep = () => {
     if (numOfSteps > 1) {
       setNumOfSteps(numOfSteps - 1)
-    } else {
-      setNewRecipeErrs(
-        newRecipeErrs.concat({
-          message: 'Your recipe must have at least one step!',
-        })
-      )
     }
   }
 
@@ -156,6 +142,20 @@ const NewRecipePage: NextPage<NewRecipePageProps> = ({}) => {
             <ul>
               {[...Array(numOfSteps).keys()].map((stepInd: number) => {
                 const stepNum = stepInd + 1
+
+                const [numOfIngrs, setNumOfIngrs] = React.useState(0)
+
+                const addIngr = () => {
+                  if (numOfIngrs < 50) {
+                    setNumOfIngrs(numOfIngrs + 1)
+                  }
+                }
+
+                const removeIngr = () => {
+                  if (numOfIngrs > 0) {
+                    setNumOfIngrs(numOfIngrs - 1)
+                  }
+                }
                 return (
                   <li key={stepInd}>
                     <h4 className="text-gray-900">{`Step ${stepNum}`}</h4>
@@ -189,6 +189,101 @@ const NewRecipePage: NextPage<NewRecipePageProps> = ({}) => {
                         errors.attributes.steps[stepInd].stepTime?.message
                       }
                     />
+                    <h3 className="text-gray-900 text-sm font-bold">
+                      Step {stepNum} Ingredients
+                    </h3>
+                    <ul>
+                      {[...Array(numOfIngrs).keys()].map((ingrInd: number) => {
+                        return (
+                          <li key={ingrInd}>
+                            <div className="flex flex-row">
+                              <div className="w-1/3 mx-2">
+                                <NumFormItem
+                                  label="Quantity"
+                                  returnVar={`attributes.steps[${stepInd}].ingredients[${ingrInd}].amount`}
+                                  placeholder="20"
+                                  control={control}
+                                  rules={{
+                                    min: {
+                                      value: 0,
+                                      message: "Can't have a negative amount",
+                                    },
+                                    required:
+                                      'Surely this ingredient has an amount',
+                                  }}
+                                />
+                              </div>
+                              <div className="w-1/3 mx-2">
+                                <TextFormItem
+                                  label="Unit"
+                                  returnVar={`attributes.steps[${stepInd}].ingredients[${ingrInd}].unit`}
+                                  placeholder="cups"
+                                  register={register({
+                                    required: 'Ingredients need a unit!',
+                                  })}
+                                />
+                              </div>
+                              <div className="w-1/3 mx-2">
+                                <TextFormItem
+                                  label="Name"
+                                  returnVar={`attributes.steps[${stepInd}].ingredients[${ingrInd}].name`}
+                                  placeholder="milk"
+                                  register={register({
+                                    required: 'Ingredients need a name!',
+                                  })}
+                                />
+                              </div>
+                            </div>
+                            <div>
+                              {(() => {
+                                const { steps } = errors.attributes || {}
+                                const { ingredients } = steps
+                                  ? steps[stepInd]
+                                  : { ingredients: undefined }
+                                const ingrErrs = ingredients
+                                  ? ingredients[ingrInd]
+                                  : undefined
+                                console.log('ingrErrs', ingrErrs)
+                                if (ingrErrs) {
+                                  const { amount, unit, name } = ingrErrs
+                                  return (
+                                    <React.Fragment>
+                                      {amount ? (
+                                        <p className="text-red-700 italic text-sm px-2 whitespace-pre-line">
+                                          {amount.message}
+                                        </p>
+                                      ) : null}
+                                      {unit ? (
+                                        <p className="text-red-700 italic text-sm px-2 whitespace-pre-line">
+                                          {unit.message}
+                                        </p>
+                                      ) : null}
+                                      {name ? (
+                                        <p className="text-red-700 italic text-sm px-2 whitespace-pre-line">
+                                          {name.message}
+                                        </p>
+                                      ) : null}
+                                    </React.Fragment>
+                                  )
+                                }
+                              })()}
+                            </div>
+                            {/* // .map((ingrErr) => {
+                              //   console.log('ingrErr', ingrErr)
+                              //   return (
+                              //     <p className="text-red-700 italic text-sm px-2">
+                              //       {ingrErr.name?.message}
+                              //     </p>
+                              //   )
+                              // })} */}
+                          </li>
+                        )
+                      })}
+                      <button onClick={addIngr}>Add Next Ingredient</button>
+                      <button onClick={removeIngr}>
+                        Remove Last Ingredient
+                      </button>
+                    </ul>
                     <TextAreaFormItem
                       label="Step Instructions"
                       returnVar={`attributes.steps[${stepInd}].description`}

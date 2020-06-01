@@ -22,4 +22,28 @@
   @apply outline-none shadow-outline
 }
 
+.add-remove-btn {
+  @apply w-full text-white font-bold py-2 px-4 rounded
+}
+
+.add-remove-btn:focus {
+  @apply outline-none shadow-outline
+}
+
+.add-btn {
+  @apply bg-green-600
+}
+
+.add-btn:hover {
+  @apply bg-green-800
+}
+
+.remove-btn {
+  @apply bg-red-600
+}
+
+.remove-btn:hover {
+  @apply bg-red-800
+}
+
 @tailwind utilities;

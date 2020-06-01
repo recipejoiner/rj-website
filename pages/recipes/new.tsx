@@ -290,10 +290,22 @@ const NewRecipePage: NextPage<NewRecipePageProps> = ({}) => {
                           )
                         }
                       )}
-                      <button onClick={addIngr}>Add Next Ingredient</button>
-                      <button onClick={removeIngr}>
-                        Remove Last Ingredient
-                      </button>
+                      <div className="flex flex-row mt-5 mb-5">
+                        <button
+                          className="add-remove-btn add-btn mx-3 text-sm space-x-2leading-tight"
+                          onClick={addIngr}
+                        >
+                          <span className="font-bold text-xl">+ </span>
+                          Ingredient
+                        </button>
+                        <button
+                          className="add-remove-btn remove-btn mx-3 text-sm leading-tight"
+                          onClick={removeIngr}
+                        >
+                          <span className="font-bold text-xl">– </span>
+                          Ingredient
+                        </button>
+                      </div>
                     </ul>
                     <TextAreaFormItem
                       label="Step Instructions"
@@ -312,8 +324,22 @@ const NewRecipePage: NextPage<NewRecipePageProps> = ({}) => {
                   </li>
                 )
               })}
-              <button onClick={addStep}>Add Next Step</button>
-              <button onClick={removeStep}>Remove Last Step</button>
+              <div className="flex flex-row mt-5 mb-5 border-t pt-6 align-middle">
+                <button
+                  className="add-remove-btn add-btn mx-1"
+                  onClick={addStep}
+                >
+                  <span className="font-bold text-xl">+ </span>
+                  Step
+                </button>
+                <button
+                  className="add-remove-btn remove-btn mx-1"
+                  onClick={removeStep}
+                >
+                  <span className="font-bold text-xl">– </span>
+                  Step
+                </button>
+              </div>
             </ul>
             <ul className="pt-2">
               {newRecipeErrs

@@ -84,12 +84,18 @@ const LoginPage: NextPage<LoginPageProps> = ({}) => {
               label="Email"
               returnVar="email"
               placeholder="you@example.com"
-              register={register}
+              register={register({
+                required: "What's your email?",
+              })}
+              errorMessage={errors.email && errors.email.message}
             />
             <PasswordFormItem
               label="Password"
               returnVar="password"
-              register={register}
+              register={register({
+                required: "What's your password?",
+              })}
+              errorMessage={errors.password && errors.password.message}
             />
             <ul className="p-2">
               {loginErrs.map((err) => {

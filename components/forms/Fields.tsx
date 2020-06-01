@@ -84,6 +84,7 @@ interface NumFormItemProps {
   rules: any
   errorMessage?: any
   control: any
+  defaultValue?: number
 }
 
 export const NumFormItem: React.FC<NumFormItemProps> = ({
@@ -93,6 +94,7 @@ export const NumFormItem: React.FC<NumFormItemProps> = ({
   rules,
   errorMessage,
   control,
+  defaultValue = 0,
 }) => {
   return (
     <div className="mb-4">
@@ -120,7 +122,7 @@ export const NumFormItem: React.FC<NumFormItemProps> = ({
             return parseFloat(e.target.value)
           }
         }}
-        defaultValue={0}
+        defaultValue={defaultValue}
       />
       <p
         className={`${

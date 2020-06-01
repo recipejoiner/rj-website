@@ -10,8 +10,7 @@ import { withLoginRedirect } from 'helpers/auth'
 import client, { gqlError } from 'requests/client'
 
 import {
-  RecipeType,
-  RecipeInput,
+  RecipeFormReturnType,
   CreateRecipeVars,
   CREATE_RECIPE,
 } from 'requests/recipes'
@@ -33,7 +32,6 @@ const NewRecipePage: NextPage<NewRecipePageProps> = ({}) => {
   >()
   // console.log('attributes', watch('attributes'))
   const onSubmit = handleSubmit((variables: CreateRecipeVars) => {
-    console.log('in onsubmit')
     client
       .mutate({
         mutation: CREATE_RECIPE,
@@ -46,14 +44,19 @@ const NewRecipePage: NextPage<NewRecipePageProps> = ({}) => {
         },
       })
       .then((res) => {
-        const { data }: { data?: RecipeType } = res || {}
-        if (!!data) {
-          redirectTo(`/${data.result.by.username}/${data.result.handle}`)
+        const { data }: { data?: RecipeFormReturnType } = res || {}
+        if (data) {
+          const { result } = data.mutation || {}
+          const { by, handle } = result || {}
+          const { username } = by || {}
+          const path = '/' + username + '/' + handle
+          redirectTo(path)
         } else {
           throw 'Data is missing!'
         }
       })
       .catch((err) => {
+        console.log(err)
         setNewRecipeErrs(err.graphQLErrors)
       })
   })
@@ -193,6 +196,7 @@ const NewRecipePage: NextPage<NewRecipePageProps> = ({}) => {
                         required:
                           'Surely this step must take some amount of time',
                       }}
+                      defaultValue={1}
                       errorMessage={
                         errors.attributes?.steps &&
                         errors.attributes?.steps[stepInd] &&
@@ -312,16 +316,18 @@ const NewRecipePage: NextPage<NewRecipePageProps> = ({}) => {
               <button onClick={removeStep}>Remove Last Step</button>
             </ul>
             <ul className="pt-2">
-              {newRecipeErrs.map((err) => {
-                return (
-                  <li
-                    key={err.message}
-                    className="text-red-500 font-bold text-sm italic"
-                  >
-                    {err.message}
-                  </li>
-                )
-              })}
+              {newRecipeErrs
+                ? newRecipeErrs.map((err) => {
+                    return (
+                      <li
+                        key={err.message}
+                        className="text-red-500 font-bold text-sm italic"
+                      >
+                        {err.message}
+                      </li>
+                    )
+                  })
+                : null}
             </ul>
             <div className="flex flex-col items-center justify-between">
               <button

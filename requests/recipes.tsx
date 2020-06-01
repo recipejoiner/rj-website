@@ -260,7 +260,7 @@ interface RecipeInputStep {
   description: string
   ingredients: Array<RecipeInputIngredient> // not required
 }
-export interface RecipeInput {
+interface RecipeInput {
   title: string
   description: string
   servings: string
@@ -269,42 +269,24 @@ export interface RecipeInput {
 export interface CreateRecipeVars {
   attributes: RecipeInput
 }
-// return type is RecipeType
+export interface RecipeFormReturnType {
+  mutation: {
+    result: {
+      by: {
+        username: string
+      }
+      handle: string
+    }
+  }
+}
 export const CREATE_RECIPE = gql`
   mutation createRecipe($attributes: RecipeInput!) {
-    createOrEditRecipe(attributes: $attributes) {
+    mutation: createOrEditRecipe(attributes: $attributes) {
       result: recipe {
         by {
           username
         }
-        id
-        title
         handle
-        description
-        servings
-        ingredients {
-          ingredientInfo {
-            name
-          }
-          quantity
-          unit {
-            name
-          }
-        }
-        steps {
-          stepNum
-          stepTime
-          description
-          ingredients {
-            ingredientInfo {
-              name
-            }
-            quantity
-            unit {
-              name
-            }
-          }
-        }
       }
     }
   }
@@ -317,7 +299,7 @@ interface EditRecipeVars {
 // uses same types as CREATE_RECIPE
 export const EDIT_RECIPE = gql`
   mutation editRecipe($existingRecipeId: ID!, $attributes: RecipeInput!) {
-    createOrEditRecipe(
+    mutation: createOrEditRecipe(
       existingRecipeId: $existingRecipeId
       attributes: $attributes
     ) {
@@ -325,34 +307,7 @@ export const EDIT_RECIPE = gql`
         by {
           username
         }
-        id
-        title
         handle
-        description
-        servings
-        ingredients {
-          ingredientInfo {
-            name
-          }
-          quantity
-          unit {
-            name
-          }
-        }
-        steps {
-          stepNum
-          stepTime
-          description
-          ingredients {
-            ingredientInfo {
-              name
-            }
-            quantity
-            unit {
-              name
-            }
-          }
-        }
       }
     }
   }

@@ -3,6 +3,8 @@ import { NextPage } from 'next'
 import { useForm } from 'react-hook-form'
 import * as React from 'react'
 
+import { getToken } from 'helpers/auth'
+import { redirectTo } from 'helpers/methods'
 import { withLoginRedirect } from 'helpers/auth'
 
 import client, { gqlError } from 'requests/client'
@@ -31,7 +33,7 @@ const NewRecipePage: NextPage<NewRecipePageProps> = ({}) => {
   >()
   // console.log('attributes', watch('attributes'))
   const onSubmit = handleSubmit((variables: CreateRecipeVars) => {
-    const token = process.env.NEXT_PUBLIC_RJ_API_TOKEN || ''
+    console.log('in onsubmit')
     client
       .mutate({
         mutation: CREATE_RECIPE,
@@ -39,14 +41,14 @@ const NewRecipePage: NextPage<NewRecipePageProps> = ({}) => {
         context: {
           // example of setting the headers with context per operation
           headers: {
-            authorization: `Bearer ${token}`,
+            authorization: `Bearer ${getToken()}`,
           },
         },
       })
       .then((res) => {
         const { data }: { data?: RecipeType } = res || {}
         if (!!data) {
-          // do something on success
+          redirectTo(`/${data.result.by.username}/${data.result.handle}`)
         } else {
           throw 'Data is missing!'
         }
@@ -161,7 +163,7 @@ const NewRecipePage: NextPage<NewRecipePageProps> = ({}) => {
                 const removeIngr = () => {
                   if (numOfIngrs[stepInd] > 0) {
                     const newNum = numOfIngrs
-                    newNum[stepInd] += 1
+                    newNum[stepInd] -= 1
                     setNumOfIngrs(newNum)
                   }
                 }
@@ -248,7 +250,8 @@ const NewRecipePage: NextPage<NewRecipePageProps> = ({}) => {
                                 {(() => {
                                   const { steps } = errors.attributes || {}
                                   const { ingredients } =
-                                    steps != undefined
+                                    steps != undefined &&
+                                    steps[stepInd] != undefined
                                       ? steps[stepInd]
                                       : { ingredients: undefined }
                                   const ingrErrs =

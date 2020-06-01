@@ -111,7 +111,12 @@ const SignUpPage: NextPage<SignUpPageProps> = ({}) => {
             <PasswordFormItem
               label="Password Confirmation"
               returnVar="passwordConfirmation"
-              register={register}
+              register={register({
+                validate: {
+                  sameAsPass: (value: string) =>
+                    value === watch('password') || 'Passwords must match',
+                },
+              })}
               errorMessage={
                 errors.passwordConfirmation &&
                 errors.passwordConfirmation.message

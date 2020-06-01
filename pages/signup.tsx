@@ -7,6 +7,7 @@ import client, { gqlError } from 'requests/client'
 import { SignUpReturnType, SignUpVarsType, SIGN_UP } from 'requests/auth'
 import { setCookie, redirectTo } from 'helpers/methods'
 import { withHomeRedirect } from 'helpers/auth'
+import { PASSWORD_REGEX, PasswordRequirements } from 'helpers/regex'
 
 import { TextFormItem, PasswordFormItem } from 'components/forms/Fields'
 
@@ -102,12 +103,19 @@ const SignUpPage: NextPage<SignUpPageProps> = ({}) => {
             <PasswordFormItem
               label="Password"
               returnVar="password"
-              register={register}
+              register={register({
+                validate: PasswordRequirements,
+              })}
+              errorMessage={errors.password && errors.password.message}
             />
             <PasswordFormItem
               label="Password Confirmation"
               returnVar="passwordConfirmation"
               register={register}
+              errorMessage={
+                errors.passwordConfirmation &&
+                errors.passwordConfirmation.message
+              }
             />
             <ul className="pt-2">
               {loginErrs.map((err) => {

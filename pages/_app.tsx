@@ -32,7 +32,7 @@ interface AppState {
 interface UserProps {
   loggedIn?: boolean
   currentUserInfo?: CurrentUserLoginCheckType
-  error?: any
+  err?: any
 }
 
 class MyApp extends App<UserProps, {}, AppState> {
@@ -58,8 +58,7 @@ class MyApp extends App<UserProps, {}, AppState> {
     console.log('prev state', state)
     // Any time the user's logged-in state changes,
     // reset any parts of state that are tied to that.
-    // Here, it's just a boolean. Might add more user info in the future.
-    if (props.loggedIn && props.loggedIn !== state.loggedIn) {
+    if (props.loggedIn !== state.loggedIn) {
       console.log('changing state!')
       return {
         loggedIn: props.loggedIn,
@@ -226,11 +225,21 @@ class MyApp extends App<UserProps, {}, AppState> {
         })
         .then((res) => {
           const { data }: { data?: CurrentUserLoginCheckType } = res || {}
-          if (data && data.me.email) {
-            console.log('login data', data)
-            return data
+          if (data) {
+            if (data.me.email) {
+              return data
+            }
+            throw { message: 'missing email', data: data }
           }
-          return undefined
+          return { message: 'missing data', res: res }
+        })
+        .catch((err) => {
+          return {
+            pageProps: pageProps,
+            err: {
+              error: err,
+            },
+          }
         })
       return {
         pageProps: pageProps,
@@ -240,7 +249,7 @@ class MyApp extends App<UserProps, {}, AppState> {
     } catch (err) {
       return {
         pageProps: pageProps,
-        error: err,
+        err: err,
       }
     }
   }

@@ -136,7 +136,8 @@ const InfiniteScroll: React.FC<InfiniteScrollProps<any, any>> = ({
   const handleScroll = () => {
     if (
       !activelyFetching &&
-      window.innerHeight + window.scrollY >= document.body.offsetHeight
+      window.innerHeight + window.scrollY >=
+        document.body.offsetHeight - window.innerHeight
     ) {
       onLoadMore()
     }

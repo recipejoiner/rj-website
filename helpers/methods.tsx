@@ -103,12 +103,16 @@ export function toMixedNumber(num: number) {
     denominator = 3
   }
 
-  return (
-    <span>
-      {wholeNum}
-      <sup>{numerator}</sup>⁄<sub>{denominator}</sub>
-    </span>
-  )
+  if (numerator === 0) {
+    return <span>{wholeNum}</span>
+  } else {
+    return (
+      <span>
+        {wholeNum}
+        <sup>{numerator}</sup>⁄<sub>{denominator}</sub>
+      </span>
+    )
+  }
 }
 
 // EXPERIMENTAL METHOD

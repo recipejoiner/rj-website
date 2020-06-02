@@ -232,12 +232,6 @@ class MyApp extends App<UserProps, {}, AppState> {
           }
           return undefined
         })
-        .catch((err) => {
-          return {
-            pageProps: pageProps,
-            error: err,
-          }
-        })
       return {
         pageProps: pageProps,
         loggedIn: !!currentUserInfo,

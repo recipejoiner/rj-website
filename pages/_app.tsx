@@ -228,10 +228,10 @@ class MyApp extends App<UserProps, {}, AppState> {
           console.log('login data', data)
           return data
         }
-        return data
+        return undefined
       })
       .catch((err) => {
-        return err
+        throw err
       })
     return {
       pageProps: pageProps,

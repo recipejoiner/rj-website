@@ -24,11 +24,38 @@ interface StepProps {
 const Step: React.FC<StepProps> = ({ step }) => {
   const { stepNum, stepTime, description, ingredients } = step || {}
   return (
-    <li>
-      <h3>
-        Step {stepNum || <Skeleton width={40} />}: About{' '}
-        {stepTime || <Skeleton width={40} />} minutes
+    <li className="my-5">
+      <h3 className="header-2-text">
+        Step {stepNum || <Skeleton width={40} />}
       </h3>
+      <span className="block text-sm">
+        About {stepTime || <Skeleton width={40} />} minutes
+      </span>
+      <div>
+        <h3 className="header-3-text">Ingredients</h3>
+        <ul className="p-1 pl-2">
+          {ingredients ? (
+            ingredients.length > 0 ? (
+              ingredients.map((ingredient) => {
+                return (
+                  <li key={ingredient.ingredientInfo.name} className="pb-2">
+                    <span className="block">
+                      <span>{toMixedNumber(ingredient.quantity)} </span>
+                      <span>{ingredient.unit.name} </span>
+                      <span>{ingredient.ingredientInfo.name}</span>
+                    </span>
+                  </li>
+                )
+              })
+            ) : (
+              <span className="text-sm">No ingredients!</span>
+            )
+          ) : (
+            <Skeleton />
+          )}
+        </ul>
+      </div>
+      <h3 className="header-3-text">Instructions</h3>
       <p>{description || <Skeleton count={5} />}</p>
     </li>
   )
@@ -87,17 +114,21 @@ const RecipePage: NextPage<RecipeProps> = (props) => {
           <h3 className="header-2-text">All Ingredients</h3>
           <ul className="p-1 pl-2">
             {ingredients ? (
-              ingredients.map((ingredient) => {
-                return (
-                  <li key={ingredient.ingredientInfo.name} className="pb-2">
-                    <span className="block">
-                      <span>{toMixedNumber(ingredient.quantity)} </span>
-                      <span>{ingredient.unit.name} </span>
-                      <span>{ingredient.ingredientInfo.name}</span>
-                    </span>
-                  </li>
-                )
-              })
+              ingredients.length > 0 ? (
+                ingredients.map((ingredient) => {
+                  return (
+                    <li key={ingredient.ingredientInfo.name} className="pb-2">
+                      <span className="block">
+                        <span>{toMixedNumber(ingredient.quantity)} </span>
+                        <span>{ingredient.unit.name} </span>
+                        <span>{ingredient.ingredientInfo.name}</span>
+                      </span>
+                    </li>
+                  )
+                })
+              ) : (
+                <span className="text-sm">No ingredients!</span>
+              )
             ) : (
               <Skeleton />
             )}

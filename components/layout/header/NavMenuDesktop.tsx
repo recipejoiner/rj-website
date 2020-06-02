@@ -6,7 +6,7 @@ type NavMenuDesktopProps = {
   closeMenus(): void
   testDropdownOpen: boolean
   setTestDropdownOpen: React.Dispatch<React.SetStateAction<boolean>>
-  currentUserInfo: CurrentUserLoginCheckType
+  currentUserInfo?: CurrentUserLoginCheckType
 }
 
 const NavMenuDesktop: React.FC<NavMenuDesktopProps> = ({
@@ -32,7 +32,10 @@ const NavMenuDesktop: React.FC<NavMenuDesktopProps> = ({
             Home
           </a>
         </Link>
-        <Link href="/[username]" as={`/${currentUserInfo.me.username}`}>
+        <Link
+          href="/[username]"
+          as={`/${currentUserInfo ? currentUserInfo.me.username : ''}`}
+        >
           <a
             onClick={() => {
               closeMenus()

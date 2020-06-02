@@ -6,7 +6,7 @@ type NavMenuDesktopProps = {
   closeMenus(): void
   testDropdownOpen: boolean
   setTestDropdownOpen: React.Dispatch<React.SetStateAction<boolean>>
-  currentUserInfo?: CurrentUserLoginCheckType
+  currentUserInfo: CurrentUserLoginCheckType
 }
 
 const NavMenuDesktop: React.FC<NavMenuDesktopProps> = ({
@@ -17,6 +17,9 @@ const NavMenuDesktop: React.FC<NavMenuDesktopProps> = ({
 }) => {
   const linkStyle =
     'px-8 py-4 md:px-6 lg:px-10 block font-semibold hover:text-gray-700 uppercase text-sm tracking-widest h-full flex items-center'
+
+  const { me } = currentUserInfo || {}
+  const { username } = me || {}
   return (
     <nav
       className={`hidden md:block h-auto z-90 scrolling-auto scrolling-touch flex flex-no-wrap`}
@@ -32,10 +35,7 @@ const NavMenuDesktop: React.FC<NavMenuDesktopProps> = ({
             Home
           </a>
         </Link>
-        <Link
-          href="/[username]"
-          as={`/${currentUserInfo ? currentUserInfo.me.username : ''}`}
-        >
+        <Link href="/[username]" as={`/${username}`}>
           <a
             onClick={() => {
               closeMenus()

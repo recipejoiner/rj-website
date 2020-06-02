@@ -60,6 +60,7 @@ class MyApp extends App<UserProps, {}, AppState> {
     // reset any parts of state that are tied to that.
     if (props.loggedIn !== state.loggedIn) {
       console.log('changing state!')
+      console.log('props.currentUserInfo', props.currentUserInfo)
       return {
         loggedIn: props.loggedIn,
         currentUserInfo: props.currentUserInfo,
@@ -225,21 +226,17 @@ class MyApp extends App<UserProps, {}, AppState> {
         })
         .then((res) => {
           const { data }: { data?: CurrentUserLoginCheckType } = res || {}
-          if (data) {
+          if (data && data.me) {
+            console.log('data', data)
             if (data.me.email) {
               return data
             }
             throw { message: 'missing email', data: data }
           }
-          return { message: 'missing data', res: res }
+          throw { message: 'missing data or data.me', res: res }
         })
         .catch((err) => {
-          return {
-            pageProps: pageProps,
-            err: {
-              error: err,
-            },
-          }
+          throw { message: 'some error with the query', err: err }
         })
       return {
         pageProps: pageProps,

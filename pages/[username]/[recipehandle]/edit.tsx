@@ -45,41 +45,47 @@ const EditRecipePage: NextPage<EditRecipePageProps> = ({
     EditRecipeVars
   >({
     defaultValues: {
-      existingRecipeId: existingRecipeId,
+      existingRecipeId: existingRecipeId, // this isn't actually used by the form
       attributes: oldAttributes,
     },
   })
 
   // console.log('attributes', watch('attributes'))
-  const onSubmit = handleSubmit((variables: EditRecipeVars) => {
-    client
-      .mutate({
-        mutation: EDIT_RECIPE,
-        variables: variables,
-        context: {
-          // example of setting the headers with context per operation
-          headers: {
-            authorization: `Bearer ${getToken()}`,
+  const onSubmit = handleSubmit(
+    ({ attributes }: { attributes: RecipeInput }) => {
+      console.log('atts', attributes)
+      client
+        .mutate({
+          mutation: EDIT_RECIPE,
+          variables: {
+            existingRecipeId: existingRecipeId,
+            attributes: attributes,
           },
-        },
-      })
-      .then((res) => {
-        const { data }: { data?: RecipeFormReturnType } = res || {}
-        if (data) {
-          const { result } = data.mutation || {}
-          const { by, handle } = result || {}
-          const { username } = by || {}
-          const path = '/' + username + '/' + handle
-          redirectTo(path)
-        } else {
-          throw 'Data is missing!'
-        }
-      })
-      .catch((err) => {
-        console.log(err)
-        setNewRecipeErrs(err.graphQLErrors)
-      })
-  })
+          context: {
+            // example of setting the headers with context per operation
+            headers: {
+              authorization: `Bearer ${getToken()}`,
+            },
+          },
+        })
+        .then((res) => {
+          const { data }: { data?: RecipeFormReturnType } = res || {}
+          if (data) {
+            const { result } = data.mutation || {}
+            const { by, handle } = result || {}
+            const { username } = by || {}
+            const path = '/' + username + '/' + handle
+            redirectTo(path)
+          } else {
+            throw 'Data is missing!'
+          }
+        })
+        .catch((err) => {
+          console.log(err)
+          setNewRecipeErrs(err.graphQLErrors)
+        })
+    }
+  )
 
   const title = 'Edit Recipe - RecipeJoiner'
   const description = 'Edit your recipe!'
@@ -110,7 +116,7 @@ const EditRecipePage: NextPage<EditRecipePageProps> = ({
         watch={watch}
         errors={errors}
         control={control}
-        formTitle="Create a new recipe!"
+        formTitle={`Edit ${oldAttributes.title}`}
         submitBtnTxt="Save Recipe"
         numOfStepsInit={numOfStepsInit}
         numOfIngrsInit={numOfIngrsInit}

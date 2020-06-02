@@ -107,19 +107,21 @@ const RecipePage: NextPage<RecipeProps> = (props) => {
         </Head>
       )}
       <div className="p-2 max-w-3xl m-auto">
-        <div className="flex flex-row justify-center">
-          <h1 className="header-text text-center mt-5">
-            {title || <Skeleton />}
-          </h1>
-          {onOwnRecipe ? (
+        <h1 className="header-text text-center mt-5">
+          {title || <Skeleton />}
+        </h1>
+        {onOwnRecipe ? (
+          <div className="m-2">
             <Link
               href="/[username]/[recipehandle]/edit"
               as={`/${username}/${handle}/edit`}
             >
-              <a>Edit</a>
+              <a className="block w-24 m-auto font-bold text-center text-sm p-1 bg-gray-200 rounded border">
+                Edit Recipe
+              </a>
             </Link>
-          ) : null}
-        </div>
+          </div>
+        ) : null}
         <Link href="/[username]" as={`/${username || 'ari'}`}>
           <a className="block text-center text-sm px-2 pb-2">
             by chef {username ? username : <Skeleton width={20} />}

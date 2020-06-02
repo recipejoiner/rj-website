@@ -16,6 +16,7 @@ interface RecipeFormProps {
   errors: any
   control: any
   formTitle: string
+  submitBtnTxt?: string
   numOfStepsInit?: number
   numOfIngrsInit?: Array<number>
 }
@@ -27,6 +28,7 @@ const RecipeForm: React.FC<RecipeFormProps> = ({
   errors,
   control,
   formTitle,
+  submitBtnTxt = 'Create Recipe',
   numOfStepsInit = 1,
   numOfIngrsInit = [0],
 }) => {
@@ -309,7 +311,7 @@ const RecipeForm: React.FC<RecipeFormProps> = ({
                 className="bg-blue-500 hover:bg-blue-700 w-full text-white font-bold py-2 px-4 rounded focus:outline-none focus:shadow-outline"
                 type="submit"
               >
-                Create Recipe
+                {submitBtnTxt}
               </button>
             </div>
           </form>

@@ -29,11 +29,15 @@ import RecipeForm from 'components/forms/RecipeForm'
 interface EditRecipePageProps {
   existingRecipeId: number
   oldAttributes: RecipeInput
+  numOfStepsInit: number
+  numOfIngrsInit: Array<number>
 }
 
 const EditRecipePage: NextPage<EditRecipePageProps> = ({
   existingRecipeId,
   oldAttributes,
+  numOfStepsInit,
+  numOfIngrsInit,
 }) => {
   const [newRecipeErrs, setNewRecipeErrs] = React.useState<Array<gqlError>>([])
 
@@ -106,6 +110,10 @@ const EditRecipePage: NextPage<EditRecipePageProps> = ({
         watch={watch}
         errors={errors}
         control={control}
+        formTitle="Create a new recipe!"
+        submitBtnTxt="Save Recipe"
+        numOfStepsInit={numOfStepsInit}
+        numOfIngrsInit={numOfIngrsInit}
       />
     </React.Fragment>
   )
@@ -178,9 +186,13 @@ export const getServerSideProps: GetServerSideProps = async (ctx) => {
       steps: [],
     }
 
+    const numOfStepsInit = steps.length
+    var numOfIngrsInit = Array(numOfStepsInit)
     steps.map((step) => {
       const { stepNum, stepTime, description, ingredients } = step || {}
       var oldIngredients: Array<RecipeInputIngredient> = []
+      // stepNum is 1 indexed, need to adjust for this
+      numOfIngrsInit[stepNum - 1] = ingredients.length
       ingredients.map((ingredient) => {
         const { ingredientInfo, quantity, unit } = ingredient
         oldIngredients.push({
@@ -201,6 +213,8 @@ export const getServerSideProps: GetServerSideProps = async (ctx) => {
       props: {
         existingRecipeId: existingRecipeId,
         oldAttributes: oldAttributes,
+        numOfStepsInit: numOfStepsInit,
+        numOfIngrsInit: numOfIngrsInit,
       },
     }
   } catch (err) {

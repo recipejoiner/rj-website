@@ -108,8 +108,8 @@ export function toMixedNumber(num: number) {
   } else {
     return (
       <span>
-        {wholeNum}
-        <sup>{numerator}</sup>⁄<sub>{denominator}</sub>
+        {wholeNum.toFixed(0)}
+        <sup>{numerator.toFixed(0)}</sup>⁄<sub>{denominator.toFixed(0)}</sub>
       </span>
     )
   }

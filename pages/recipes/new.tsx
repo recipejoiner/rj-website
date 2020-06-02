@@ -93,6 +93,7 @@ const NewRecipePage: NextPage<NewRecipePageProps> = ({}) => {
         watch={watch}
         errors={errors}
         control={control}
+        formTitle="Create a new recipe!"
       />
     </React.Fragment>
   )

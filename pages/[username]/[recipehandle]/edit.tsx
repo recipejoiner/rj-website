@@ -53,7 +53,6 @@ const EditRecipePage: NextPage<EditRecipePageProps> = ({
   // console.log('attributes', watch('attributes'))
   const onSubmit = handleSubmit(
     ({ attributes }: { attributes: RecipeInput }) => {
-      console.log('atts', attributes)
       client
         .mutate({
           mutation: EDIT_RECIPE,

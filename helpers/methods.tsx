@@ -74,6 +74,43 @@ export function ifLoggedInRedirectTo(path: string) {
   }
 }
 
+export function toMixedNumber(num: number) {
+  var gcd = function (a: number, b: number): number {
+    if (b < 0.0000001) return a // Limit the precision
+
+    return gcd(b, Math.floor(a % b)) // Discard any fractions due to limitations in precision.
+  }
+  var fraction = num % 1
+  var wholeNum = num - fraction
+  fraction = parseFloat(fraction.toFixed(2))
+
+  var len = fraction.toString().length - 2
+
+  var denominator = Math.pow(10, len)
+  var numerator = fraction * denominator
+
+  var divisor = gcd(numerator, denominator)
+
+  numerator /= divisor
+  denominator /= divisor
+
+  // handle where fraction is 33/100 or 3/10
+  if (
+    (numerator === 33 && denominator === 100) ||
+    (numerator === 3 && denominator === 10)
+  ) {
+    numerator = 1
+    denominator = 3
+  }
+
+  return (
+    <span>
+      {wholeNum}
+      <sup>{numerator}</sup>⁄<sub>{denominator}</sub>
+    </span>
+  )
+}
+
 // EXPERIMENTAL METHOD
 export function ensureVarIsSet(variable: any) {
   return new Promise(function (resolve, reject) {

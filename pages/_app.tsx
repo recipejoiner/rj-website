@@ -212,13 +212,17 @@ class MyApp extends App<UserProps, {}, AppState> {
     }
 
     try {
+      const token = getToken(ctx)
+      if (!token) {
+        throw { message: 'missing token' }
+      }
       const currentUserInfo = await client
         .query({
           query: CURRENT_USER_LOGIN_CHECK,
           context: {
             // example of setting the headers with context per operation
             headers: {
-              authorization: `Bearer ${getToken(ctx)}`,
+              authorization: `Bearer ${token}`,
             },
           },
           // Prevent caching issues when logging in/out without refresh.
@@ -226,6 +230,8 @@ class MyApp extends App<UserProps, {}, AppState> {
         })
         .then((res) => {
           const { data }: { data?: CurrentUserLoginCheckType } = res || {}
+          // if a valid token was used, even if it's the API token, then data will exists.
+          // data.me will just be set to null.
           if (data && data.me) {
             console.log('data', data)
             if (data.me.email) {
@@ -246,7 +252,7 @@ class MyApp extends App<UserProps, {}, AppState> {
     } catch (err) {
       return {
         pageProps: pageProps,
-        err: err,
+        err: { message: 'some uncaught error', err: err },
       }
     }
   }

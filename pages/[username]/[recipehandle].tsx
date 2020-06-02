@@ -11,6 +11,7 @@ import {
   RecipeStepType,
   RECIPE_BY_USERNAME_AND_HANDLE,
 } from 'requests/recipes'
+import { toMixedNumber } from 'helpers/methods'
 import client from 'requests/client'
 
 interface RecipeProps {
@@ -35,11 +36,11 @@ const Step: React.FC<StepProps> = ({ step }) => {
 
 const RecipePage: NextPage<RecipeProps> = (props) => {
   const { recipe } = props
-  const { by, description, handle, id, steps, servings, title } =
+  const { by, description, handle, id, steps, servings, title, ingredients } =
     recipe?.result || {}
   const { username } = by || {}
 
-  const pageTitle = `${title ? title.toLowerCase() : 'a recipe'}, by ${
+  const pageTitle = `${title || 'a recipe'}, by ${
     by ? by.username : 'rj'
   } - RecipeJoiner`
   const pageDescription = description
@@ -66,23 +67,46 @@ const RecipePage: NextPage<RecipeProps> = (props) => {
           {/* OpenGraph tags end */}
         </Head>
       )}
-      <h1>{title || <Skeleton />}</h1>
-      <div>
-        By Chef{' '}
-        {username ? (
-          <Link href="/[username]" as={`/${username}`}>
-            <a>{username}</a>
-          </Link>
-        ) : (
-          <Skeleton width={20} />
-        )}
+      <div className="p-2 max-w-3xl m-auto">
+        <h1 className="header-text text-center mt-5">
+          {title || <Skeleton />}
+        </h1>
+        <Link href="/[username]" as={`/${username || 'ari'}`}>
+          <a className="block text-center text-sm px-2 pb-2">
+            by chef {username ? username : <Skeleton width={20} />}
+          </a>
+        </Link>
+        <span className="block text-justify leading-snug text-sm">
+          {description || <Skeleton />}
+        </span>
+        <div className="text-sm py-2 text-center">
+          <span className="font-bold">Serving Size </span>
+          <span>{servings}</span>
+        </div>
+        <div>
+          <h3 className="header-2-text">All Ingredients</h3>
+          {ingredients ? (
+            ingredients.map((ingredient) => {
+              return (
+                <div key={ingredient.ingredientInfo.name}>
+                  <span className="block">
+                    <span>{toMixedNumber(ingredient.quantity)} </span>
+                    <span>{ingredient.unit.name} </span>
+                    <span>{ingredient.ingredientInfo.name}</span>
+                  </span>
+                </div>
+              )
+            })
+          ) : (
+            <Skeleton />
+          )}
+        </div>
+        <ul>
+          {steps
+            ? steps.map((step) => <Step step={step} key={step.stepNum} />)
+            : [1, 2].map((num) => <Step key={num} />)}
+        </ul>
       </div>
-      <p>{description || <Skeleton />}</p>
-      <ul>
-        {steps
-          ? steps.map((step) => <Step step={step} key={step.stepNum} />)
-          : [1, 2].map((num) => <Step key={num} />)}
-      </ul>
     </React.Fragment>
   )
 }

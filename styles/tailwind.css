@@ -7,7 +7,11 @@
 /* Add all custom component classes here */
 
 .header-text {
-  @apply text-2xl text-center
+  @apply text-2xl font-black
+}
+
+.header-2-text {
+  @apply text-xl font-black
 }
 
 .form-submit-btn {

@@ -5,6 +5,7 @@ import { NextPage } from 'next'
 import { GetStaticProps, GetStaticPaths } from 'next'
 import { ParsedUrlQuery } from 'querystring'
 import Skeleton from 'react-loading-skeleton'
+import UserContext from 'helpers/UserContext'
 
 import {
   RecipeType,
@@ -67,6 +68,17 @@ const RecipePage: NextPage<RecipeProps> = (props) => {
     recipe?.result || {}
   const { username } = by || {}
 
+  const [onOwnRecipe, setOnOwnRecipe] = React.useState(false)
+  const { isLoggedIn, currentUserInfo } = React.useContext(UserContext)
+  if (
+    isLoggedIn &&
+    currentUserInfo &&
+    !onOwnRecipe &&
+    currentUserInfo.me.username == username
+  ) {
+    setOnOwnRecipe(true)
+  }
+
   const pageTitle = `${title || 'a recipe'}, by ${
     by ? by.username : 'rj'
   } - RecipeJoiner`
@@ -95,9 +107,19 @@ const RecipePage: NextPage<RecipeProps> = (props) => {
         </Head>
       )}
       <div className="p-2 max-w-3xl m-auto">
-        <h1 className="header-text text-center mt-5">
-          {title || <Skeleton />}
-        </h1>
+        <div className="flex flex-row justify-center">
+          <h1 className="header-text text-center mt-5">
+            {title || <Skeleton />}
+          </h1>
+          {onOwnRecipe ? (
+            <Link
+              href="/[username]/[recipehandle]/edit"
+              as={`/${username}/${handle}/edit`}
+            >
+              <a>Edit</a>
+            </Link>
+          ) : null}
+        </div>
         <Link href="/[username]" as={`/${username || 'ari'}`}>
           <a className="block text-center text-sm px-2 pb-2">
             by chef {username ? username : <Skeleton width={20} />}

@@ -1,5 +1,6 @@
 import * as React from 'react'
 import Head from 'next/head'
+import Link from 'next/link'
 import { NextPage } from 'next'
 import { GetStaticProps, GetStaticPaths } from 'next'
 import { ParsedUrlQuery } from 'querystring'
@@ -66,7 +67,16 @@ const RecipePage: NextPage<RecipeProps> = (props) => {
         </Head>
       )}
       <h1>{title || <Skeleton />}</h1>
-      <div>By Chef {username || <Skeleton width={20} />}</div>
+      <div>
+        By Chef{' '}
+        {username ? (
+          <Link href="/[username]" as={`/${username}`}>
+            <a>{username}</a>
+          </Link>
+        ) : (
+          <Skeleton width={20} />
+        )}
+      </div>
       <p>{description || <Skeleton />}</p>
       <ul>
         {steps

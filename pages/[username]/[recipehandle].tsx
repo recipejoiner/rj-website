@@ -85,27 +85,31 @@ const RecipePage: NextPage<RecipeProps> = (props) => {
         </div>
         <div>
           <h3 className="header-2-text">All Ingredients</h3>
-          {ingredients ? (
-            ingredients.map((ingredient) => {
-              return (
-                <div key={ingredient.ingredientInfo.name}>
-                  <span className="block">
-                    <span>{toMixedNumber(ingredient.quantity)} </span>
-                    <span>{ingredient.unit.name} </span>
-                    <span>{ingredient.ingredientInfo.name}</span>
-                  </span>
-                </div>
-              )
-            })
-          ) : (
-            <Skeleton />
-          )}
+          <ul className="p-1 pl-2">
+            {ingredients ? (
+              ingredients.map((ingredient) => {
+                return (
+                  <li key={ingredient.ingredientInfo.name} className="pb-2">
+                    <span className="block">
+                      <span>{toMixedNumber(ingredient.quantity)} </span>
+                      <span>{ingredient.unit.name} </span>
+                      <span>{ingredient.ingredientInfo.name}</span>
+                    </span>
+                  </li>
+                )
+              })
+            ) : (
+              <Skeleton />
+            )}
+          </ul>
         </div>
-        <ul>
-          {steps
-            ? steps.map((step) => <Step step={step} key={step.stepNum} />)
-            : [1, 2].map((num) => <Step key={num} />)}
-        </ul>
+        <div>
+          <ul>
+            {steps
+              ? steps.map((step) => <Step step={step} key={step.stepNum} />)
+              : [1, 2].map((num) => <Step key={num} />)}
+          </ul>
+        </div>
       </div>
     </React.Fragment>
   )

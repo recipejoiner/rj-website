@@ -292,7 +292,7 @@ export const CREATE_RECIPE = gql`
   }
 `
 
-interface EditRecipeVars {
+export interface EditRecipeVars {
   existingRecipeId: number
   attributes: RecipeInput
 }

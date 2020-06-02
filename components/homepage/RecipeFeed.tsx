@@ -34,20 +34,22 @@ export const UserRecipesFeed: React.FC<UserRecipesFeedProps> = ({}) => {
 
   return (
     <div className="bg-gray-100 pt-5 px-5 border-t">
-      <h3 className="text-center text-xl font-bold">Your Recipe Feed</h3>
-      <InfiniteScroll
-        QUERY={USER_RECIPES_FEED}
-        QueryData={queryDataInit}
-        QueryVars={UserRecipesVars}
-      >
-        {(edges: Array<EdgeType<ShortRecipeInfoType>>) => (
-          <ul>
-            {edges.map((edge) => {
-              return <ShortRecipe edge={edge} key={edge.cursor} />
-            })}
-          </ul>
-        )}
-      </InfiniteScroll>
+      <div className="m-auto max-w-3xl">
+        <h3 className="text-center text-xl font-bold">Your Recipe Feed</h3>
+        <InfiniteScroll
+          QUERY={USER_RECIPES_FEED}
+          QueryData={queryDataInit}
+          QueryVars={UserRecipesVars}
+        >
+          {(edges: Array<EdgeType<ShortRecipeInfoType>>) => (
+            <ul>
+              {edges.map((edge) => {
+                return <ShortRecipe edge={edge} key={edge.cursor} />
+              })}
+            </ul>
+          )}
+        </InfiniteScroll>
+      </div>
     </div>
   )
 }
@@ -62,22 +64,24 @@ export const AllRecipesFeed: React.FC<AllRecipesFeedProps> = ({}) => {
 
   return (
     <div className="bg-gray-100 pt-5 px-5 border-t">
-      <h3 className="text-center text-xl font-bold">
-        Check out some of our latest recipes!
-      </h3>
-      <InfiniteScroll
-        QUERY={ALL_RECIPES}
-        QueryData={queryDataInit}
-        QueryVars={AllRecipesVars}
-      >
-        {(edges: Array<EdgeType<ShortRecipeInfoType>>) => (
-          <ul>
-            {edges.map((edge) => {
-              return <ShortRecipe edge={edge} key={edge.cursor} />
-            })}
-          </ul>
-        )}
-      </InfiniteScroll>
+      <div className="m-auto max-w-3xl">
+        <h3 className="text-center text-xl font-bold">
+          Check out some of our latest recipes!
+        </h3>
+        <InfiniteScroll
+          QUERY={ALL_RECIPES}
+          QueryData={queryDataInit}
+          QueryVars={AllRecipesVars}
+        >
+          {(edges: Array<EdgeType<ShortRecipeInfoType>>) => (
+            <ul>
+              {edges.map((edge) => {
+                return <ShortRecipe edge={edge} key={edge.cursor} />
+              })}
+            </ul>
+          )}
+        </InfiniteScroll>
+      </div>
     </div>
   )
 }

@@ -84,43 +84,45 @@ const UserPage: NextPage<UserPageProps> = ({ userInfo }) => {
         {/* OpenGraph tags end */}
       </Head>
       <div className="flex flex-col">
-        <header className="p-2">
-          {onOwnPage ? (
-            <div className="flex flex-row justify-start">
-              <h1 className="text-3xl pr-1">{username}</h1>
-              <SettingsBtn />
-            </div>
-          ) : (
-            <h1 className="text-xl">{username}</h1>
-          )}
-        </header>
-        <ul className="flex flex-row text-gray-500 font-semibold text-sm leading-tight border-t border-b py-3">
-          {stats.map((stat) => {
-            return (
-              <li className="text-center w-1/3" key={stat.name}>
-                <span className="block text-gray-900 font-bold">
-                  {stat.count}
-                </span>
-                {stat.name}
-              </li>
-            )
-          })}
-        </ul>
-        <InfiniteScroll
-          QUERY={ALL_USER_RECIPES_BY_USERNAME}
-          QueryData={queryDataInit}
-          QueryVars={UsersRecipesVars}
-        >
-          {(edges: Array<EdgeType<ShortRecipeInfoType>>) => {
-            return (
-              <ul>
-                {edges.map((edge) => {
-                  return <ShortRecipe edge={edge} key={edge.cursor} />
-                })}
-              </ul>
-            )
-          }}
-        </InfiniteScroll>
+        <div className="m-auto max-w-3xl">
+          <header className="p-2">
+            {onOwnPage ? (
+              <div className="flex flex-row justify-start">
+                <h1 className="text-3xl pr-1">{username}</h1>
+                <SettingsBtn />
+              </div>
+            ) : (
+              <h1 className="text-xl">{username}</h1>
+            )}
+          </header>
+          <ul className="flex flex-row text-gray-500 font-semibold text-sm leading-tight border-t border-b py-3">
+            {stats.map((stat) => {
+              return (
+                <li className="text-center w-1/3" key={stat.name}>
+                  <span className="block text-gray-900 font-bold">
+                    {stat.count}
+                  </span>
+                  {stat.name}
+                </li>
+              )
+            })}
+          </ul>
+          <InfiniteScroll
+            QUERY={ALL_USER_RECIPES_BY_USERNAME}
+            QueryData={queryDataInit}
+            QueryVars={UsersRecipesVars}
+          >
+            {(edges: Array<EdgeType<ShortRecipeInfoType>>) => {
+              return (
+                <ul>
+                  {edges.map((edge) => {
+                    return <ShortRecipe edge={edge} key={edge.cursor} />
+                  })}
+                </ul>
+              )
+            }}
+          </InfiniteScroll>
+        </div>
       </div>
     </React.Fragment>
   )

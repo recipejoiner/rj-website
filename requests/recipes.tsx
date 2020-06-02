@@ -249,7 +249,7 @@ export const RECIPE_BY_ID = gql`
   }
 `
 
-interface RecipeInputIngredient {
+export interface RecipeInputIngredient {
   name: string
   amount: number
   unit: string
@@ -260,7 +260,7 @@ interface RecipeInputStep {
   description: string
   ingredients: Array<RecipeInputIngredient> // not required
 }
-interface RecipeInput {
+export interface RecipeInput {
   title: string
   description: string
   servings: string

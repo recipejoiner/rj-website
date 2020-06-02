@@ -15,6 +15,9 @@ interface RecipeFormProps {
   watch: any
   errors: any
   control: any
+  formTitle: string
+  numOfStepsInit?: number
+  numOfIngrsInit?: Array<number>
 }
 
 const RecipeForm: React.FC<RecipeFormProps> = ({
@@ -23,12 +26,15 @@ const RecipeForm: React.FC<RecipeFormProps> = ({
   watch,
   errors,
   control,
+  formTitle,
+  numOfStepsInit = 1,
+  numOfIngrsInit = [0],
 }) => {
   const [newRecipeErrs, setNewRecipeErrs] = React.useState<Array<gqlError>>([])
 
-  const [numOfSteps, setNumOfSteps] = React.useState(1)
+  const [numOfSteps, setNumOfSteps] = React.useState(numOfStepsInit)
   // array where each index is the stepInd and the value is the number of ingredients at that step
-  const [numOfIngrs, setNumOfIngrs] = React.useState([0])
+  const [numOfIngrs, setNumOfIngrs] = React.useState(numOfIngrsInit)
 
   const addStep = () => {
     if (numOfSteps < 50) {
@@ -51,7 +57,7 @@ const RecipeForm: React.FC<RecipeFormProps> = ({
   return (
     <React.Fragment>
       <div className="w-screen bg-gray-100 min-h-screen -mt-14 md:-mt-16">
-        <h1 className="header-text pt-20 md:pt-26">Create a new recipe!</h1>
+        <h1 className="header-text pt-20 md:pt-26">{formTitle}</h1>
         <div className="w-full max-w-2xl m-auto pt-0 md:pt-5">
           <form
             onSubmit={onSubmit}

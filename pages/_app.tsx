@@ -30,8 +30,9 @@ interface AppState {
 }
 
 interface UserProps {
-  loggedIn: boolean
-  currentUserInfo: CurrentUserLoginCheckType
+  loggedIn?: boolean
+  currentUserInfo?: CurrentUserLoginCheckType
+  error?: any
 }
 
 class MyApp extends App<UserProps, {}, AppState> {
@@ -58,7 +59,7 @@ class MyApp extends App<UserProps, {}, AppState> {
     // Any time the user's logged-in state changes,
     // reset any parts of state that are tied to that.
     // Here, it's just a boolean. Might add more user info in the future.
-    if (props.loggedIn !== state.loggedIn) {
+    if (props.loggedIn && props.loggedIn !== state.loggedIn) {
       console.log('changing state!')
       return {
         loggedIn: props.loggedIn,
@@ -210,33 +211,40 @@ class MyApp extends App<UserProps, {}, AppState> {
       pageProps = await Component.getInitialProps(ctx)
     }
 
-    const currentUserInfo = await client
-      .query({
-        query: CURRENT_USER_LOGIN_CHECK,
-        context: {
-          // example of setting the headers with context per operation
-          headers: {
-            authorization: `Bearer ${getToken(ctx)}`,
+    try {
+      const currentUserInfo = await client
+        .query({
+          query: CURRENT_USER_LOGIN_CHECK,
+          context: {
+            // example of setting the headers with context per operation
+            headers: {
+              authorization: `Bearer ${getToken(ctx)}`,
+            },
           },
-        },
-        // Prevent caching issues when logging in/out without refresh.
-        fetchPolicy: 'network-only',
-      })
-      .then((res) => {
-        const { data }: { data?: CurrentUserLoginCheckType } = res || {}
-        if (data && data.me.email) {
-          console.log('login data', data)
-          return data
-        }
-        return undefined
-      })
-      .catch((err) => {
-        throw err
-      })
-    return {
-      pageProps: pageProps,
-      loggedIn: !!currentUserInfo,
-      currentUserInfo: currentUserInfo,
+          // Prevent caching issues when logging in/out without refresh.
+          fetchPolicy: 'network-only',
+        })
+        .then((res) => {
+          const { data }: { data?: CurrentUserLoginCheckType } = res || {}
+          if (data && data.me.email) {
+            console.log('login data', data)
+            return data
+          }
+          return undefined
+        })
+        .catch((err) => {
+          throw err
+        })
+      return {
+        pageProps: pageProps,
+        loggedIn: !!currentUserInfo,
+        currentUserInfo: currentUserInfo,
+      }
+    } catch (err) {
+      return {
+        pageProps: pageProps,
+        error: err,
+      }
     }
   }
 

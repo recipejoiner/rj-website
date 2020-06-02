@@ -108,11 +108,11 @@ const NewRecipePage: NextPage<NewRecipePageProps> = ({}) => {
         {/* OpenGraph tags end */}
       </Head>
       <div className="w-screen bg-gray-100 min-h-screen -mt-14 md:-mt-16">
-        <h1 className="header-text pt-24 sm:pt-26">Create a new recipe!</h1>
-        <div className="w-full max-w-lg m-auto pt-10 sm:pt-20">
+        <h1 className="header-text pt-20 md:pt-26">Create a new recipe!</h1>
+        <div className="w-full max-w-2xl m-auto pt-0 md:pt-5">
           <form
             onSubmit={onSubmit}
-            className="sm:bg-white sm:shadow-md rounded px-8 pt-6 pb-8 mb-4"
+            className="md:bg-white md:shadow-md rounded px-8 pt-6 pb-8 mb-4"
           >
             <TextFormItem
               label="Title"
@@ -364,7 +364,7 @@ const NewRecipePage: NextPage<NewRecipePageProps> = ({}) => {
               </button>
             </div>
           </form>
-          <p className="text-center text-gray-500 text-xs">
+          <p className="text-center text-gray-500 text-xs pb-3">
             &copy;2020 RecipeJoiner. All rights reserved.
           </p>
         </div>

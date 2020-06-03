@@ -256,9 +256,13 @@ class MyApp extends App<UserProps, {}, AppState> {
             if (data.me.email) {
               return data
             }
-            throw { message: 'missing email', data: JSON.stringify(data) }
+            throw { message: `missing email, data: ${JSON.stringify(data)}` }
           }
-          throw { message: 'missing data or data.me', res: JSON.stringify(res) }
+          throw {
+            message: `missing data or data.me, res: ${JSON.stringify(
+              res
+            )}, token: ${token}`,
+          }
         })
         .catch((err) => {
           // throw { message: 'some error with the query', err: err }

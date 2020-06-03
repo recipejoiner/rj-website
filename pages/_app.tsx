@@ -22,6 +22,25 @@ import {
 import { getToken } from 'helpers/auth'
 import Header from 'components/layout/Header'
 
+import * as Honeybadger from 'honeybadger'
+if (typeof window === 'undefined') {
+  // Node
+  // https://docs.honeybadger.io/lib/node.html#configuration
+  Honeybadger.configure({
+    apiKey: process.env.HONEYBADGER_API_KEY || '',
+    developmentEnvironments: ['test', 'development'],
+  })
+} else {
+  // Browser
+  // https://docs.honeybadger.io/lib/javascript/reference/configuration.html
+  Honeybadger.configure({
+    apiKey: process.env.HONEYBADGER_API_KEY || '',
+  })
+
+  // This is handy for testing; remove it in production.
+  ;(window as any).Honeybadger = Honeybadger
+}
+
 interface AppState {
   loggedIn: boolean
   menuOpen: boolean
@@ -250,6 +269,7 @@ class MyApp extends App<UserProps, {}, AppState> {
         currentUserInfo: currentUserInfo,
       }
     } catch (err) {
+      Honeybadger.notify(err, { url: ctx.asPath })
       return {
         pageProps: pageProps,
         err: { message: 'some uncaught error', err: err },

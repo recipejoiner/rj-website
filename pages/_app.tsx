@@ -72,14 +72,14 @@ class MyApp extends App<UserProps, {}, AppState> {
     props: UserProps & AppProps,
     state: AppState
   ) {
-    console.log('in getDerivedStateFromProps')
-    console.log('props', props)
-    console.log('prev state', state)
+    // console.log('in getDerivedStateFromProps')
+    // console.log('props', props)
+    // console.log('prev state', state)
     // Any time the user's logged-in state changes,
     // reset any parts of state that are tied to that.
     if (props.loggedIn !== state.loggedIn) {
-      console.log('changing state!')
-      console.log('props.currentUserInfo', props.currentUserInfo)
+      // console.log('changing state!')
+      // console.log('props.currentUserInfo', props.currentUserInfo)
       return {
         loggedIn: props.loggedIn,
         currentUserInfo: props.currentUserInfo,
@@ -252,7 +252,7 @@ class MyApp extends App<UserProps, {}, AppState> {
           // if a valid token was used, even if it's the API token, then data will exist.
           // data.me will just be set to null.
           if (data && data.me) {
-            console.log('data', data)
+            // console.log('data', data)
             if (data.me.email) {
               return data
             }

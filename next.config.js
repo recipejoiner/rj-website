@@ -49,7 +49,7 @@ const nextConfiguration = {
     //
     // So ask Webpack to replace honeybadger imports with honeybadger-js (the
     // browser version) when building the browser's bundle.
-    if (!options.isServer) {
+    if (!isServer) {
       config.resolve.alias['honeybadger'] = 'honeybadger-js'
     }
 

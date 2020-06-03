@@ -139,6 +139,7 @@ const RecipeForm: React.FC<RecipeFormProps> = ({
                     />
                     <NumFormItem
                       label="Step Time (minutes)"
+                      type="text"
                       returnVar={`attributes.steps[${stepInd}].stepTime`}
                       placeholder="20"
                       control={control}

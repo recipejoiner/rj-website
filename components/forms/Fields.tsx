@@ -88,6 +88,7 @@ interface NumFormItemProps {
   step?: string
   min?: string
   pattern?: string
+  type?: string
 }
 
 export const NumFormItem: React.FC<NumFormItemProps> = ({
@@ -101,6 +102,7 @@ export const NumFormItem: React.FC<NumFormItemProps> = ({
   step = '1',
   min = '0',
   pattern = '[0-9]*',
+  type = 'number',
 }) => {
   return (
     <div className="mb-4">
@@ -117,7 +119,7 @@ export const NumFormItem: React.FC<NumFormItemProps> = ({
         }`}
         id={returnVar}
         name={returnVar}
-        type="number"
+        type={type}
         min={min}
         step={step}
         placeholder={placeholder}

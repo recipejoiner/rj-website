@@ -249,16 +249,16 @@ class MyApp extends App<UserProps, {}, AppState> {
         })
         .then((res) => {
           const { data }: { data?: CurrentUserLoginCheckType } = res || {}
-          // if a valid token was used, even if it's the API token, then data will exists.
+          // if a valid token was used, even if it's the API token, then data will exist.
           // data.me will just be set to null.
           if (data && data.me) {
             console.log('data', data)
             if (data.me.email) {
               return data
             }
-            throw { message: 'missing email', data: data }
+            throw { message: 'missing email', data: JSON.stringify(data) }
           }
-          throw { message: 'missing data or data.me', res: res }
+          throw { message: 'missing data or data.me', res: JSON.stringify(res) }
         })
         .catch((err) => {
           // throw { message: 'some error with the query', err: err }

@@ -261,7 +261,7 @@ class MyApp extends App<UserProps, {}, AppState> {
           throw {
             message: `missing data or data.me, res: ${JSON.stringify(
               res
-            )}, token: ${token}`,
+            )}, token: ${token}, cookies in header: ${ctx.req?.headers.cookie}`,
           }
         })
         .catch((err) => {

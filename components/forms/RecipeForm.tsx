@@ -178,6 +178,9 @@ const RecipeForm: React.FC<RecipeFormProps> = ({
                                       required:
                                         'Surely this ingredient has an amount',
                                     }}
+                                    min="0"
+                                    step="0.01"
+                                    pattern="[0-9.]*"
                                   />
                                 </div>
                                 <div className="w-1/3 mx-2">

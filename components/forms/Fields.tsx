@@ -85,6 +85,9 @@ interface NumFormItemProps {
   errorMessage?: any
   control: any
   defaultValue?: number
+  step?: string
+  min?: string
+  pattern?: string
 }
 
 export const NumFormItem: React.FC<NumFormItemProps> = ({
@@ -95,6 +98,9 @@ export const NumFormItem: React.FC<NumFormItemProps> = ({
   errorMessage,
   control,
   defaultValue = 0,
+  step = '1',
+  min = '0',
+  pattern = '[0-9]*',
 }) => {
   return (
     <div className="mb-4">
@@ -112,6 +118,8 @@ export const NumFormItem: React.FC<NumFormItemProps> = ({
         id={returnVar}
         name={returnVar}
         type="number"
+        min={min}
+        step={step}
         placeholder={placeholder}
         rules={rules}
         control={control}
@@ -123,6 +131,7 @@ export const NumFormItem: React.FC<NumFormItemProps> = ({
           }
         }}
         defaultValue={defaultValue}
+        pattern={pattern}
       />
       <p
         className={`${

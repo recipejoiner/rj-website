@@ -21,6 +21,7 @@
     "detect-browser": "^5.1.0",
     "graphql": "^15.0.0",
     "honeybadger": "^1.4.0",
+    "honeybadger-js": "^2.2.2",
     "imagemin-mozjpeg": "^8.0.0",
     "imagemin-optipng": "^7.1.0",
     "imagemin-svgo": "^7.1.0",

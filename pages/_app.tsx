@@ -261,7 +261,8 @@ class MyApp extends App<UserProps, {}, AppState> {
           throw { message: 'missing data or data.me', res: res }
         })
         .catch((err) => {
-          throw { message: 'some error with the query', err: err }
+          // throw { message: 'some error with the query', err: err }
+          throw err
         })
       return {
         pageProps: pageProps,

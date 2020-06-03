@@ -37,8 +37,8 @@ if (typeof window === 'undefined') {
     apiKey: process.env.HONEYBADGER_API_KEY || '',
   })
 
-  // This is handy for testing; remove it in production.
-  ;(window as any).Honeybadger = Honeybadger
+  // // This is handy for testing; remove it in production.
+  // ;(window as any).Honeybadger = Honeybadger
 }
 
 interface AppState {

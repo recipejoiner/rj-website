@@ -69,7 +69,9 @@ const SignUpPage: NextPage<SignUpPageProps> = ({}) => {
         {/* OpenGraph tags end */}
       </Head>
       <div className="w-screen bg-gray-100 min-h-screen -mt-14 md:-mt-16">
-        <h1 className="header-text pt-24 sm:pt-26">Welcome to RecipeJoiner!</h1>
+        <h1 className="header-text text-center pt-24 sm:pt-26">
+          Welcome to RecipeJoiner!
+        </h1>
         <div className="text-center">Please sign up below.</div>
         <div className="w-full max-w-lg m-auto pt-10 sm:pt-20">
           <form

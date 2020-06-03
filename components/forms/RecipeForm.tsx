@@ -59,7 +59,7 @@ const RecipeForm: React.FC<RecipeFormProps> = ({
   return (
     <React.Fragment>
       <div className="w-screen bg-gray-100 min-h-screen -mt-14 md:-mt-16">
-        <h1 className="header-text pt-20 md:pt-26">{formTitle}</h1>
+        <h1 className="header-text text-center pt-20 md:pt-26">{formTitle}</h1>
         <div className="w-full max-w-2xl m-auto pt-0 md:pt-5">
           <form
             onSubmit={onSubmit}

@@ -73,7 +73,9 @@ const LoginPage: NextPage<LoginPageProps> = ({}) => {
         {/* OpenGraph tags end */}
       </Head>
       <div className="w-screen bg-gray-100 h-screen fixed">
-        <h1 className="header-text pt-10 sm:pt-20">Welcome back!</h1>
+        <h1 className="header-text text-center pt-10 sm:pt-20">
+          Welcome back!
+        </h1>
         <div className="text-center">Please sign in below.</div>
         <div className="w-full max-w-xs m-auto pt-10 sm:pt-20">
           <form

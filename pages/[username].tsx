@@ -8,7 +8,7 @@ import {
   UserInfoType,
   UserByUsernameVarsType,
   USER_INFO_BY_USERNAME,
-} from 'requests/auth'
+} from 'requests/users'
 import { recipeConnectionDataInit } from 'requests/recipes'
 import {
   UserRecipeFeedData,

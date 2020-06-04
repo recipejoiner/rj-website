@@ -8,13 +8,13 @@ import {
 } from 'requests/users'
 import { getToken } from 'helpers/auth'
 
-type FollowBtnProps = {
+type FollowChangeBtnProps = {
   followingStatus: boolean | null
   setFollowingStatus: React.Dispatch<React.SetStateAction<boolean | null>>
   username: string
 }
 
-const FollowBtn: React.FC<FollowBtnProps> = ({
+const FollowChangeBtn: React.FC<FollowChangeBtnProps> = ({
   followingStatus,
   setFollowingStatus,
   username,
@@ -78,4 +78,4 @@ const FollowBtn: React.FC<FollowBtnProps> = ({
   )
 }
 
-export default FollowBtn
+export default FollowChangeBtn

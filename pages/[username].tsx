@@ -24,7 +24,7 @@ import InfiniteScroll, {
 import ShortRecipe from 'components/ShortRecipe'
 import UserContext from 'helpers/UserContext'
 import SettingsBtn from 'components/SettingsBtn'
-import FollowBtn from 'components/FollowBtn'
+import FollowChangeBtn from 'components/FollowChangeBtn'
 
 interface UserPageProps {
   userInfo: UserInfoType
@@ -102,7 +102,7 @@ const UserPage: NextPage<UserPageProps> = ({ userInfo }) => {
             ) : (
               <div className="flex flex-col">
                 <h1 className="text-xl">{username}</h1>
-                <FollowBtn
+                <FollowChangeBtn
                   followingStatus={followingStatus}
                   setFollowingStatus={setFollowingStatus}
                 />

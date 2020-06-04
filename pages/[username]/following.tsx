@@ -10,7 +10,7 @@ const Following: NextPage<Props> = ({}) => {
   const { currentUserInfo } = React.useContext(UserContext)
   return (
     <React.Fragment>
-      <Head></Head>
+      {/* <Head></Head> */}
       <div>Following list goes here</div>
     </React.Fragment>
   )

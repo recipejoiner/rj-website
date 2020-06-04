@@ -10,7 +10,7 @@ const Follower: NextPage<Props> = ({}) => {
   const { currentUserInfo } = React.useContext(UserContext)
   return (
     <React.Fragment>
-      <Head></Head>
+      {/* <Head></Head> */}
       <div>Follower list goes here</div>
     </React.Fragment>
   )

@@ -95,8 +95,8 @@ interface HeaderProps {
 
 const Header: React.FC<HeaderProps> = ({ setMenuOpen }) => {
   const { currentUserInfo } = React.useContext(UserContext)
-  console.log('in header')
-  console.log('React.useContext(UserContext)', React.useContext(UserContext))
+  // console.log('in header')
+  // console.log('React.useContext(UserContext)', React.useContext(UserContext))
   if (currentUserInfo) {
     return (
       <LoggedInHeader

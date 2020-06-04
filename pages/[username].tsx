@@ -24,6 +24,7 @@ import InfiniteScroll, {
 import ShortRecipe from 'components/ShortRecipe'
 import UserContext from 'helpers/UserContext'
 import SettingsBtn from 'components/SettingsBtn'
+import FollowBtn from 'components/FollowBtn'
 
 interface UserPageProps {
   userInfo: UserInfoType
@@ -31,8 +32,14 @@ interface UserPageProps {
 
 const UserPage: NextPage<UserPageProps> = ({ userInfo }) => {
   const { result } = userInfo || {}
-  const { id, username, recipeCount, followerCount, followingCount } =
-    result || {}
+  const {
+    id,
+    username,
+    recipeCount,
+    followerCount,
+    followingCount,
+    areFollowing,
+  } = result || {}
 
   const stats = [
     { name: 'recipes', count: recipeCount },
@@ -91,7 +98,10 @@ const UserPage: NextPage<UserPageProps> = ({ userInfo }) => {
                 <SettingsBtn />
               </div>
             ) : (
-              <h1 className="text-xl">{username}</h1>
+              <div className="flex flex-col">
+                <h1 className="text-xl">{username}</h1>
+                <FollowBtn />
+              </div>
             )}
           </header>
           <ul className="flex flex-row text-gray-500 font-semibold text-sm leading-tight border-t border-b py-3">

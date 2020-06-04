@@ -41,13 +41,33 @@ const UserPage: NextPage<UserPageProps> = ({ userInfo }) => {
     areFollowing,
   } = result || {}
 
+  // want to be able to increment/decrement this based on clicking follow/unfollow
+  const [followerCountState, setFollowerCountState] = React.useState(
+    followerCount
+  )
+
   const stats = [
     { name: 'recipes', count: recipeCount },
-    { name: 'followers', count: followerCount },
+    { name: 'followers', count: followerCountState },
     { name: 'following', count: followingCount },
   ]
 
   const [followingStatus, setFollowingStatus] = React.useState(areFollowing)
+
+  // don't want this effect to run on first mount
+  const didMount = React.useRef(false)
+  React.useEffect(() => {
+    if (didMount.current) {
+      if (followingStatus === false) {
+        setFollowerCountState(followerCountState - 1)
+      }
+      if (followingStatus === true) {
+        setFollowerCountState(followerCountState + 1)
+      }
+    } else {
+      didMount.current = true
+    }
+  }, [followingStatus]) // only run effect if followingStatus changes. note that it also runs on initial component mount, hence the useRef
 
   const queryDataInit: QueryResultRes<ShortRecipeInfoType> = {
     result: recipeConnectionDataInit,

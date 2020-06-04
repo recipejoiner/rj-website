@@ -239,7 +239,7 @@ class MyApp extends App<UserProps, {}, AppState> {
             },
           },
           // Prevent caching issues when logging in/out without refresh.
-          fetchPolicy: 'network-only',
+          fetchPolicy: 'no-cache',
         })
         .then((res) => {
           const { data }: { data?: CurrentUserLoginCheckType } = res || {}

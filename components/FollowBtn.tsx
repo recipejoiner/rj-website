@@ -1,14 +1,42 @@
 import Link from 'next/link'
+import client from 'requests/client'
+import {
+  UserFollowChangeVars,
+  UserFollowChangeReturnType,
+  FOLLOW,
+  UNFOLLOW,
+} from 'requests/users'
+import { getToken } from 'helpers/auth'
 
 type FollowBtnProps = {
   followingStatus: boolean | null
   setFollowingStatus: React.Dispatch<React.SetStateAction<boolean | null>>
+  username: string
 }
 
 const FollowBtn: React.FC<FollowBtnProps> = ({
   followingStatus,
   setFollowingStatus,
+  username,
 }) => {
+  const followUser = ({ variables }: { variables: UserFollowChangeVars }) => {
+    client
+      .mutate({
+        mutation: FOLLOW,
+        variables: variables,
+        context: {
+          headers: {
+            authorization: `Bearer ${getToken()}`,
+          },
+        },
+      })
+      .then((res) => {
+        const { data }: { data?: UserFollowChangeReturnType } = res || {}
+        if (data && data.result.user) {
+          setFollowingStatus(data.result.user.areFollowing)
+        }
+      })
+  }
   return (
     <div>
       <button className="h-8 py-2 px-4 border border-gray-300 rounded bg-white hover:bg-gray-200">

@@ -1,6 +1,7 @@
 import Head from 'next/head'
 import { NextPage, GetServerSideProps } from 'next'
 import * as React from 'react'
+import Link from 'next/link'
 
 import client from 'requests/client'
 import { getToken } from 'helpers/auth'
@@ -47,9 +48,17 @@ const UserPage: NextPage<UserPageProps> = ({ userInfo }) => {
   )
 
   const stats = [
-    { name: 'recipes', count: recipeCount },
-    { name: 'followers', count: followerCountState },
-    { name: 'following', count: followingCount },
+    { name: 'recipes', count: recipeCount, link: { href: '#', as: '#' } },
+    {
+      name: 'followers',
+      count: followerCountState,
+      link: { href: '/[username]/followers', as: `/${username}/followers` },
+    },
+    {
+      name: 'following',
+      count: followingCount,
+      link: { href: '/[username]/following', as: `/${username}/following` },
+    },
   ]
 
   const [followingStatus, setFollowingStatus] = React.useState(areFollowing)
@@ -132,12 +141,17 @@ const UserPage: NextPage<UserPageProps> = ({ userInfo }) => {
           </header>
           <ul className="flex flex-row text-gray-500 font-semibold text-sm leading-tight border-t border-b py-3">
             {stats.map((stat) => {
+              const { name, count, link } = stat
               return (
-                <li className="text-center w-1/3" key={stat.name}>
-                  <span className="block text-gray-900 font-bold">
-                    {stat.count}
-                  </span>
-                  {stat.name}
+                <li className="text-center w-1/3" key={name}>
+                  <Link href={link.href} as={link.as}>
+                    <a>
+                      <span className="block text-gray-900 font-bold">
+                        {count}
+                      </span>
+                      {name}
+                    </a>
+                  </Link>
                 </li>
               )
             })}

@@ -37,6 +37,25 @@ const FollowBtn: React.FC<FollowBtnProps> = ({
         }
       })
   }
+
+  const unFollowUser = ({ variables }: { variables: UserFollowChangeVars }) => {
+    client
+      .mutate({
+        mutation: UNFOLLOW,
+        variables: variables,
+        context: {
+          headers: {
+            authorization: `Bearer ${getToken()}`,
+          },
+        },
+      })
+      .then((res) => {
+        const { data }: { data?: UserFollowChangeReturnType } = res || {}
+        if (data && data.result.user) {
+          setFollowingStatus(data.result.user.areFollowing)
+        }
+      })
+  }
   return (
     <div>
       <button className="h-8 py-2 px-4 border border-gray-300 rounded bg-white hover:bg-gray-200">

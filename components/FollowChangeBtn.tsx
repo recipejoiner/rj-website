@@ -19,7 +19,10 @@ const FollowChangeBtn: React.FC<FollowChangeBtnProps> = ({
   setFollowingStatus,
   username,
 }) => {
-  const followUser = ({ variables }: { variables: UserFollowChangeVars }) => {
+  const variables: UserFollowChangeVars = {
+    username: username,
+  }
+  const followUser = () => {
     client
       .mutate({
         mutation: FOLLOW,
@@ -38,7 +41,7 @@ const FollowChangeBtn: React.FC<FollowChangeBtnProps> = ({
       })
   }
 
-  const unFollowUser = ({ variables }: { variables: UserFollowChangeVars }) => {
+  const unFollowUser = () => {
     client
       .mutate({
         mutation: UNFOLLOW,

@@ -42,7 +42,7 @@ interface FollowBtnProps {
 
 const FollowBtn: React.FC<FollowBtnProps> = ({ followUser }) => {
   return (
-    <button onClick={followUser} className="btn">
+    <button onClick={followUser} className="btn w-24">
       Follow
     </button>
   )
@@ -99,11 +99,13 @@ const FollowChangeBtn: React.FC<FollowChangeBtnProps> = ({
         }
       })
   }
-  return (
-    <div>
-      <UnFollowBtn unFollowUser={unFollowUser} />
-    </div>
-  )
+  if (followingStatus == true) {
+    return <UnFollowBtn unFollowUser={unFollowUser} />
+  } else if (followingStatus == false) {
+    return <FollowBtn followUser={followUser} />
+  } else {
+    return null
+  }
 }
 
 export default FollowChangeBtn

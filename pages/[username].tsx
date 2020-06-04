@@ -155,6 +155,8 @@ export const getServerSideProps: GetServerSideProps = async (ctx) => {
         variables: {
           username: username,
         },
+        // Prevent caching issues when following/unfollowing users, primarily. Want the follow/unfollow state to be consistent
+        fetchPolicy: 'network-only',
         context: {
           headers: {
             authorization: `Bearer ${getToken(ctx)}`,

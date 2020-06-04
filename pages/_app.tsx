@@ -76,7 +76,6 @@ class MyApp extends App<UserProps, {}, AppState> {
     // reset any parts of state that are tied to that.
     if (props.currentUserInfo !== state.currentUserInfo) {
       // console.log('changing state!')
-      // console.log('props.currentUserInfo', props.currentUserInfo)
       return {
         currentUserInfo: props.currentUserInfo,
       }

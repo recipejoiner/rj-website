@@ -69,13 +69,13 @@ class MyApp extends App<UserProps, {}, AppState> {
     props: UserProps & AppProps,
     state: AppState
   ) {
-    // console.log('in getDerivedStateFromProps')
-    // console.log('props', props)
-    // console.log('prev state', state)
+    console.log('in getDerivedStateFromProps')
+    console.log('props', props)
+    console.log('prev state', state)
     // Any time the user's logged-in state changes,
     // reset any parts of state that are tied to that.
     if (props.currentUserInfo !== state.currentUserInfo) {
-      // console.log('changing state!')
+      console.log('changing state!')
       return {
         currentUserInfo: props.currentUserInfo,
       }

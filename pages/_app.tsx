@@ -42,15 +42,13 @@ if (typeof window === 'undefined') {
 }
 
 interface AppState {
-  loggedIn: boolean
   menuOpen: boolean
   yPos: number
   currentUserInfo: CurrentUserLoginCheckType | undefined
 }
 
 interface UserProps {
-  loggedIn?: boolean
-  currentUserInfo?: CurrentUserLoginCheckType
+  currentUserInfo: CurrentUserLoginCheckType | undefined
   err?: any
 }
 
@@ -59,12 +57,11 @@ class MyApp extends App<UserProps, {}, AppState> {
     super(AppProps)
     this.props
     this.state = {
-      loggedIn: false,
       menuOpen: false,
       currentUserInfo: undefined,
       yPos: 0,
     }
-    this.setLoggedIn = this.setLoggedIn.bind(this)
+    this.setCurrentUser = this.setCurrentUser.bind(this)
     this.setMenuOpen = this.setMenuOpen.bind(this)
   }
 
@@ -77,20 +74,19 @@ class MyApp extends App<UserProps, {}, AppState> {
     // console.log('prev state', state)
     // Any time the user's logged-in state changes,
     // reset any parts of state that are tied to that.
-    if (props.loggedIn !== state.loggedIn) {
+    if (props.currentUserInfo !== state.currentUserInfo) {
       // console.log('changing state!')
       // console.log('props.currentUserInfo', props.currentUserInfo)
       return {
-        loggedIn: props.loggedIn,
         currentUserInfo: props.currentUserInfo,
       }
     }
     return null
   }
 
-  setLoggedIn(state: boolean) {
+  setCurrentUser(currentUserInfo: CurrentUserLoginCheckType | undefined) {
     this.setState({
-      loggedIn: state,
+      currentUserInfo: currentUserInfo,
     })
   }
 
@@ -157,8 +153,7 @@ class MyApp extends App<UserProps, {}, AppState> {
         </Head>
         <UserContext.Provider
           value={{
-            isLoggedIn: this.state.loggedIn,
-            setLoggedIn: this.setLoggedIn,
+            setCurrentUser: this.setCurrentUser,
             currentUserInfo: this.state.currentUserInfo,
           }}
         >
@@ -270,7 +265,6 @@ class MyApp extends App<UserProps, {}, AppState> {
         })
       return {
         pageProps: pageProps,
-        loggedIn: !!currentUserInfo,
         currentUserInfo: currentUserInfo,
       }
     } catch (err) {

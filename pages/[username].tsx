@@ -50,9 +50,8 @@ const UserPage: NextPage<UserPageProps> = ({ userInfo }) => {
   }
 
   const [onOwnPage, setOnOwnPage] = React.useState(false)
-  const { isLoggedIn, currentUserInfo } = React.useContext(UserContext)
+  const { currentUserInfo } = React.useContext(UserContext)
   if (
-    isLoggedIn &&
     currentUserInfo &&
     !onOwnPage &&
     currentUserInfo.me.username == username

@@ -9,7 +9,7 @@ import UserContext from 'helpers/UserContext'
 type Props = {}
 
 const Home: NextPage<Props> = ({}) => {
-  const { isLoggedIn } = React.useContext(UserContext)
+  const { currentUserInfo } = React.useContext(UserContext)
   return (
     <React.Fragment>
       <Head>
@@ -24,7 +24,7 @@ const Home: NextPage<Props> = ({}) => {
           }}
         />
       </Head>
-      {isLoggedIn ? (
+      {currentUserInfo ? (
         <React.Fragment>
           <UserRecipesFeed />
         </React.Fragment>

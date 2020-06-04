@@ -2,8 +2,9 @@ import { createContext } from 'react'
 import { CurrentUserLoginCheckType } from 'requests/auth'
 
 interface ContextProps {
-  isLoggedIn: boolean
-  setLoggedIn: (state: boolean) => void
+  setCurrentUser: (
+    currentUserInfo: CurrentUserLoginCheckType | undefined
+  ) => void
   currentUserInfo: CurrentUserLoginCheckType | undefined
 }
 const UserContext = createContext<Partial<ContextProps>>({})

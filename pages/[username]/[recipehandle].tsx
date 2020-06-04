@@ -69,9 +69,8 @@ const RecipePage: NextPage<RecipeProps> = (props) => {
   const { username } = by || {}
 
   const [onOwnRecipe, setOnOwnRecipe] = React.useState(false)
-  const { isLoggedIn, currentUserInfo } = React.useContext(UserContext)
+  const { currentUserInfo } = React.useContext(UserContext)
   if (
-    isLoggedIn &&
     currentUserInfo &&
     !onOwnRecipe &&
     currentUserInfo.me.username == username
@@ -127,7 +126,7 @@ const RecipePage: NextPage<RecipeProps> = (props) => {
             by chef {username ? username : <Skeleton width={20} />}
           </a>
         </Link>
-        <span className="block text-justify leading-snug text-sm">
+        <span className="block m-auto text-justify leading-snug text-sm">
           {description || <Skeleton />}
         </span>
         <div className="text-sm py-2 text-center">

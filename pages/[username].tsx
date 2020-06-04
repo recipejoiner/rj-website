@@ -92,7 +92,7 @@ const UserPage: NextPage<UserPageProps> = ({ userInfo }) => {
         {/* OpenGraph tags end */}
       </Head>
       <div className="flex flex-col">
-        <div className="m-auto max-w-3xl">
+        <div className="m-auto max-w-3xl min-w-full">
           <header className="p-2">
             {onOwnPage ? (
               <div className="flex flex-row justify-start">

@@ -246,15 +246,23 @@ class MyApp extends App<UserProps, {}, AppState> {
           const { data }: { data?: CurrentUserLoginCheckType } = res || {}
           // if a valid token was used, even if it's the API token, then data will exist.
           // data.me will just be set to null.
-          if (data && data.me) {
+          if (data) {
             // console.log('data', data)
             if (data.me.email) {
               return data
             }
-            throw { message: `missing email, data: ${JSON.stringify(data)}` }
+            // this is not an error - it simply means the user wasn't logged in
+            else if (data.me == null) {
+              return undefined
+            }
+            throw {
+              message: `missing 'me', data: ${JSON.stringify(
+                data
+              )}, cookies in header: ${ctx.req?.headers.cookie}`,
+            }
           }
           throw {
-            message: `missing data or data.me, res: ${JSON.stringify(
+            message: `missing data, res: ${JSON.stringify(
               res
             )}, token: ${token}, cookies in header: ${ctx.req?.headers.cookie}`,
           }
@@ -271,7 +279,7 @@ class MyApp extends App<UserProps, {}, AppState> {
       Honeybadger.notify(err, { url: ctx.asPath })
       return {
         pageProps: pageProps,
-        err: { message: 'some uncaught error', err: err },
+        err: err,
       }
     }
   }

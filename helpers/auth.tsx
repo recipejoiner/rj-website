@@ -28,6 +28,19 @@ export const getToken = (
     return getCookie('UserToken') || process.env.NEXT_PUBLIC_RJ_API_TOKEN
   }
 }
+// Same as above, but only will get the user's token. Using this for testing.
+export const getUserToken = (
+  ctx?: NextPageContext | GetServerSidePropsContext<ParsedUrlQuery>
+) => {
+  if (!!ctx && typeof window === 'undefined') {
+    return (
+      getCookieFromCookies(ctx.req?.headers.cookie || '', 'UserToken') ||
+      undefined
+    )
+  } else if (typeof window !== 'undefined') {
+    return getCookie('UserToken') || undefined
+  }
+}
 
 export const logout = (everywhere: boolean) => {
   const localLogout = () => {

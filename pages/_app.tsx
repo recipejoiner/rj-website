@@ -19,7 +19,7 @@ import {
   CurrentUserLoginCheckType,
   CURRENT_USER_LOGIN_CHECK,
 } from 'requests/auth'
-import { getToken } from 'helpers/auth'
+import { getToken, getUserToken } from 'helpers/auth'
 import Header from 'components/layout/Header'
 
 import * as Honeybadger from 'honeybadger'
@@ -248,6 +248,13 @@ class MyApp extends App<UserProps, {}, AppState> {
           if (data) {
             // this is not an error - it simply means the user wasn't logged in
             if (data.me == null) {
+              if (getUserToken(ctx) != undefined) {
+                throw {
+                  message: `Should've gotten the current user. data: ${JSON.stringify(
+                    data
+                  )}, ctx: ${ctx}`,
+                }
+              }
               return undefined
             }
             // console.log('data', data)

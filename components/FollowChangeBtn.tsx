@@ -36,6 +36,18 @@ const UnFollowBtn: React.FC<UnFollowBtnProps> = ({ unFollowUser }) => {
   )
 }
 
+interface FollowBtnProps {
+  followUser: () => void
+}
+
+const FollowBtn: React.FC<FollowBtnProps> = ({ followUser }) => {
+  return (
+    <button onClick={followUser} className="btn">
+      Follow
+    </button>
+  )
+}
+
 interface FollowChangeBtnProps {
   followingStatus: boolean | null
   setFollowingStatus: React.Dispatch<React.SetStateAction<boolean | null>>
@@ -89,7 +101,7 @@ const FollowChangeBtn: React.FC<FollowChangeBtnProps> = ({
   }
   return (
     <div>
-      <UnFollowBtn followUser={followUser} />
+      <UnFollowBtn unFollowUser={unFollowUser} />
     </div>
   )
 }

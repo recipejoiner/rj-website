@@ -47,6 +47,8 @@ const UserPage: NextPage<UserPageProps> = ({ userInfo }) => {
     { name: 'following', count: followingCount },
   ]
 
+  const [followingStatus, setFollowingStatus] = React.useState(areFollowing)
+
   const queryDataInit: QueryResultRes<ShortRecipeInfoType> = {
     result: recipeConnectionDataInit,
     __typename: '',
@@ -100,7 +102,10 @@ const UserPage: NextPage<UserPageProps> = ({ userInfo }) => {
             ) : (
               <div className="flex flex-col">
                 <h1 className="text-xl">{username}</h1>
-                <FollowBtn />
+                <FollowBtn
+                  followingStatus={followingStatus}
+                  setFollowingStatus={setFollowingStatus}
+                />
               </div>
             )}
           </header>

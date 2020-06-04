@@ -1,8 +1,14 @@
 import Link from 'next/link'
 
-type FollowBtnProps = {}
+type FollowBtnProps = {
+  followingStatus: boolean | null
+  setFollowingStatus: React.Dispatch<React.SetStateAction<boolean | null>>
+}
 
-const FollowBtn: React.FC<FollowBtnProps> = ({}) => {
+const FollowBtn: React.FC<FollowBtnProps> = ({
+  followingStatus,
+  setFollowingStatus,
+}) => {
   return (
     <div>
       <button className="h-8 py-2 px-4 border border-gray-300 rounded bg-white hover:bg-gray-200">

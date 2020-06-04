@@ -246,13 +246,13 @@ class MyApp extends App<UserProps, {}, AppState> {
           // if a valid token was used, even if it's the API token, then data will exist.
           // data.me will just be set to null.
           if (data) {
-            // console.log('data', data)
-            if (data.me.email) {
-              return data
-            }
             // this is not an error - it simply means the user wasn't logged in
-            else if (data.me == null) {
+            if (data.me == null) {
               return undefined
+            }
+            // console.log('data', data)
+            else if (data.me.email) {
+              return data
             }
             throw {
               message: `missing 'me', data: ${JSON.stringify(

@@ -16,10 +16,10 @@ const UnFollowBtn: React.FC<UnFollowBtnProps> = ({ unFollowUser }) => {
   return (
     <button
       onClick={unFollowUser}
-      className="h-8 py-2 px-4 border border-gray-300 rounded bg-white hover:bg-gray-200"
+      className="h-8 py-2 w-12 border border-gray-300 rounded bg-white hover:bg-gray-200"
     >
       <svg
-        className="h-full text-gray-900 hover:text-gray-700 fill-current"
+        className="h-full m-auto text-gray-900 hover:text-gray-700 fill-current"
         viewBox="0 0 193 102"
         version="1.1"
       >

@@ -65,6 +65,7 @@ const InfiniteScroll: React.FC<InfiniteScrollProps<any, any>> = ({
   >(QUERY, {
     client: client,
     variables: QueryVars,
+    fetchPolicy: 'no-cache', // want the contents to be reloaded every time, and never cached
     context: {
       headers: {
         authorization: `Bearer ${getToken()}`,

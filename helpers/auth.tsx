@@ -96,7 +96,8 @@ const redirectBasedOnLogin = async (
     })
     .then((res) => {
       const { data }: { data?: CurrentUserLoginCheckType } = res || {}
-      if (data && data.me.email) {
+      // should always get back 'data', just 'data.me' will be null if a user isn't logged in
+      if (data && data.me && data.me.email) {
         return true
       }
       return false

@@ -8,7 +8,7 @@ import {
 } from 'requests/users'
 import { getToken } from 'helpers/auth'
 
-type FollowChangeBtnProps = {
+interface FollowChangeBtnProps {
   followingStatus: boolean | null
   setFollowingStatus: React.Dispatch<React.SetStateAction<boolean | null>>
   username: string

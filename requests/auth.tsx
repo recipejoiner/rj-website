@@ -95,6 +95,7 @@ export const USER_INFO_BY_USERNAME = gql`
       recipeCount
       followerCount
       followingCount
+      areFollowing # will be null if not logged in
       firstName
       lastName
       createdAt

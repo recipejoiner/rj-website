@@ -154,10 +154,18 @@ const InfiniteScroll: React.FC<InfiniteScrollProps<any, any>> = ({
   }
   const { result } = (infiniteScrollData as QueryResultRes<any>) || {}
   const { connection } = result || infiniteScrollData
-  const { edges } = connection
+  const { edges, pageInfo } = connection
+  const { hasNextPage } = pageInfo
   return (
     <React.Fragment>
-      <div id="_infinitescroll">{children(edges)}</div>
+      <div id="_infinitescroll">
+        {children(edges)}
+        {!hasNextPage ? (
+          <span className="block text-center text-gray-400 py-5">
+            Loaded all data
+          </span>
+        ) : null}
+      </div>
     </React.Fragment>
   )
 }

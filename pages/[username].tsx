@@ -105,6 +105,7 @@ const UserPage: NextPage<UserPageProps> = ({ userInfo }) => {
                 <FollowChangeBtn
                   followingStatus={followingStatus}
                   setFollowingStatus={setFollowingStatus}
+                  username={username}
                 />
               </div>
             )}

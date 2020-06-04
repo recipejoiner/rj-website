@@ -162,7 +162,7 @@ const InfiniteScroll: React.FC<InfiniteScrollProps<any, any>> = ({
         {children(edges)}
         {!hasNextPage ? (
           <span className="block text-center text-gray-400 py-5">
-            Loaded all data
+            loaded all data
           </span>
         ) : null}
       </div>

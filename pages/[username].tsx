@@ -16,11 +16,7 @@ import {
   ShortRecipeNodeType,
   ALL_USER_RECIPES_BY_USERNAME,
 } from 'requests/recipes'
-import InfiniteScroll, {
-  EdgeType,
-  QueryResultRes,
-  QueryConnectionRes,
-} from 'components/InfiniteScroll'
+import InfiniteScroll, { EdgeType } from 'components/InfiniteScroll'
 import ShortRecipe from 'components/ShortRecipe'
 import UserContext from 'helpers/UserContext'
 import SettingsBtn from 'components/SettingsBtn'

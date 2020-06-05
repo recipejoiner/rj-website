@@ -1,4 +1,3 @@
-import Link from 'next/link'
 import client from 'requests/client'
 import {
   UserFollowChangeVars,

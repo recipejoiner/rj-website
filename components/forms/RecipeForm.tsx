@@ -41,18 +41,16 @@ const RecipeForm: React.FC<RecipeFormProps> = ({
   const addStep = () => {
     if (numOfSteps < 50) {
       setNumOfSteps(numOfSteps + 1)
-      const newNums = numOfIngrs
-      newNums.push(0)
-      setNumOfIngrs(newNums)
+
+      setNumOfIngrs([...numOfIngrs, 0])
     }
   }
 
   const removeStep = () => {
     if (numOfSteps > 1) {
       setNumOfSteps(numOfSteps - 1)
-      const newNums = numOfIngrs
-      newNums.pop()
-      setNumOfIngrs(newNums)
+
+      setNumOfIngrs(numOfIngrs.slice(0, -1))
     }
   }
 

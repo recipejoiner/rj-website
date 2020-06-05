@@ -3,10 +3,10 @@ import Link from 'next/link'
 import Skeleton from 'react-loading-skeleton'
 
 import { EdgeType } from 'components/InfiniteScroll'
-import { ShortRecipeInfoType } from 'requests/recipes'
+import { ShortRecipeNodeType } from 'requests/recipes'
 
 interface ShortRecipeProps {
-  edge: EdgeType<ShortRecipeInfoType>
+  edge: EdgeType<ShortRecipeNodeType>
 }
 
 const ShortRecipe: React.FC<ShortRecipeProps> = ({ edge }) => {

@@ -31,7 +31,7 @@ export const recipeConnectionDataInit = {
   __typename: '',
 }
 
-export interface ShortRecipeInfoType {
+export interface ShortRecipeNodeType {
   id: string
   by: {
     username: string
@@ -43,16 +43,7 @@ export interface ShortRecipeInfoType {
   servings: string
   __typename: string
 }
-export interface AllRecipesData {
-  connection: {
-    pageInfo: {
-      hasNextPage: boolean
-      __typename: string
-    }
-    edges: Array<EdgeType<ShortRecipeInfoType>>
-    __typename: string
-  }
-}
+
 export interface AllRecipesVarsType {
   cursor: string | null
 }
@@ -78,11 +69,6 @@ export const ALL_RECIPES = gql`
     }
   }
 `
-
-export interface UserRecipeFeedData {
-  result: AllRecipesData
-  __typename: string
-}
 export interface UserRecipeFeedVarsType {
   cursor: string | null
 }

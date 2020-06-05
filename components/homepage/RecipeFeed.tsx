@@ -5,14 +5,10 @@ import * as React from 'react'
 import { recipeConnectionDataInit } from 'requests/recipes'
 import {
   AllRecipesVarsType,
-  ShortRecipeInfoType,
+  ShortRecipeNodeType,
   ALL_RECIPES,
 } from 'requests/recipes'
-import {
-  UserRecipeFeedData,
-  UserRecipeFeedVarsType,
-  USER_RECIPES_FEED,
-} from 'requests/recipes'
+import { UserRecipeFeedVarsType, USER_RECIPES_FEED } from 'requests/recipes'
 
 import InfiniteScroll, {
   EdgeType,
@@ -23,7 +19,7 @@ import ShortRecipe from 'components/ShortRecipe'
 
 interface UserRecipesFeedProps {}
 export const UserRecipesFeed: React.FC<UserRecipesFeedProps> = ({}) => {
-  const queryDataInit: QueryResultRes<ShortRecipeInfoType> = {
+  const queryDataInit: QueryResultRes<ShortRecipeNodeType> = {
     result: recipeConnectionDataInit,
     __typename: '',
   }
@@ -41,7 +37,7 @@ export const UserRecipesFeed: React.FC<UserRecipesFeedProps> = ({}) => {
           QueryData={queryDataInit}
           QueryVars={UserRecipesVars}
         >
-          {(edges: Array<EdgeType<ShortRecipeInfoType>>) => (
+          {(edges: Array<EdgeType<ShortRecipeNodeType>>) => (
             <ul>
               {edges.map((edge) => {
                 return <ShortRecipe edge={edge} key={edge.cursor} />
@@ -56,7 +52,7 @@ export const UserRecipesFeed: React.FC<UserRecipesFeedProps> = ({}) => {
 
 interface AllRecipesFeedProps {}
 export const AllRecipesFeed: React.FC<AllRecipesFeedProps> = ({}) => {
-  const queryDataInit: QueryConnectionRes<ShortRecipeInfoType> = recipeConnectionDataInit
+  const queryDataInit: QueryConnectionRes<ShortRecipeNodeType> = recipeConnectionDataInit
 
   const AllRecipesVars: AllRecipesVarsType = {
     cursor: null,
@@ -73,7 +69,7 @@ export const AllRecipesFeed: React.FC<AllRecipesFeedProps> = ({}) => {
           QueryData={queryDataInit}
           QueryVars={AllRecipesVars}
         >
-          {(edges: Array<EdgeType<ShortRecipeInfoType>>) => (
+          {(edges: Array<EdgeType<ShortRecipeNodeType>>) => (
             <ul>
               {edges.map((edge) => {
                 return <ShortRecipe edge={edge} key={edge.cursor} />

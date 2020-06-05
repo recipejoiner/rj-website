@@ -62,3 +62,31 @@ export const UNFOLLOW = gql`
     }
   }
 `
+
+// use these with QueryResultRes
+export interface followRelListNode {
+  username: string
+  areFollowing: string
+}
+export interface UserRecipesByUsernameVarsType {
+  username: string
+  cursor: string | null
+}
+export const FOLLOWING_BY_USERNAME = gql`
+  query followingByUsername($username: String!, cursor: String) {
+    result: userByUsername(username: $username) {
+      connection: following(first: 30, after: $cursor) {
+        pageInfo {
+          hasNextPage
+        }
+        edges {
+          cursor
+          node {
+            username
+            areFollowing
+          }
+        }
+      }
+    }
+  }
+`

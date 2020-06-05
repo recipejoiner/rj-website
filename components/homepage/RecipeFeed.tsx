@@ -1,5 +1,3 @@
-import Head from 'next/head'
-import { NextPage } from 'next'
 import * as React from 'react'
 
 import { recipeConnectionDataInit } from 'requests/recipes'

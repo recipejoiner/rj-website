@@ -1,10 +1,12 @@
 import ApolloClient from 'apollo-client'
-import fetch from 'node-fetch'
+import 'node-fetch'
 import { HttpLink, createHttpLink } from 'apollo-link-http'
 import { InMemoryCache } from 'apollo-cache-inmemory'
 
 const client = new ApolloClient({
-  link: new HttpLink({ uri: process.env.NEXT_PUBLIC_RECIPEJOINER_API }),
+  link: new HttpLink({
+    uri: process.env.NEXT_PUBLIC_RECIPEJOINER_API,
+  }),
   cache: new InMemoryCache(),
   defaultOptions: {
     watchQuery: {

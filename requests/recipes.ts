@@ -4,26 +4,22 @@ export interface ShortRecipeNodeType {
   id: string
   by: {
     username: string
-    __typename: string
   }
   title: string
   handle: string
   description: string
   servings: string
-  __typename: string
 }
 
 export const recipeConnectionNodeInit: ShortRecipeNodeType = {
   id: '',
   by: {
     username: '',
-    __typename: '',
   },
   title: '',
   handle: '',
   description: '',
   servings: '',
-  __typename: '',
 }
 
 export interface AllRecipesVarsType {

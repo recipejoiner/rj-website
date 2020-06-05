@@ -64,10 +64,16 @@ export const UNFOLLOW = gql`
 `
 
 // use these with QueryResultRes
-export interface followRelListNode {
+export interface FollowRelListNode {
   username: string
-  areFollowing: string
+  areFollowing: boolean | null
 }
+
+export const followConnectionNodeInit: FollowRelListNode = {
+  username: '',
+  areFollowing: null,
+}
+
 export interface UserRecipesByUsernameVarsType {
   username: string
   cursor: string | null

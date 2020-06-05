@@ -124,7 +124,9 @@ const UserPage: NextPage<UserPageProps> = ({ userInfo }) => {
                 <h1 className="text-xl">{username}</h1>
                 <FollowChangeBtn
                   followingStatus={followingStatus}
-                  setFollowingStatus={setFollowingStatus}
+                  setFollowingStatus={(status: boolean) =>
+                    setFollowingStatus(status)
+                  }
                   username={username}
                 />
               </div>

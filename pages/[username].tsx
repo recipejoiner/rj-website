@@ -175,12 +175,18 @@ export const getServerSideProps: GetServerSideProps = async (ctx) => {
 
     const username = params?.username as string | undefined
 
+    if (username === 'undefined' || typeof username === 'undefined') {
+      throw 'Username must be defined'
+    }
+
+    const queryVars: UserByUsernameVarsType = {
+      username: username,
+    }
+
     const data: UserInfoType = await client
       .query({
         query: USER_INFO_BY_USERNAME,
-        variables: {
-          username: username,
-        },
+        variables: queryVars,
         // Prevent caching issues when following/unfollowing users, primarily. Want the follow/unfollow state to be consistent
         fetchPolicy: 'network-only',
         context: {

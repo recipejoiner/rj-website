@@ -1,5 +1,4 @@
 import ApolloClient from 'apollo-client'
-import 'isomorphic-unfetch'
 import { HttpLink, createHttpLink } from 'apollo-link-http'
 import { InMemoryCache } from 'apollo-cache-inmemory'
 

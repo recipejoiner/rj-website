@@ -1,4 +1,5 @@
 import ApolloClient from 'apollo-client'
+import fetch from 'node-fetch'
 import { HttpLink, createHttpLink } from 'apollo-link-http'
 import { InMemoryCache } from 'apollo-cache-inmemory'
 

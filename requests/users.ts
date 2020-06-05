@@ -73,7 +73,7 @@ export interface UserRecipesByUsernameVarsType {
   cursor: string | null
 }
 export const FOLLOWING_BY_USERNAME = gql`
-  query followingByUsername($username: String!, cursor: String) {
+  query followingByUsername($username: String!, $cursor: String) {
     result: userByUsername(username: $username) {
       connection: following(first: 30, after: $cursor) {
         pageInfo {

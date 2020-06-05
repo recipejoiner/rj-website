@@ -74,7 +74,7 @@ export const followConnectionNodeInit: FollowRelListNode = {
   areFollowing: null,
 }
 
-export interface UserRecipesByUsernameVarsType {
+export interface FollowRelListByUsernameVars {
   username: string
   cursor: string | null
 }

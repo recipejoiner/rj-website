@@ -50,7 +50,7 @@ const FollowBtn: React.FC<FollowBtnProps> = ({ followUser }) => {
 
 interface FollowChangeBtnProps {
   followingStatus: boolean | null
-  setFollowingStatus: React.Dispatch<React.SetStateAction<boolean | null>>
+  setFollowingStatus: (status: boolean) => void
   username: string
 }
 

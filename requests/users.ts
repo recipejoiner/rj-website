@@ -96,3 +96,21 @@ export const FOLLOWING_BY_USERNAME = gql`
     }
   }
 `
+export const FOLLOWERS_BY_USERNAME = gql`
+  query followersByUsername($username: String!, $cursor: String) {
+    result: userByUsername(username: $username) {
+      connection: followers(first: 30, after: $cursor) {
+        pageInfo {
+          hasNextPage
+        }
+        edges {
+          cursor
+          node {
+            username
+            areFollowing
+          }
+        }
+      }
+    }
+  }
+`

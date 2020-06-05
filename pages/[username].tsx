@@ -10,7 +10,7 @@ import {
   UserByUsernameVarsType,
   USER_INFO_BY_USERNAME,
 } from 'requests/users'
-import { recipeConnectionDataInit } from 'requests/recipes'
+import { recipeConnectionNodeInit } from 'requests/recipes'
 import {
   UserRecipesByUsernameVarsType,
   ShortRecipeNodeType,
@@ -77,10 +77,6 @@ const UserPage: NextPage<UserPageProps> = ({ userInfo }) => {
     }
   }, [followingStatus]) // only run effect if followingStatus changes. note that it also runs on initial component mount, hence the useRef
 
-  const queryDataInit: QueryResultRes<ShortRecipeNodeType> = {
-    result: recipeConnectionDataInit,
-    __typename: '',
-  }
   const UsersRecipesVars: UserRecipesByUsernameVarsType = {
     username: username,
     cursor: null,
@@ -157,7 +153,8 @@ const UserPage: NextPage<UserPageProps> = ({ userInfo }) => {
           </ul>
           <InfiniteScroll
             QUERY={ALL_USER_RECIPES_BY_USERNAME}
-            QueryData={queryDataInit}
+            hasJustConnection={false}
+            nodeInit={recipeConnectionNodeInit}
             QueryVars={UsersRecipesVars}
           >
             {(edges: Array<EdgeType<ShortRecipeNodeType>>) => {

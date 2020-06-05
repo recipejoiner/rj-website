@@ -1,6 +1,6 @@
 import * as React from 'react'
 
-import { recipeConnectionDataInit } from 'requests/recipes'
+import { recipeConnectionNodeInit } from 'requests/recipes'
 import {
   AllRecipesVarsType,
   ShortRecipeNodeType,
@@ -8,20 +8,11 @@ import {
 } from 'requests/recipes'
 import { UserRecipeFeedVarsType, USER_RECIPES_FEED } from 'requests/recipes'
 
-import InfiniteScroll, {
-  EdgeType,
-  QueryResultRes,
-  QueryConnectionRes,
-} from 'components/InfiniteScroll'
+import InfiniteScroll, { EdgeType } from 'components/InfiniteScroll'
 import ShortRecipe from 'components/ShortRecipe'
 
 interface UserRecipesFeedProps {}
 export const UserRecipesFeed: React.FC<UserRecipesFeedProps> = ({}) => {
-  const queryDataInit: QueryResultRes<ShortRecipeNodeType> = {
-    result: recipeConnectionDataInit,
-    __typename: '',
-  }
-
   const UserRecipesVars: UserRecipeFeedVarsType = {
     cursor: null,
   }
@@ -32,7 +23,8 @@ export const UserRecipesFeed: React.FC<UserRecipesFeedProps> = ({}) => {
         <h3 className="text-center text-xl font-bold">Your Recipe Feed</h3>
         <InfiniteScroll
           QUERY={USER_RECIPES_FEED}
-          QueryData={queryDataInit}
+          hasJustConnection={false}
+          nodeInit={recipeConnectionNodeInit}
           QueryVars={UserRecipesVars}
         >
           {(edges: Array<EdgeType<ShortRecipeNodeType>>) => (
@@ -50,8 +42,6 @@ export const UserRecipesFeed: React.FC<UserRecipesFeedProps> = ({}) => {
 
 interface AllRecipesFeedProps {}
 export const AllRecipesFeed: React.FC<AllRecipesFeedProps> = ({}) => {
-  const queryDataInit: QueryConnectionRes<ShortRecipeNodeType> = recipeConnectionDataInit
-
   const AllRecipesVars: AllRecipesVarsType = {
     cursor: null,
   }
@@ -64,7 +54,8 @@ export const AllRecipesFeed: React.FC<AllRecipesFeedProps> = ({}) => {
         </h3>
         <InfiniteScroll
           QUERY={ALL_RECIPES}
-          QueryData={queryDataInit}
+          hasJustConnection={true}
+          nodeInit={recipeConnectionNodeInit}
           QueryVars={AllRecipesVars}
         >
           {(edges: Array<EdgeType<ShortRecipeNodeType>>) => (

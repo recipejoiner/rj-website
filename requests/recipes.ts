@@ -1,36 +1,5 @@
 import gql from 'graphql-tag'
 
-import { EdgeType } from 'components/InfiniteScroll'
-
-export const recipeConnectionDataInit = {
-  connection: {
-    pageInfo: {
-      hasNextPage: true,
-      __typename: '',
-    },
-    edges: [
-      {
-        cursor: '',
-        node: {
-          id: '',
-          by: {
-            username: '',
-            __typename: '',
-          },
-          title: '',
-          handle: '',
-          description: '',
-          servings: '',
-          __typename: '',
-        },
-        __typename: '',
-      },
-    ],
-    __typename: '',
-  },
-  __typename: '',
-}
-
 export interface ShortRecipeNodeType {
   id: string
   by: {
@@ -42,6 +11,19 @@ export interface ShortRecipeNodeType {
   description: string
   servings: string
   __typename: string
+}
+
+export const recipeConnectionNodeInit: ShortRecipeNodeType = {
+  id: '',
+  by: {
+    username: '',
+    __typename: '',
+  },
+  title: '',
+  handle: '',
+  description: '',
+  servings: '',
+  __typename: '',
 }
 
 export interface AllRecipesVarsType {

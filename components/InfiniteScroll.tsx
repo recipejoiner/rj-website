@@ -46,19 +46,53 @@ export interface QueryResultRes<NodeType> {
   __typename: string
 }
 
+function getQueryDataInit(hasJustConnection: boolean, nodeInit: any) {
+  const connectionDataInit: QueryConnectionRes<typeof nodeInit> = {
+    connection: {
+      pageInfo: {
+        hasNextPage: true,
+        __typename: '',
+      },
+      edges: [
+        {
+          cursor: '',
+          node: nodeInit,
+          __typename: '',
+        },
+      ],
+      __typename: '',
+    },
+    __typename: '',
+  }
+
+  const resultDataInit: QueryResultRes<typeof nodeInit> = {
+    result: connectionDataInit,
+    __typename: '',
+  }
+
+  if (hasJustConnection) {
+    return connectionDataInit
+  } else {
+    return resultDataInit
+  }
+}
+
 interface InfiniteScrollProps<NodeType, QueryVarsType> {
   QUERY: DocumentNode
-  QueryData: QueryResultRes<NodeType> | QueryConnectionRes<NodeType>
+  hasJustConnection: boolean
+  nodeInit: NodeType
   QueryVars: QueryVarsType
   children: (edges: Array<EdgeType<NodeType>>) => React.ReactNode
 }
 
 const InfiniteScroll: React.FC<InfiniteScrollProps<any, any>> = ({
   QUERY,
-  QueryData,
+  hasJustConnection,
+  nodeInit,
   QueryVars,
   children,
 }) => {
+  const QueryData = getQueryDataInit(hasJustConnection, nodeInit)
   const { loading, data, error, fetchMore } = useQuery<
     typeof QueryData,
     typeof QueryVars

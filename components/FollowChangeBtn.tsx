@@ -1,3 +1,4 @@
+import React from 'react'
 import client from 'requests/client'
 import {
   UserFollowChangeVars,
@@ -6,6 +7,7 @@ import {
   UNFOLLOW,
 } from 'requests/users'
 import { getToken } from 'helpers/auth'
+import UserContext from 'helpers/UserContext'
 
 interface UnFollowBtnProps {
   unFollowUser: () => void
@@ -98,9 +100,17 @@ const FollowChangeBtn: React.FC<FollowChangeBtnProps> = ({
         }
       })
   }
-  if (followingStatus == true) {
+
+  const { currentUserInfo } = React.useContext(UserContext)
+
+  // will be true if the passed-in username is the same as for the current user
+  // this is for not showing a 'follow' button next to the current user - can't follow self
+  const selfBtn = !!currentUserInfo && currentUserInfo.me.username === username
+
+  // followingStatus will be null if no current user
+  if (followingStatus == true && !selfBtn) {
     return <UnFollowBtn unFollowUser={unFollowUser} />
-  } else if (followingStatus == false) {
+  } else if (followingStatus == false && !selfBtn) {
     return <FollowBtn followUser={followUser} />
   } else {
     return null

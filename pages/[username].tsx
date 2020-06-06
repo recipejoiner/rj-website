@@ -3,6 +3,8 @@ import { NextPage, GetServerSideProps } from 'next'
 import * as React from 'react'
 import Link from 'next/link'
 import Modal from 'react-modal'
+Modal.setAppElement('#__next') // Make sure to bind modal to your appElement (http://reactcommunity.org/react-modal/accessibility/)
+import { useRouter } from 'next/router'
 
 import client from 'requests/client'
 import { getToken } from 'helpers/auth'
@@ -22,12 +24,14 @@ import ShortRecipe from 'components/ShortRecipe'
 import UserContext from 'helpers/UserContext'
 import SettingsBtn from 'components/SettingsBtn'
 import FollowChangeBtn from 'components/FollowChangeBtn'
+import Following from 'components/users/following'
 
 interface UserPageProps {
   userInfo: UserInfoType
 }
 
 const UserPage: NextPage<UserPageProps> = ({ userInfo }) => {
+  const router = useRouter()
   const { result } = userInfo || {}
   const {
     id,
@@ -89,6 +93,8 @@ const UserPage: NextPage<UserPageProps> = ({ userInfo }) => {
     setOnOwnPage(true)
   }
 
+  const [modalOpen, setModalOpen] = React.useState(true)
+
   const title = `chef ${username} - RecipeJoiner`
   const description = `Check out all recipes by chef ${username}!`
   return (
@@ -112,6 +118,22 @@ const UserPage: NextPage<UserPageProps> = ({ userInfo }) => {
         />
         {/* OpenGraph tags end */}
       </Head>
+      {/* Modal */}
+      <Modal
+        // isOpen={router.pathname.endsWith('following')}
+        isOpen={true}
+        className="w-80 h-128 m-auto bg-white overflow-scroll mt-48 p-2 rounded border shadow-xl"
+        style={{
+          overlay: { backgroundColor: '#000000bf' },
+        }}
+        onRequestClose={() => {
+          setModalOpen(false)
+          router.push('/[username]', `/${username}`)
+        }}
+        contentLabel="User modal"
+      >
+        <Following />
+      </Modal>
       <div className="flex flex-col">
         <div className="m-auto max-w-3xl min-w-full">
           <header className="p-2">

@@ -16,7 +16,7 @@ import FollowChangeBtn from 'components/FollowChangeBtn'
 
 type Props = {}
 
-const Following: NextPage<Props> = ({}) => {
+const Following: React.FC<Props> = ({}) => {
   const { currentUserInfo } = React.useContext(UserContext)
   const router = useRouter()
   const { username } = router.query

@@ -13,7 +13,7 @@ const AppModal: React.FC<AppModalProps> = ({ setModalOpen, children }) => {
       isOpen={true}
       className="w-80 h-128 m-auto bg-white overflow-scroll mt-48 p-2 rounded border shadow-xl"
       style={{
-        overlay: { backgroundColor: '#000000bf' },
+        overlay: { backgroundColor: '#000000bf', zIndex: 1000 },
       }}
       onRequestClose={() => {
         setModalOpen(false)

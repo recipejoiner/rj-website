@@ -1,30 +1,25 @@
-import { NextPage } from 'next'
-import Link from 'next/link'
-import Head from 'next/head'
-import { useRouter } from 'next/router'
 import React from 'react'
+import Link from 'next/link'
 
-import UserContext from 'helpers/UserContext'
 import {
   FollowRelListNodeType,
   followConnectionNodeInit,
   FollowRelListByUsernameVars,
   FOLLOWING_BY_USERNAME,
+  FOLLOWERS_BY_USERNAME,
 } from 'requests/users'
 import InfiniteScroll, { EdgeType } from 'components/InfiniteScroll'
 import FollowChangeBtn from 'components/FollowChangeBtn'
 
-type Props = {}
+type UserRelListProps = {
+  username: string
+  relationship: 'following' | 'followers'
+}
 
-const Following: React.FC<Props> = ({}) => {
-  const { currentUserInfo } = React.useContext(UserContext)
-  const router = useRouter()
-  const { username } = router.query
-
-  if (username === 'undefined' || typeof username !== 'string') {
-    throw 'Username must be a valid string'
-  }
-
+const UserRelList: React.FC<UserRelListProps> = ({
+  username,
+  relationship,
+}) => {
   const UsersFollowRelVars: FollowRelListByUsernameVars = {
     username: username,
     cursor: null,
@@ -32,8 +27,15 @@ const Following: React.FC<Props> = ({}) => {
 
   return (
     <React.Fragment>
+      <h3 className="text-center border-b">
+        {relationship === 'following' ? 'Following' : 'Followers'}
+      </h3>
       <InfiniteScroll
-        QUERY={FOLLOWING_BY_USERNAME}
+        QUERY={
+          relationship === 'following'
+            ? FOLLOWING_BY_USERNAME
+            : FOLLOWERS_BY_USERNAME
+        }
         hasJustConnection={false}
         nodeInit={followConnectionNodeInit}
         QueryVars={UsersFollowRelVars}
@@ -72,7 +74,7 @@ const Following: React.FC<Props> = ({}) => {
                       as={`/${edge.node.username || '#'}`}
                     >
                       <a>
-                        <h3>{edge.node.username}</h3>
+                        <h4>{edge.node.username}</h4>
                       </a>
                     </Link>
                     <FollowChangeBtn
@@ -95,4 +97,4 @@ const Following: React.FC<Props> = ({}) => {
   )
 }
 
-export default Following
+export default UserRelList

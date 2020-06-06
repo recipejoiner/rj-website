@@ -22,7 +22,7 @@ import ShortRecipe from 'components/ShortRecipe'
 import UserContext from 'helpers/UserContext'
 import SettingsBtn from 'components/SettingsBtn'
 import FollowChangeBtn from 'components/FollowChangeBtn'
-import Following from 'components/users/following'
+import Following from 'components/users/UserRelList'
 
 interface UserPageProps {
   userInfo: UserInfoType
@@ -46,16 +46,28 @@ const UserPage: NextPage<UserPageProps> = ({ userInfo }) => {
   )
 
   const stats = [
-    { name: 'recipes', count: recipeCount, link: { href: '#', as: '#' } },
+    { name: 'recipes', count: recipeCount, onClick: () => {} },
     {
       name: 'followers',
       count: followerCountState,
-      link: { href: '/[username]/followers', as: `/${username}/followers` },
+      onClick: () => {
+        setModalState &&
+          setModalState(
+            true,
+            <Following username={username} relationship="followers" />
+          )
+      },
     },
     {
       name: 'following',
       count: followingCount,
-      link: { href: '/[username]/following', as: `/${username}/following` },
+      onClick: () => {
+        setModalState &&
+          setModalState(
+            true,
+            <Following username={username} relationship="following" />
+          )
+      },
     },
   ]
 
@@ -136,26 +148,17 @@ const UserPage: NextPage<UserPageProps> = ({ userInfo }) => {
               </div>
             )}
           </header>
-          <button
-            onClick={() => {
-              setModalState && setModalState(true, <Following />)
-            }}
-          >
-            Open Following Modal
-          </button>
           <ul className="flex flex-row text-gray-500 font-semibold text-sm leading-tight border-t border-b py-3">
             {stats.map((stat) => {
-              const { name, count, link } = stat
+              const { name, count, onClick } = stat
               return (
                 <li className="text-center w-1/3" key={name}>
-                  <Link href={link.href} as={link.as}>
-                    <a>
-                      <span className="block text-gray-900 font-bold">
-                        {count}
-                      </span>
-                      {name}
-                    </a>
-                  </Link>
+                  <button onClick={onClick}>
+                    <span className="block text-gray-900 font-bold">
+                      {count}
+                    </span>
+                    {name}
+                  </button>
                 </li>
               )
             })}

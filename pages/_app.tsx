@@ -179,7 +179,7 @@ class MyApp extends App<UserProps, {}, AppState> {
               }}
               contentLabel="User modal"
             >
-              <Following />
+              {this.state.modalChild}
             </Modal>
             <Header setMenuOpen={this.setMenuOpen} />
             {/* This div exists solely for applying styles, eg giving the page padding */}

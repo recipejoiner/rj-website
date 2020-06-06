@@ -27,7 +27,7 @@ const UserRelList: React.FC<UserRelListProps> = ({
 
   return (
     <React.Fragment>
-      <h3 className="text-center border-b">
+      <h3 className="text-center border-b fixed w-80 rounded-t pt-2 h-10 bg-white">
         {relationship === 'following' ? 'Following' : 'Followers'}
       </h3>
       <InfiniteScroll
@@ -54,7 +54,7 @@ const UserRelList: React.FC<UserRelListProps> = ({
             setFollowingStatusRecord(newFollowingStatusRecord)
           }
           return (
-            <ul>
+            <ul className="mt-10 p-2">
               {edges.map((edge) => {
                 // make sure that the edge is defined (and not the initializer), and that the followStatus of this username hasn't yet been initialized
                 // else, it'll keep trying to update that status and throw a 'too many re-renders' error

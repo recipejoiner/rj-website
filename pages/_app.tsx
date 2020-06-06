@@ -9,7 +9,7 @@ import App from 'next/app'
 import { AppContext, AppProps } from 'next/app'
 import Head from 'next/head'
 import * as React from 'react'
-import '../styles/tailwind.css'
+import 'styles/tailwind.css'
 
 import { detect } from 'detect-browser'
 import Modal from 'react-modal'

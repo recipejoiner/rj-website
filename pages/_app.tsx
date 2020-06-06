@@ -12,6 +12,8 @@ import * as React from 'react'
 import '../styles/tailwind.css'
 
 import { detect } from 'detect-browser'
+import Modal from 'react-modal'
+Modal.setAppElement('#__next') // Make sure to bind modal to your appElement (http://reactcommunity.org/react-modal/accessibility/)
 
 import UserContext from 'helpers/UserContext'
 import client from 'requests/client'
@@ -43,6 +45,7 @@ if (typeof window === 'undefined') {
 
 interface AppState {
   menuOpen: boolean
+  modalOpen: boolean
   yPos: number
   currentUserInfo: CurrentUserLoginCheckType | undefined
 }
@@ -57,6 +60,7 @@ class MyApp extends App<UserProps, {}, AppState> {
     super(AppProps)
     this.props
     this.state = {
+      modalOpen: false,
       menuOpen: false,
       currentUserInfo: undefined,
       yPos: 0,
@@ -164,7 +168,19 @@ class MyApp extends App<UserProps, {}, AppState> {
                 : ''
             }`}
           >
-            {/* UserContext.Provider allows us to provide whatever we set as the value here to all components contained within */}
+            <Modal
+              isOpen={true}
+              className="w-80 h-128 m-auto bg-white overflow-scroll mt-48 p-2 rounded border shadow-xl"
+              style={{
+                overlay: { backgroundColor: '#000000bf' },
+              }}
+              onRequestClose={() => {
+                setModalOpen(false)
+              }}
+              contentLabel="User modal"
+            >
+              <Following />
+            </Modal>
             <Header setMenuOpen={this.setMenuOpen} />
             {/* This div exists solely for applying styles, eg giving the page padding */}
             <div className="pt-14 md:pt-16 flex-grow antialiased bg-white text-gray-900 w-full relative mx-auto max-w-12xl">

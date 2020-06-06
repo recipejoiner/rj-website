@@ -1,4 +1,5 @@
 import { NextPage } from 'next'
+import Link from 'next/link'
 import Head from 'next/head'
 import { useRouter } from 'next/router'
 import React from 'react'
@@ -63,8 +64,18 @@ const Following: NextPage<Props> = ({}) => {
                   setFollowingStatus(edge.node.username, edge.node.areFollowing)
                 }
                 return (
-                  <li key={edge.cursor}>
-                    <h3>{edge.node.username}</h3>
+                  <li
+                    key={edge.cursor}
+                    className="flex flex-row justify-between p-1"
+                  >
+                    <Link
+                      href="/[username]"
+                      as={`/${edge.node.username || '#'}`}
+                    >
+                      <a>
+                        <h3>{edge.node.username}</h3>
+                      </a>
+                    </Link>
                     <FollowChangeBtn
                       followingStatus={
                         followingStatusRecord[edge.node.username]

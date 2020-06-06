@@ -12,8 +12,6 @@ import * as React from 'react'
 import 'styles/tailwind.css'
 
 import { detect } from 'detect-browser'
-import Modal from 'react-modal'
-Modal.setAppElement('#__next') // Make sure to bind modal to your appElement (http://reactcommunity.org/react-modal/accessibility/)
 
 import UserContext from 'helpers/UserContext'
 import client from 'requests/client'
@@ -23,6 +21,7 @@ import {
 } from 'requests/auth'
 import { getToken, getUserToken } from 'helpers/auth'
 import Header from 'components/layout/Header'
+import AppModal from 'components/AppModal'
 
 import * as Honeybadger from 'honeybadger'
 if (typeof window === 'undefined') {
@@ -46,6 +45,7 @@ if (typeof window === 'undefined') {
 interface AppState {
   menuOpen: boolean
   modalOpen: boolean
+  modalChildren: React.ReactNode
   yPos: number
   currentUserInfo: CurrentUserLoginCheckType | undefined
 }
@@ -63,6 +63,7 @@ class MyApp extends App<UserProps, {}, AppState> {
       modalOpen: false,
       menuOpen: false,
       currentUserInfo: undefined,
+      modalChildren: <></>,
       yPos: 0,
     }
     this.setCurrentUser = this.setCurrentUser.bind(this)
@@ -114,7 +115,7 @@ class MyApp extends App<UserProps, {}, AppState> {
 
   fullSite() {
     const { Component, pageProps } = this.props
-    const { menuOpen } = this.state
+    const { menuOpen, modalOpen } = this.state
     return (
       // 'min-h-screen flex flex-col' are for making it easier to make the footer (if we add one) sticky
       <div className="min-h-screen flex flex-col font-sans">
@@ -163,24 +164,12 @@ class MyApp extends App<UserProps, {}, AppState> {
           {/* Flex col to allow for putting a header and footer above and below the page */}
           <div
             className={`min-h-screen flex flex-col ${
-              menuOpen
+              menuOpen || modalOpen
                 ? 'overflow-hidden max-h-screen fixed lg:overflow-auto lg:static lg:max-h-full'
                 : ''
             }`}
           >
-            <Modal
-              isOpen={true}
-              className="w-80 h-128 m-auto bg-white overflow-scroll mt-48 p-2 rounded border shadow-xl"
-              style={{
-                overlay: { backgroundColor: '#000000bf' },
-              }}
-              onRequestClose={() => {
-                setModalOpen(false)
-              }}
-              contentLabel="User modal"
-            >
-              {this.state.modalChild}
-            </Modal>
+            <AppModal></AppModal>
             <Header setMenuOpen={this.setMenuOpen} />
             {/* This div exists solely for applying styles, eg giving the page padding */}
             <div className="pt-14 md:pt-16 flex-grow antialiased bg-white text-gray-900 w-full relative mx-auto max-w-12xl">

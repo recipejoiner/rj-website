@@ -66,6 +66,7 @@ class MyApp extends App<UserProps, {}, AppState> {
       modalChildren: <></>,
       yPos: 0,
     }
+    this.setModalState = this.setModalState.bind(this)
     this.setCurrentUser = this.setCurrentUser.bind(this)
     this.setMenuOpen = this.setMenuOpen.bind(this)
   }
@@ -86,6 +87,20 @@ class MyApp extends App<UserProps, {}, AppState> {
       }
     }
     return null
+  }
+
+  setModalState(modalOpenStatus: boolean, modalChildren?: React.ReactNode) {
+    if (modalOpenStatus === true && !!modalChildren) {
+      this.setState({
+        modalOpen: modalOpenStatus,
+        modalChildren: modalChildren,
+      })
+    } else {
+      this.setState({
+        modalOpen: modalOpenStatus,
+        modalChildren: <></>,
+      })
+    }
   }
 
   setCurrentUser(currentUserInfo: CurrentUserLoginCheckType | undefined) {
@@ -169,7 +184,10 @@ class MyApp extends App<UserProps, {}, AppState> {
                 : ''
             }`}
           >
-            <AppModal></AppModal>
+            <AppModal
+              modalOpen={this.state.modalOpen}
+              setModalState={this.setModalState}
+            ></AppModal>
             <Header setMenuOpen={this.setMenuOpen} />
             {/* This div exists solely for applying styles, eg giving the page padding */}
             <div className="pt-14 md:pt-16 flex-grow antialiased bg-white text-gray-900 w-full relative mx-auto max-w-12xl">

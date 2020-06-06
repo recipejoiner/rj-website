@@ -4,19 +4,26 @@ Modal.setAppElement('#__next') // Make sure to bind modal to your appElement (ht
 
 interface AppModalProps {
   modalOpen: boolean
-  setModalOpen: (state: boolean) => void
+  setModalState: (
+    modalOpenStatus: boolean,
+    modalChildren?: React.ReactNode
+  ) => void
 }
 
-const AppModal: React.FC<AppModalProps> = ({ setModalOpen, children }) => {
+const AppModal: React.FC<AppModalProps> = ({
+  modalOpen,
+  setModalState,
+  children,
+}) => {
   return (
     <Modal
-      isOpen={true}
+      isOpen={modalOpen}
       className="w-80 h-128 m-auto bg-white overflow-scroll mt-48 p-2 rounded border shadow-xl"
       style={{
         overlay: { backgroundColor: '#000000bf', zIndex: 1000 },
       }}
       onRequestClose={() => {
-        setModalOpen(false)
+        setModalState(false)
       }}
       contentLabel="User modal"
     >

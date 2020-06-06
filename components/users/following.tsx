@@ -32,7 +32,6 @@ const Following: React.FC<Props> = ({}) => {
 
   return (
     <React.Fragment>
-      {/* <Head></Head> */}
       <InfiniteScroll
         QUERY={FOLLOWING_BY_USERNAME}
         hasJustConnection={false}

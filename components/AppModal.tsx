@@ -18,7 +18,7 @@ const AppModal: React.FC<AppModalProps> = ({
   return (
     <Modal
       isOpen={modalOpen}
-      className="w-80 h-128 m-auto bg-white overflow-scroll mt-48 p-2 rounded border shadow-xl"
+      className="w-80 h-128 m-auto bg-white overflow-scroll mt-48 rounded border shadow-xl"
       style={{
         overlay: { backgroundColor: '#000000bf', zIndex: 1000 },
       }}

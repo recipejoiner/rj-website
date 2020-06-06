@@ -174,6 +174,7 @@ class MyApp extends App<UserProps, {}, AppState> {
           value={{
             setCurrentUser: this.setCurrentUser,
             currentUserInfo: this.state.currentUserInfo,
+            setModalState: this.setModalState,
           }}
         >
           {/* Flex col to allow for putting a header and footer above and below the page */}

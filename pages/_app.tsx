@@ -174,6 +174,7 @@ class MyApp extends App<UserProps, {}, AppState> {
           value={{
             setCurrentUser: this.setCurrentUser,
             currentUserInfo: this.state.currentUserInfo,
+            modalOpen: this.state.modalOpen,
             setModalState: this.setModalState,
           }}
         >

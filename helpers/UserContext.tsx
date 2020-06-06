@@ -6,6 +6,7 @@ interface ContextProps {
     currentUserInfo: CurrentUserLoginCheckType | undefined
   ) => void
   currentUserInfo: CurrentUserLoginCheckType | undefined
+  modalOpen: boolean
   setModalState: (
     modalOpenStatus: boolean,
     modalChildren?: React.ReactNode

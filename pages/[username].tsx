@@ -2,6 +2,7 @@ import Head from 'next/head'
 import { NextPage, GetServerSideProps } from 'next'
 import * as React from 'react'
 import Link from 'next/link'
+import Modal from 'react-modal'
 
 import client from 'requests/client'
 import { getToken } from 'helpers/auth'

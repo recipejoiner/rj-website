@@ -188,7 +188,9 @@ class MyApp extends App<UserProps, {}, AppState> {
             <AppModal
               modalOpen={this.state.modalOpen}
               setModalState={this.setModalState}
-            ></AppModal>
+            >
+              {this.state.modalChildren}
+            </AppModal>
             <Header setMenuOpen={this.setMenuOpen} />
             {/* This div exists solely for applying styles, eg giving the page padding */}
             <div className="pt-14 md:pt-16 flex-grow antialiased bg-white text-gray-900 w-full relative mx-auto max-w-12xl">

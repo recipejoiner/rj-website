@@ -82,7 +82,7 @@ const UserPage: NextPage<UserPageProps> = ({ userInfo }) => {
   }
 
   const [onOwnPage, setOnOwnPage] = React.useState(false)
-  const { currentUserInfo } = React.useContext(UserContext)
+  const { currentUserInfo, setModalState } = React.useContext(UserContext)
   if (
     currentUserInfo &&
     !onOwnPage &&
@@ -136,6 +136,13 @@ const UserPage: NextPage<UserPageProps> = ({ userInfo }) => {
               </div>
             )}
           </header>
+          <button
+            onClick={() => {
+              setModalState && setModalState(true, <Following />)
+            }}
+          >
+            Open Following Modal
+          </button>
           <ul className="flex flex-row text-gray-500 font-semibold text-sm leading-tight border-t border-b py-3">
             {stats.map((stat) => {
               const { name, count, link } = stat

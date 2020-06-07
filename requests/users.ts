@@ -81,7 +81,7 @@ export interface FollowRelListByUsernameVars {
 export const FOLLOWING_BY_USERNAME = gql`
   query followingByUsername($username: String!, $cursor: String) {
     result: userByUsername(username: $username) {
-      connection: following(first: 30, after: $cursor) {
+      connection: following(first: 24, after: $cursor) {
         pageInfo {
           hasNextPage
         }
@@ -99,7 +99,7 @@ export const FOLLOWING_BY_USERNAME = gql`
 export const FOLLOWERS_BY_USERNAME = gql`
   query followersByUsername($username: String!, $cursor: String) {
     result: userByUsername(username: $username) {
-      connection: followers(first: 30, after: $cursor) {
+      connection: followers(first: 24, after: $cursor) {
         pageInfo {
           hasNextPage
         }

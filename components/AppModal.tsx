@@ -22,7 +22,7 @@ const AppModal: React.FC<AppModalProps> = ({
     <Modal
       id="app-modal"
       isOpen={modalOpen}
-      className="absolute inset-0 bg-white overflow-scroll sm:w-80 sm:h-128 sm:m-auto sm:mt-48 mt-12 outline-none sm:rounded sm:rounded-t-none"
+      className="absolute inset-0 bg-white overflow-scroll sm:w-72 md:w-96 sm:h-96 sm:m-auto sm:mt-48 mt-12 outline-none sm:rounded-4xl sm:rounded-t-none"
       style={{
         overlay: { backgroundColor: '#000000bf', zIndex: 1000 },
       }}
@@ -31,13 +31,13 @@ const AppModal: React.FC<AppModalProps> = ({
       }}
       contentLabel="User modal"
     >
-      <header className="text-center border-b table fixed -mt-12 w-screen pt-2 h-12 bg-white sm:w-80 sm:rounded-t">
+      <header className="text-center border-b table fixed -mt-12 w-screen pt-2 h-12 bg-white sm:w-72 md:w-96 sm:rounded-t-4xl">
         <h3 className="font-medium mt-1">{modalTitle}</h3>
         {/* X button for closing the modal */}
         <div className="absolute w-full -mt-8">
           <button className="float-right" onClick={() => setModalState(false)}>
             <svg
-              className="h-8 w-8 m-1 p-2 mr-2 text-gray-900 fill-current"
+              className="h-8 w-8 m-1 p-2 mr-2 sm:h-10 sm:w-10 sm:pb-3 text-gray-900 fill-current"
               viewBox="0 0 189 189"
             >
               <g id="UI-Icons" transform="translate(-477.000000, -438.000000)">

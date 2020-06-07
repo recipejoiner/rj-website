@@ -14,11 +14,13 @@ import FollowChangeBtn from 'components/FollowChangeBtn'
 type UserRelListProps = {
   username: string
   relationship: 'following' | 'followers'
+  inModal?: boolean
 }
 
 const UserRelList: React.FC<UserRelListProps> = ({
   username,
   relationship,
+  inModal,
 }) => {
   const UsersFollowRelVars: FollowRelListByUsernameVars = {
     username: username,
@@ -39,6 +41,7 @@ const UserRelList: React.FC<UserRelListProps> = ({
         hasJustConnection={false}
         nodeInit={followConnectionNodeInit}
         QueryVars={UsersFollowRelVars}
+        inModal={inModal}
       >
         {(edges: Array<EdgeType<FollowRelListNodeType>>) => {
           const [

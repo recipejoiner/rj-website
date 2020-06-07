@@ -17,6 +17,7 @@ const AppModal: React.FC<AppModalProps> = ({
 }) => {
   return (
     <Modal
+      id="app-modal"
       isOpen={modalOpen}
       className="w-80 h-128 m-auto bg-white overflow-scroll mt-48 outline-none rounded border shadow-xl"
       style={{

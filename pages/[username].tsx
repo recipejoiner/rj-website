@@ -22,7 +22,7 @@ import ShortRecipe from 'components/ShortRecipe'
 import UserContext from 'helpers/UserContext'
 import SettingsBtn from 'components/SettingsBtn'
 import FollowChangeBtn from 'components/FollowChangeBtn'
-import Following from 'components/users/UserRelList'
+import UserRelList from 'components/users/UserRelList'
 
 interface UserPageProps {
   userInfo: UserInfoType
@@ -46,14 +46,22 @@ const UserPage: NextPage<UserPageProps> = ({ userInfo }) => {
     setModalState &&
       setModalState(
         true,
-        <Following username={username} relationship="followers" />
+        <UserRelList
+          username={username}
+          relationship="followers"
+          inModal={true}
+        />
       )
   }
   const openFollowing = () => {
     setModalState &&
       setModalState(
         true,
-        <Following username={username} relationship="following" />
+        <UserRelList
+          username={username}
+          relationship="following"
+          inModal={true}
+        />
       )
   }
 

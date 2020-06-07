@@ -83,6 +83,7 @@ interface InfiniteScrollProps<NodeType, QueryVarsType> {
   nodeInit: NodeType
   QueryVars: QueryVarsType
   children: (edges: Array<EdgeType<NodeType>>) => React.ReactNode
+  inModal?: boolean
 }
 
 const InfiniteScroll: React.FC<InfiniteScrollProps<any, any>> = ({
@@ -91,6 +92,7 @@ const InfiniteScroll: React.FC<InfiniteScrollProps<any, any>> = ({
   nodeInit,
   QueryVars,
   children,
+  inModal,
 }) => {
   const QueryData = getQueryDataInit(hasJustConnection, nodeInit)
   const { loading, data, error, fetchMore } = useQuery<
@@ -178,7 +180,26 @@ const InfiniteScroll: React.FC<InfiniteScrollProps<any, any>> = ({
     }
   }
 
-  useEvent('scroll', handleScroll)
+  var modalElm: HTMLElement | null = null
+  if (typeof document !== 'undefined') {
+    modalElm = document.getElementById('app-modal')
+  }
+
+  const handleModalScroll = () => {
+    if (
+      !activelyFetching &&
+      modalElm &&
+      modalElm.scrollTop + modalElm.clientHeight >= modalElm.scrollHeight
+    ) {
+      onLoadMore()
+    }
+  }
+
+  if (inModal && modalElm) {
+    useEvent('scroll', handleModalScroll, false, modalElm)
+  } else {
+    useEvent('scroll', handleScroll, false)
+  }
 
   // for initial load
   const [loaded, setLoad] = React.useState(false)

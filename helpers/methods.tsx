@@ -1,14 +1,19 @@
 import React, { useEffect } from 'react'
 import Router from 'next/router'
 
-export function useEvent(event: string, handler: () => void, passive = false) {
+export function useEvent(
+  event: string,
+  handler: () => void,
+  passive = false,
+  element?: HTMLElement
+) {
+  const elm = element ? element : window
   useEffect(() => {
     // initiate the event handler
-    window.addEventListener(event, handler, passive)
-
+    elm.addEventListener(event, handler, passive)
     // this will clean up the event every time the component is re-rendered
     return function cleanup() {
-      window.removeEventListener(event, handler, passive)
+      elm.removeEventListener(event, handler, passive)
     }
   })
 }

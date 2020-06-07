@@ -86,7 +86,7 @@ const UserPage: NextPage<UserPageProps> = ({ userInfo }) => {
     followerCount
   )
 
-  const stats = [
+  const [stats, setStats] = React.useState([
     { name: 'recipes', count: recipeCount, onClick: () => {} },
     {
       name: 'followers',
@@ -98,7 +98,7 @@ const UserPage: NextPage<UserPageProps> = ({ userInfo }) => {
       count: followingCount,
       onClick: openFollowing,
     },
-  ]
+  ])
 
   const [followingStatus, setFollowingStatus] = React.useState(areFollowing)
 
@@ -123,10 +123,26 @@ const UserPage: NextPage<UserPageProps> = ({ userInfo }) => {
   }
 
   const [onOwnPage, setOnOwnPage] = React.useState(false)
-  // handle navigating directly from one profile page to another - need to reload this
+
+  // handle navigating directly from one profile page to another - need to reload this and a bunch of info
   const [currUsername, setCurrUsername] = React.useState(username)
   if (username !== currUsername) {
     setCurrUsername(username)
+    console.log('followerCount', followerCount)
+    setFollowerCountState(followerCount)
+    setStats([
+      { name: 'recipes', count: recipeCount, onClick: () => {} },
+      {
+        name: 'followers',
+        count: followerCount,
+        onClick: openFollowers,
+      },
+      {
+        name: 'following',
+        count: followingCount,
+        onClick: openFollowing,
+      },
+    ])
   }
   React.useEffect(() => {
     if (

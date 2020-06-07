@@ -123,13 +123,22 @@ const UserPage: NextPage<UserPageProps> = ({ userInfo }) => {
   }
 
   const [onOwnPage, setOnOwnPage] = React.useState(false)
-  if (
-    currentUserInfo &&
-    !onOwnPage &&
-    currentUserInfo.me.username == username
-  ) {
-    setOnOwnPage(true)
+  // handle navigating directly from one profile page to another - need to reload this
+  const [currUsername, setCurrUsername] = React.useState(username)
+  if (username !== currUsername) {
+    setCurrUsername(username)
   }
+  React.useEffect(() => {
+    if (
+      currentUserInfo &&
+      !onOwnPage &&
+      currentUserInfo.me.username == username
+    ) {
+      setOnOwnPage(true)
+    } else {
+      setOnOwnPage(false)
+    }
+  }, [currUsername]) // run on first render and whenever currUsername changes
 
   const title = `chef ${username} - RecipeJoiner`
   const description = `Check out all recipes by chef ${username}!`
@@ -163,15 +172,17 @@ const UserPage: NextPage<UserPageProps> = ({ userInfo }) => {
                 <SettingsBtn />
               </div>
             ) : (
-              <div className="flex flex-col">
-                <h1 className="text-xl">{username}</h1>
-                <FollowChangeBtn
-                  followingStatus={followingStatus}
-                  setFollowingStatus={(status: boolean) =>
-                    setFollowingStatus(status)
-                  }
-                  username={username}
-                />
+              <div className="flex flex-col sm:flex-row">
+                <h1 className="text-3xl sm:pr-2">{username}</h1>
+                <div className="mt-1 sm:mt-2">
+                  <FollowChangeBtn
+                    followingStatus={followingStatus}
+                    setFollowingStatus={(status: boolean) =>
+                      setFollowingStatus(status)
+                    }
+                    username={username}
+                  />
+                </div>
               </div>
             )}
           </header>

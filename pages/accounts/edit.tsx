@@ -11,8 +11,8 @@ const SettingsPage: NextPage<SettingsPageProps> = ({}) => {
   const linkStyle =
     'w-full px-8 py-4 block font-semibold hover:text-gray-700 uppercase text-sm tracking-widest border-b border-gray-300'
 
-  const title = 'Settings - RecipeJoiner'
-  const description = 'Settings page'
+  const title = 'Edit Profile - RecipeJoiner'
+  const description = 'Profile edit page'
   return (
     <React.Fragment>
       <Head>
@@ -35,21 +35,9 @@ const SettingsPage: NextPage<SettingsPageProps> = ({}) => {
         {/* OpenGraph tags end */}
       </Head>
       <div className="p-2">
-        <span className="block text-center">More settings coming soon!</span>
-        <div className="pt-10">
-          <button
-            className={`${linkStyle} text-red-700`}
-            onClick={() => logout(false)}
-          >
-            log out
-          </button>
-          <button
-            className={`${linkStyle} text-red-700 border-none`}
-            onClick={() => logout(true)}
-          >
-            log out everywhere
-          </button>
-        </div>
+        <span className="block text-center pt-10">
+          Profile editing coming soon!
+        </span>
       </div>
     </React.Fragment>
   )

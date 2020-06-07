@@ -22,7 +22,7 @@ const AppModal: React.FC<AppModalProps> = ({
     <Modal
       id="app-modal"
       isOpen={modalOpen}
-      className="sm:w-80 sm:h-128 sm:m-auto bg-white overflow-scroll sm:mt-48 mt-10 outline-none sm:rounded sm:rounded-t-none absolute inset-0"
+      className="absolute inset-0 bg-white overflow-scroll sm:w-80 sm:h-128 sm:m-auto sm:mt-48 mt-10 outline-none sm:rounded sm:rounded-t-none"
       style={{
         overlay: { backgroundColor: '#000000bf', zIndex: 1000 },
       }}
@@ -32,7 +32,7 @@ const AppModal: React.FC<AppModalProps> = ({
       contentLabel="User modal"
     >
       <header>
-        <h3 className="text-center border-b fixed -mt-10 w-80 rounded-t pt-2 h-10 bg-white">
+        <h3 className="text-center border-b fixed -mt-10 w-screen sm:w-80 sm:rounded-t pt-2 h-10 bg-white">
           {modalTitle}
         </h3>
       </header>

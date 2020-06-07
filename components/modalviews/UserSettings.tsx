@@ -10,7 +10,9 @@ const UserSettings: React.FC<UserSettingsProps> = ({}) => {
 
   return (
     <React.Fragment>
-      <span className="block text-center">More settings coming soon!</span>
+      <span className="block text-center pt-10">
+        More settings coming soon!
+      </span>
       <div className="pt-10">
         <button
           className={`${linkStyle} text-red-700`}

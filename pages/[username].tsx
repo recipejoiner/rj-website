@@ -22,7 +22,7 @@ import ShortRecipe from 'components/ShortRecipe'
 import UserContext from 'helpers/UserContext'
 import SettingsBtn from 'components/SettingsBtn'
 import FollowChangeBtn from 'components/FollowChangeBtn'
-import UserRelList from 'components/users/UserRelList'
+import UserRelList from 'components/modalviews/UserRelList'
 
 interface UserPageProps {
   userInfo: UserInfoType

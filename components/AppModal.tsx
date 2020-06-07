@@ -22,7 +22,7 @@ const AppModal: React.FC<AppModalProps> = ({
     <Modal
       id="app-modal"
       isOpen={modalOpen}
-      className="sm:w-80 sm:h-128 sm:m-auto bg-white overflow-scroll sm:mt-48 mt-10 outline-none sm:rounded sm:rounded-t-none absolute inset-0 top-0 mt-0 w-screen h-screen"
+      className="sm:w-80 sm:h-128 sm:m-auto bg-white overflow-scroll sm:mt-48 mt-10 outline-none sm:rounded sm:rounded-t-none absolute inset-0"
       style={{
         overlay: { backgroundColor: '#000000bf', zIndex: 1000 },
       }}

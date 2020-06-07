@@ -29,7 +29,6 @@ interface UserPageProps {
 }
 
 const UserPage: NextPage<UserPageProps> = ({ userInfo }) => {
-  const router = useRouter()
   const { result } = userInfo || {}
   const {
     id,
@@ -39,6 +38,38 @@ const UserPage: NextPage<UserPageProps> = ({ userInfo }) => {
     followingCount,
     areFollowing,
   } = result || {}
+  const { currentUserInfo, modalOpen, setModalState } = React.useContext(
+    UserContext
+  )
+
+  const openFollowers = () => {
+    setModalState &&
+      setModalState(
+        true,
+        <Following username={username} relationship="followers" />
+      )
+  }
+  const openFollowing = () => {
+    setModalState &&
+      setModalState(
+        true,
+        <Following username={username} relationship="following" />
+      )
+  }
+
+  // const router = useRouter()
+  // const { view } = router.query
+  // if (
+  //   view &&
+  //   username &&
+  //   typeof view === 'string' &&
+  //   typeof modalOpen !== 'undefined' &&
+  //   !modalOpen
+  // ) {
+  //   if (view === 'followers') {
+  //     openFollowers()
+  //   }
+  // }
 
   // want to be able to increment/decrement this based on clicking follow/unfollow
   const [followerCountState, setFollowerCountState] = React.useState(
@@ -50,24 +81,12 @@ const UserPage: NextPage<UserPageProps> = ({ userInfo }) => {
     {
       name: 'followers',
       count: followerCountState,
-      onClick: () => {
-        setModalState &&
-          setModalState(
-            true,
-            <Following username={username} relationship="followers" />
-          )
-      },
+      onClick: openFollowers,
     },
     {
       name: 'following',
       count: followingCount,
-      onClick: () => {
-        setModalState &&
-          setModalState(
-            true,
-            <Following username={username} relationship="following" />
-          )
-      },
+      onClick: openFollowing,
     },
   ]
 
@@ -94,7 +113,6 @@ const UserPage: NextPage<UserPageProps> = ({ userInfo }) => {
   }
 
   const [onOwnPage, setOnOwnPage] = React.useState(false)
-  const { currentUserInfo, setModalState } = React.useContext(UserContext)
   if (
     currentUserInfo &&
     !onOwnPage &&
@@ -126,7 +144,6 @@ const UserPage: NextPage<UserPageProps> = ({ userInfo }) => {
         />
         {/* OpenGraph tags end */}
       </Head>
-
       <div className="flex flex-col">
         <div className="m-auto max-w-3xl min-w-full">
           <header className="p-2">

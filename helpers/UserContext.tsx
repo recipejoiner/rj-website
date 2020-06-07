@@ -9,6 +9,7 @@ interface ContextProps {
   modalOpen: boolean
   setModalState: (
     modalOpenStatus: boolean,
+    modalTitle?: string,
     modalChildren?: React.ReactNode
   ) => void
 }

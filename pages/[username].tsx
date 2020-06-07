@@ -46,6 +46,7 @@ const UserPage: NextPage<UserPageProps> = ({ userInfo }) => {
     setModalState &&
       setModalState(
         true,
+        'Followers',
         <UserRelList
           username={username}
           relationship="followers"
@@ -57,6 +58,7 @@ const UserPage: NextPage<UserPageProps> = ({ userInfo }) => {
     setModalState &&
       setModalState(
         true,
+        'Following',
         <UserRelList
           username={username}
           relationship="following"

@@ -45,6 +45,7 @@ if (typeof window === 'undefined') {
 interface AppState {
   menuOpen: boolean
   modalOpen: boolean
+  modalTitle: string
   modalChildren: React.ReactNode
   yPos: number
   currentUserInfo: CurrentUserLoginCheckType | undefined
@@ -63,6 +64,7 @@ class MyApp extends App<UserProps, {}, AppState> {
       modalOpen: false,
       menuOpen: false,
       currentUserInfo: undefined,
+      modalTitle: '',
       modalChildren: <></>,
       yPos: 0,
     }
@@ -89,15 +91,21 @@ class MyApp extends App<UserProps, {}, AppState> {
     return null
   }
 
-  setModalState(modalOpenStatus: boolean, modalChildren?: React.ReactNode) {
-    if (modalOpenStatus === true && !!modalChildren) {
+  setModalState(
+    modalOpenStatus: boolean,
+    modalTitle?: string,
+    modalChildren?: React.ReactNode
+  ) {
+    if (modalOpenStatus === true && !!modalChildren && !!modalTitle) {
       this.setState({
         modalOpen: modalOpenStatus,
+        modalTitle: modalTitle,
         modalChildren: modalChildren,
       })
     } else {
       this.setState({
         modalOpen: modalOpenStatus,
+        modalTitle: '',
         modalChildren: <></>,
       })
     }
@@ -188,6 +196,7 @@ class MyApp extends App<UserProps, {}, AppState> {
           >
             <AppModal
               modalOpen={this.state.modalOpen}
+              modalTitle={this.state.modalTitle}
               setModalState={this.setModalState}
             >
               {this.state.modalChildren}

@@ -6,16 +6,17 @@ interface AppModalProps {
   modalOpen: boolean
   setModalState: (
     modalOpenStatus: boolean,
+    modalTitle?: string,
     modalChildren?: React.ReactNode
   ) => void
-  modalTitle?: string
+  modalTitle: string
 }
 
 const AppModal: React.FC<AppModalProps> = ({
   modalOpen,
   setModalState,
   children,
-  modalTitle = 'Modal Title',
+  modalTitle,
 }) => {
   return (
     <Modal

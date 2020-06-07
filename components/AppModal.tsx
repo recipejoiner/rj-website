@@ -1,6 +1,7 @@
 import * as React from 'react'
 import Modal from 'react-modal'
 Modal.setAppElement('#__next') // Make sure to bind modal to your appElement (http://reactcommunity.org/react-modal/accessibility/)
+import { useRouter } from 'next/router'
 
 interface AppModalProps {
   modalOpen: boolean
@@ -18,6 +19,13 @@ const AppModal: React.FC<AppModalProps> = ({
   children,
   modalTitle,
 }) => {
+  // close modal on nav
+  const router = useRouter()
+  const [currPath, setCurrPath] = React.useState(router.asPath)
+  if (router.asPath !== currPath) {
+    setCurrPath(router.asPath)
+    setModalState(false)
+  }
   return (
     <Modal
       id="app-modal"

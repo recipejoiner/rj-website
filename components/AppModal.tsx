@@ -24,8 +24,13 @@ const AppModal: React.FC<AppModalProps> = ({
   const [currPath, setCurrPath] = React.useState(router.asPath)
   if (router.asPath !== currPath) {
     setCurrPath(router.asPath)
-    setModalState(false)
   }
+  React.useEffect(() => {
+    if (modalOpen) {
+      setModalState(false)
+    }
+  }, [currPath]) // run when currPath changes
+
   return (
     <Modal
       id="app-modal"

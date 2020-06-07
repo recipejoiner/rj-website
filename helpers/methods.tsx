@@ -7,8 +7,8 @@ export function useEvent(
   passive = false,
   element?: HTMLElement
 ) {
-  const elm = element ? element : window
   useEffect(() => {
+    const elm = element ? element : window
     // initiate the event handler
     elm.addEventListener(event, handler, passive)
     // this will clean up the event every time the component is re-rendered

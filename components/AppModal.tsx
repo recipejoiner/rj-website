@@ -8,18 +8,20 @@ interface AppModalProps {
     modalOpenStatus: boolean,
     modalChildren?: React.ReactNode
   ) => void
+  modalTitle?: string
 }
 
 const AppModal: React.FC<AppModalProps> = ({
   modalOpen,
   setModalState,
   children,
+  modalTitle = 'Modal Title',
 }) => {
   return (
     <Modal
       id="app-modal"
       isOpen={modalOpen}
-      className="w-80 h-128 m-auto bg-white overflow-scroll mt-48 outline-none rounded border shadow-xl"
+      className="w-80 h-128 m-auto bg-white overflow-scroll mt-48 outline-none rounded rounded-t-none"
       style={{
         overlay: { backgroundColor: '#000000bf', zIndex: 1000 },
       }}
@@ -28,6 +30,11 @@ const AppModal: React.FC<AppModalProps> = ({
       }}
       contentLabel="User modal"
     >
+      <header>
+        <h3 className="text-center border-b fixed -mt-10 w-80 rounded-t pt-2 h-10 bg-white">
+          {modalTitle}
+        </h3>
+      </header>
       {children}
     </Modal>
   )

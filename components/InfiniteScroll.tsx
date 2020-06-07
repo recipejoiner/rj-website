@@ -95,7 +95,7 @@ const InfiniteScroll: React.FC<InfiniteScrollProps<any, any>> = ({
   inModal,
 }) => {
   const QueryData = getQueryDataInit(hasJustConnection, nodeInit)
-  const { loading, data, error, fetchMore } = useQuery<
+  const { loading, data, error, variables, fetchMore } = useQuery<
     typeof QueryData,
     typeof QueryVars
   >(QUERY, {
@@ -109,6 +109,11 @@ const InfiniteScroll: React.FC<InfiniteScrollProps<any, any>> = ({
       },
     },
   })
+
+  // for keeping track if the variables change
+  // ie, sometimes this component will be used by the same query, but with different variables
+  // need to be able to detect that the variable has been changed so that data can be refreshed
+  const [currQueryVars, setCurrQueryVars] = React.useState(QueryVars)
 
   const [activelyFetching, setActivelyFetching] = React.useState(false)
 
@@ -206,6 +211,12 @@ const InfiniteScroll: React.FC<InfiniteScrollProps<any, any>> = ({
   if (loaded === false && data) {
     setInfiniteScrollData(data)
     setLoad(true)
+  }
+  if (QueryVars != currQueryVars) {
+    if (data && !loading) {
+      setCurrQueryVars(QueryVars)
+      setInfiniteScrollData(data)
+    }
   }
   const { result } = (infiniteScrollData as QueryResultRes<any>) || {}
   const { connection } = result || infiniteScrollData

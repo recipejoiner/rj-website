@@ -6,7 +6,7 @@ type UserSettingsProps = {}
 
 const UserSettings: React.FC<UserSettingsProps> = ({}) => {
   const linkStyle =
-    'w-full px-8 py-4 block font-semibold hover:text-gray-700 uppercase text-sm tracking-widest border-b border-gray-300'
+    'w-full px-8 py-4 block font-semibold hover:text-gray-700 text-center text-sm tracking-widest border-b border-gray-300'
 
   return (
     <React.Fragment>
@@ -14,17 +14,20 @@ const UserSettings: React.FC<UserSettingsProps> = ({}) => {
         More settings coming soon!
       </span>
       <div className="pt-10">
+        <Link href="/accounts/edit">
+          <a className={linkStyle}>Edit Profile</a>
+        </Link>
         <button
           className={`${linkStyle} text-red-700`}
           onClick={() => logout(false)}
         >
-          log out
+          Log Out
         </button>
         <button
           className={`${linkStyle} text-red-700 border-none`}
           onClick={() => logout(true)}
         >
-          log out everywhere
+          Log Out Everywhere
         </button>
       </div>
     </React.Fragment>

@@ -32,7 +32,7 @@ const AppModal: React.FC<AppModalProps> = ({
       contentLabel="User modal"
     >
       <header>
-        <h3 className="text-center border-b fixed -mt-10 w-screen sm:w-80 sm:rounded-t pt-2 h-10 bg-white">
+        <h3 className="text-center border-b fixed -mt-10 w-screen pt-2 h-10 bg-white sm:w-80 sm:rounded-t">
           {modalTitle}
         </h3>
       </header>

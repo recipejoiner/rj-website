@@ -2,7 +2,7 @@ import * as React from 'react'
 import Head from 'next/head'
 import Link from 'next/link'
 import { NextPage } from 'next'
-import { GetStaticProps, GetStaticPaths } from 'next'
+import { GetServerSideProps } from 'next'
 import { ParsedUrlQuery } from 'querystring'
 import Skeleton from 'react-loading-skeleton'
 import UserContext from 'helpers/UserContext'
@@ -169,31 +169,7 @@ const RecipePage: NextPage<RecipeProps> = (props) => {
   )
 }
 
-export const getStaticPaths: GetStaticPaths = async () => {
-  type Path = { params: ParsedUrlQuery }
-  // type RecipeInfo = {
-  // 	cursor: string;
-  // 	node: {
-  // 		handle: string;
-  // 		updatedAt: string;
-  // 	}
-  // }
-  var paths: Array<Path> = []
-
-  // const recipeInfo: Array<RecipeInfo> = await getRecipesInfo() // todo
-
-  // recipeInfo.map((recipeInfo) => {
-  //   paths.push({
-  //     params: { username: recipeInfo.node.by.username, recipehandle: recipeInfo.node.handle },
-  //   });
-  // });
-  return {
-    paths,
-    fallback: true,
-  }
-}
-
-export const getStaticProps: GetStaticProps = async (ctx) => {
+export const getServerSideProps: GetServerSideProps = async (ctx) => {
   try {
     const { params } = ctx
 

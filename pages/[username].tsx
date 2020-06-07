@@ -23,7 +23,6 @@ import UserContext from 'helpers/UserContext'
 import SettingsBtn from 'components/SettingsBtn'
 import FollowChangeBtn from 'components/FollowChangeBtn'
 import UserRelList from 'components/modalviews/UserRelList'
-import UserSettings from 'components/modalviews/UserSettings'
 
 interface UserPageProps {
   userInfo: UserInfoType
@@ -66,9 +65,6 @@ const UserPage: NextPage<UserPageProps> = ({ userInfo }) => {
           inModal={true}
         />
       )
-  }
-  const openSettings = () => {
-    setModalState && setModalState(true, 'Settings', <UserSettings />)
   }
 
   // const router = useRouter()

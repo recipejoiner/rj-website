@@ -4,6 +4,7 @@ export interface UserInfoType {
   result: {
     id: string
     username: string
+    profileImageUrl: string | null
     recipeCount: number
     followerCount: number
     followingCount: number
@@ -20,6 +21,7 @@ export const USER_INFO_BY_USERNAME = gql`
     result: userByUsername(username: $username) {
       id
       username
+      profileImageUrl
       recipeCount
       followerCount
       followingCount
@@ -66,11 +68,13 @@ export const UNFOLLOW = gql`
 // use these with QueryResultRes
 export interface FollowRelListNodeType {
   username: string
+  profileImageUrl: string | null
   areFollowing: boolean | null
 }
 
 export const followConnectionNodeInit: FollowRelListNodeType = {
   username: '',
+  profileImageUrl: null,
   areFollowing: null,
 }
 
@@ -89,6 +93,7 @@ export const FOLLOWING_BY_USERNAME = gql`
           cursor
           node {
             username
+            profileImageUrl
             areFollowing
           }
         }
@@ -107,6 +112,7 @@ export const FOLLOWERS_BY_USERNAME = gql`
           cursor
           node {
             username
+            profileImageUrl
             areFollowing
           }
         }

@@ -182,8 +182,8 @@ const UserPage: NextPage<UserPageProps> = ({ userInfo }) => {
       </Head>
       <div className="flex flex-col">
         <div className="m-auto max-w-3xl min-w-full">
-          <header className="p-2 flex flex-row">
-            <div className="w-20 h-20 my-2 ml-2 mr-2">
+          <header className="mx-2 my-4 flex flex-row">
+            <div className="w-20 h-20 my-2 ml-2 mr-6">
               <img
                 className="object-cover w-full h-20 rounded-full"
                 src={profileImageUrl || require('images/chef-rj.svg')}

@@ -186,7 +186,7 @@ const UserPage: NextPage<UserPageProps> = ({ userInfo }) => {
             <div className="w-20 h-20 my-2 ml-2 mr-2">
               <img
                 className="object-cover w-full h-20 rounded-full"
-                src={profileImageUrl || ''}
+                src={profileImageUrl || require('images/chef-rj.svg')}
               />
             </div>
             {onOwnPage ? (

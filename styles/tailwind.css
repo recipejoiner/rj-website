@@ -19,10 +19,18 @@
 }
 
 .btn {
-  @apply bg-blue-500 w-full text-white font-bold py-1 px-2 rounded
+  @apply h-8 w-full py-1 px-2 font-bold border border-gray-300 rounded bg-white
 }
 
 .btn:hover {
+  @apply bg-gray-200
+}
+
+.btn-blue {
+  @apply btn bg-blue-500 text-white border-none
+}
+
+.btn-blue:hover {
   @apply bg-blue-700
 }
 

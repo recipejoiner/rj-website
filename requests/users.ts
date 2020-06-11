@@ -121,14 +121,14 @@ export const FOLLOWERS_BY_USERNAME = gql`
   }
 `
 
-export interface SetProfilePictureReturnType {
+export interface SetProfileImageReturnType {
   result: {
     user: {
       profileImageUrl: string
     }
   }
 }
-export interface SetProfilePictureVars {
+export interface SetProfileImageVarsType {
   profileImage: File
 }
 export const SET_PROFILE_IMAGE = gql`

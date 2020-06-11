@@ -12,8 +12,8 @@ const SettingsBtn: React.FC<SettingsBtnProps> = ({}) => {
     setModalState && setModalState(true, 'Settings', <UserSettings />)
   }
   return (
-    <button onClick={openSettings}>
-      <svg
+    <button className="btn" onClick={openSettings}>
+      {/* <svg
         className="h-12 p-2 text-gray-900 hover:text-gray-700 fill-current"
         viewBox="0 0 189 189"
         version="1.1"
@@ -26,7 +26,8 @@ const SettingsBtn: React.FC<SettingsBtnProps> = ({}) => {
             ></path>
           </g>
         </g>
-      </svg>
+      </svg> */}
+      Settings
     </button>
   )
 }

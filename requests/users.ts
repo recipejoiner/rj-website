@@ -120,3 +120,23 @@ export const FOLLOWERS_BY_USERNAME = gql`
     }
   }
 `
+
+export interface SetProfileImageReturnType {
+  result: {
+    user: {
+      profileImageUrl: string
+    }
+  }
+}
+export interface SetProfileImageVarsType {
+  profileImage: File
+}
+export const SET_PROFILE_IMAGE = gql`
+  mutation setProfileImage($profileImage: File!) {
+    result: updateUser(profileImage: $profileImage) {
+      user {
+        profileImageUrl
+      }
+    }
+  }
+`

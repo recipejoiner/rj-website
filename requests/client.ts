@@ -1,9 +1,9 @@
 import ApolloClient from 'apollo-client'
-import { HttpLink, createHttpLink } from 'apollo-link-http'
+import { createUploadLink } from 'apollo-upload-client'
 import { InMemoryCache } from 'apollo-cache-inmemory'
 
 const client = new ApolloClient({
-  link: new HttpLink({
+  link: createUploadLink({
     uri: process.env.NEXT_PUBLIC_RECIPEJOINER_API,
   }),
   cache: new InMemoryCache(),

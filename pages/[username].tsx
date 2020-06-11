@@ -23,6 +23,8 @@ import UserContext from 'helpers/UserContext'
 import SettingsBtn from 'components/SettingsBtn'
 import FollowChangeBtn from 'components/FollowChangeBtn'
 import UserRelList from 'components/modalviews/UserRelList'
+import UpdateProfileImage from 'components/modalviews/UpdateProfileImage'
+import { profile } from 'console'
 
 interface UserPageProps {
   userInfo: UserInfoType
@@ -65,6 +67,22 @@ const UserPage: NextPage<UserPageProps> = ({ userInfo }) => {
           relationship="following"
           inModal={true}
         />
+      )
+  }
+
+  const [currProfileImageUrl, setCurrProfileImageUrl] = React.useState(
+    profileImageUrl
+  )
+  const updateProfileImageUrl = (profileImageUrl: string) => {
+    setCurrProfileImageUrl(profileImageUrl)
+    setModalState && setModalState(false)
+  }
+  const openUpdateProfileImage = () => {
+    setModalState &&
+      setModalState(
+        true,
+        'Change Profile Photo',
+        <UpdateProfileImage updateProfileImageUrl={updateProfileImageUrl} />
       )
   }
 
@@ -130,6 +148,7 @@ const UserPage: NextPage<UserPageProps> = ({ userInfo }) => {
   const [currUsername, setCurrUsername] = React.useState(username)
   if (username !== currUsername) {
     setCurrUsername(username)
+    setCurrProfileImageUrl(profileImageUrl)
     console.log('followerCount', followerCount)
     setFollowerCountState(followerCount)
     setStats([
@@ -187,10 +206,22 @@ const UserPage: NextPage<UserPageProps> = ({ userInfo }) => {
         <div className="m-auto max-w-3xl min-w-full">
           <header className="mx-2 my-4 flex flex-row">
             <div className="w-20 h-20 my-2 ml-2 mr-6">
-              <img
-                className="object-cover w-full h-20 rounded-full"
-                src={profileImageUrl || require('images/chef-rj.svg')}
-              />
+              {onOwnPage ? (
+                <button
+                  className="rounded-full focus:outline-none focus:shadow-outline"
+                  onClick={openUpdateProfileImage}
+                >
+                  <img
+                    className="object-cover w-full h-20 rounded-full"
+                    src={currProfileImageUrl || require('images/chef-rj.svg')}
+                  />
+                </button>
+              ) : (
+                <img
+                  className="object-cover w-full h-20 rounded-full"
+                  src={currProfileImageUrl || require('images/chef-rj.svg')}
+                />
+              )}
             </div>
             <div className="flex flex-col">
               <h1 className="text-3xl mb-1">{username}</h1>

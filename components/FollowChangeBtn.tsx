@@ -43,7 +43,7 @@ interface FollowBtnProps {
 
 const FollowBtn: React.FC<FollowBtnProps> = ({ followUser }) => {
   return (
-    <button onClick={followUser} className="btn w-24">
+    <button onClick={followUser} className="btn-blue w-24">
       Follow
     </button>
   )

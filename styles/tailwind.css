@@ -19,7 +19,7 @@
 }
 
 .btn {
-  @apply h-8 w-full py-1 px-2 font-bold border border-gray-300 rounded bg-white text-center
+  @apply block h-8 w-full py-1 px-2 font-bold border border-gray-300 rounded bg-white text-center
 }
 
 .btn:hover {

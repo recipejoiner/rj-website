@@ -1,5 +1,6 @@
 import React from 'react'
 import Link from 'next/link'
+import Skeleton from 'react-loading-skeleton'
 
 import {
   FollowRelListNodeType,
@@ -70,25 +71,50 @@ const UserRelList: React.FC<UserRelListProps> = ({
                 return (
                   <li
                     key={edge.cursor}
-                    className="flex flex-row justify-between p-1"
+                    className="flex flex-row justify-between px-2 py-3"
                   >
                     <Link
                       href="/[username]"
                       as={`/${edge.node.username || '#'}`}
                     >
-                      <a>
-                        <h4>{edge.node.username}</h4>
+                      <a className="flex flex-row">
+                        <div className="w-8 h-8 mr-2">
+                          {edge.node.username ? (
+                            <img
+                              className="object-cover w-full h-8 rounded-full"
+                              src={
+                                edge.node.profileImageUrl ||
+                                require('images/chef-rj.svg')
+                              }
+                            />
+                          ) : (
+                            <Skeleton
+                              circle={true}
+                              height="2rem"
+                              width="2rem"
+                            />
+                          )}
+                        </div>
+                        <h4>
+                          {edge.node.username || (
+                            <Skeleton height={20} width={150} />
+                          )}
+                        </h4>
                       </a>
                     </Link>
-                    <FollowChangeBtn
-                      followingStatus={
-                        followingStatusRecord[edge.node.username]
-                      }
-                      setFollowingStatus={(status: boolean) => {
-                        setFollowingStatus(edge.node.username, status)
-                      }}
-                      username={edge.node.username}
-                    />
+                    {edge.node.username ? (
+                      <FollowChangeBtn
+                        followingStatus={
+                          followingStatusRecord[edge.node.username]
+                        }
+                        setFollowingStatus={(status: boolean) => {
+                          setFollowingStatus(edge.node.username, status)
+                        }}
+                        username={edge.node.username}
+                      />
+                    ) : (
+                      <Skeleton height={30} width={50} />
+                    )}
                   </li>
                 )
               })}

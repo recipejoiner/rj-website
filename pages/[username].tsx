@@ -24,6 +24,7 @@ import SettingsBtn from 'components/SettingsBtn'
 import FollowChangeBtn from 'components/FollowChangeBtn'
 import UserRelList from 'components/modalviews/UserRelList'
 import UpdateProfileImage from 'components/modalviews/UpdateProfileImage'
+import { profile } from 'console'
 
 interface UserPageProps {
   userInfo: UserInfoType
@@ -70,7 +71,18 @@ const UserPage: NextPage<UserPageProps> = ({ userInfo }) => {
   }
   const openUpdateProfileImage = () => {
     setModalState &&
-      setModalState(true, 'Change Profile Photo', <UpdateProfileImage />)
+      setModalState(
+        true,
+        'Change Profile Photo',
+        <UpdateProfileImage updateProfileImageUrl={updateProfileImageUrl} />
+      )
+  }
+  const [currProfileImageUrl, setCurrProfileImageUrl] = React.useState(
+    profileImageUrl
+  )
+  const updateProfileImageUrl = (profileImageUrl: string) => {
+    setCurrProfileImageUrl(profileImageUrl)
+    setModalState && setModalState(false)
   }
 
   // const router = useRouter()
@@ -135,6 +147,7 @@ const UserPage: NextPage<UserPageProps> = ({ userInfo }) => {
   const [currUsername, setCurrUsername] = React.useState(username)
   if (username !== currUsername) {
     setCurrUsername(username)
+    setCurrProfileImageUrl(profileImageUrl)
     console.log('followerCount', followerCount)
     setFollowerCountState(followerCount)
     setStats([
@@ -198,7 +211,7 @@ const UserPage: NextPage<UserPageProps> = ({ userInfo }) => {
               >
                 <img
                   className="object-cover w-full h-20 rounded-full"
-                  src={profileImageUrl || require('images/chef-rj.svg')}
+                  src={currProfileImageUrl || require('images/chef-rj.svg')}
                 />
               </button>
             </div>

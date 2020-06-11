@@ -9,9 +9,13 @@ import {
   SET_PROFILE_IMAGE,
 } from 'requests/users'
 
-type UpdateProfileImageProps = {}
+type UpdateProfileImageProps = {
+  updateProfileImageUrl: (profileImageUrl: string) => void
+}
 
-const UpdateProfileImage: React.FC<UpdateProfileImageProps> = ({}) => {
+const UpdateProfileImage: React.FC<UpdateProfileImageProps> = ({
+  updateProfileImageUrl,
+}) => {
   const linkStyle =
     'w-full px-8 py-4 block font-semibold hover:text-gray-700 focus:text-gray-900 text-center text-sm tracking-widest border-b border-gray-300 focus:outline-none focus:shadow-outline'
 
@@ -42,7 +46,7 @@ const UpdateProfileImage: React.FC<UpdateProfileImageProps> = ({}) => {
         console.log('res', res)
         const { data }: { data?: SetProfileImageReturnType } = res || {}
         if (!!data) {
-          console.log('data:', data)
+          updateProfileImageUrl(data.result.user.profileImageUrl)
         } else {
           throw 'Data is missing!'
         }

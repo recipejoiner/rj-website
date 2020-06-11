@@ -25,10 +25,7 @@ const UpdateProfileImage: React.FC<UpdateProfileImageProps> = ({
     files: FileList
   }>()
 
-  console.log('watch', watch('profileImage'))
-
   const onSubmit = handleSubmit(({ files }) => {
-    console.log('files', files)
     const variables: SetProfileImageVarsType = {
       profileImage: files[0],
     }
@@ -43,7 +40,6 @@ const UpdateProfileImage: React.FC<UpdateProfileImageProps> = ({
         },
       })
       .then((res) => {
-        console.log('res', res)
         const { data }: { data?: SetProfileImageReturnType } = res || {}
         if (!!data) {
           updateProfileImageUrl(data.result.user.profileImageUrl)

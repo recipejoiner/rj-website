@@ -193,12 +193,12 @@ const UserPage: NextPage<UserPageProps> = ({ userInfo }) => {
               />
             </div>
             {onOwnPage ? (
-              <div className="flex flex-col sm:flex-row justify-start">
+              <div className="flex flex-col justify-start">
                 <h1 className="text-3xl pr-1">{username}</h1>
                 <SettingsBtn />
               </div>
             ) : (
-              <div className="flex flex-col sm:flex-row">
+              <div className="flex flex-col ">
                 <h1 className="text-3xl sm:pr-2">{username}</h1>
                 <div className="mt-1 sm:mt-2">
                   <FollowChangeBtn

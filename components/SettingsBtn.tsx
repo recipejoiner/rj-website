@@ -12,7 +12,7 @@ const SettingsBtn: React.FC<SettingsBtnProps> = ({}) => {
     setModalState && setModalState(true, 'Settings', <UserSettings />)
   }
   return (
-    <button className="btn" onClick={openSettings}>
+    <button className="btn w-26" onClick={openSettings}>
       {/* <svg
         className="h-12 p-2 text-gray-900 hover:text-gray-700 fill-current"
         viewBox="0 0 189 189"

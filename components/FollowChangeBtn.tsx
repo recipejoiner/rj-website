@@ -15,7 +15,7 @@ interface UnFollowBtnProps {
 
 const UnFollowBtn: React.FC<UnFollowBtnProps> = ({ unFollowUser }) => {
   return (
-    <button onClick={unFollowUser} className="btn">
+    <button onClick={unFollowUser} className="btn w-16">
       <svg
         className="h-full w-8 m-auto text-gray-900 hover:text-gray-700 fill-current"
         viewBox="0 0 193 102"

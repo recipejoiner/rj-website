@@ -23,6 +23,7 @@ import UserContext from 'helpers/UserContext'
 import SettingsBtn from 'components/SettingsBtn'
 import FollowChangeBtn from 'components/FollowChangeBtn'
 import UserRelList from 'components/modalviews/UserRelList'
+import UpdateProfileImage from 'components/modalviews/UpdateProfileImage'
 
 interface UserPageProps {
   userInfo: UserInfoType
@@ -66,6 +67,10 @@ const UserPage: NextPage<UserPageProps> = ({ userInfo }) => {
           inModal={true}
         />
       )
+  }
+  const openUpdateProfileImage = () => {
+    setModalState &&
+      setModalState(true, 'Change Profile Photo', <UpdateProfileImage />)
   }
 
   // const router = useRouter()

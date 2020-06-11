@@ -146,6 +146,7 @@ const UserPage: NextPage<UserPageProps> = ({ userInfo }) => {
     ])
   }
   React.useEffect(() => {
+    setFollowingStatus(areFollowing)
     if (
       currentUserInfo &&
       !onOwnPage &&

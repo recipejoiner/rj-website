@@ -69,6 +69,14 @@ const UserPage: NextPage<UserPageProps> = ({ userInfo }) => {
         />
       )
   }
+
+  const [currProfileImageUrl, setCurrProfileImageUrl] = React.useState(
+    profileImageUrl
+  )
+  const updateProfileImageUrl = (profileImageUrl: string) => {
+    setCurrProfileImageUrl(profileImageUrl)
+    setModalState && setModalState(false)
+  }
   const openUpdateProfileImage = () => {
     setModalState &&
       setModalState(
@@ -76,13 +84,6 @@ const UserPage: NextPage<UserPageProps> = ({ userInfo }) => {
         'Change Profile Photo',
         <UpdateProfileImage updateProfileImageUrl={updateProfileImageUrl} />
       )
-  }
-  const [currProfileImageUrl, setCurrProfileImageUrl] = React.useState(
-    profileImageUrl
-  )
-  const updateProfileImageUrl = (profileImageUrl: string) => {
-    setCurrProfileImageUrl(profileImageUrl)
-    setModalState && setModalState(false)
   }
 
   // const router = useRouter()
@@ -205,15 +206,22 @@ const UserPage: NextPage<UserPageProps> = ({ userInfo }) => {
         <div className="m-auto max-w-3xl min-w-full">
           <header className="mx-2 my-4 flex flex-row">
             <div className="w-20 h-20 my-2 ml-2 mr-6">
-              <button
-                className="rounded-full focus:outline-none focus:shadow-outline"
-                onClick={openUpdateProfileImage}
-              >
+              {onOwnPage ? (
+                <button
+                  className="rounded-full focus:outline-none focus:shadow-outline"
+                  onClick={openUpdateProfileImage}
+                >
+                  <img
+                    className="object-cover w-full h-20 rounded-full"
+                    src={currProfileImageUrl || require('images/chef-rj.svg')}
+                  />
+                </button>
+              ) : (
                 <img
                   className="object-cover w-full h-20 rounded-full"
                   src={currProfileImageUrl || require('images/chef-rj.svg')}
                 />
-              </button>
+              )}
             </div>
             <div className="flex flex-col">
               <h1 className="text-3xl mb-1">{username}</h1>

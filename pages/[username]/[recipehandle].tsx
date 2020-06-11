@@ -115,9 +115,7 @@ const RecipePage: NextPage<RecipeProps> = (props) => {
               href="/[username]/[recipehandle]/edit"
               as={`/${username}/${handle}/edit`}
             >
-              <a className="block w-24 m-auto font-bold text-center text-sm p-1 bg-gray-200 rounded border">
-                Edit Recipe
-              </a>
+              <a className="w-28 m-auto btn">Edit Recipe</a>
             </Link>
           </div>
         ) : null}

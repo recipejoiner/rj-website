@@ -104,6 +104,7 @@ const UserPage: NextPage<UserPageProps> = ({ userInfo }) => {
   const [followingStatus, setFollowingStatus] = React.useState(areFollowing)
 
   // don't want this effect to run on first mount
+  // this effect is currently not functioning
   const didMount = React.useRef(false)
   React.useEffect(() => {
     if (didMount.current) {
@@ -147,6 +148,7 @@ const UserPage: NextPage<UserPageProps> = ({ userInfo }) => {
   }
   React.useEffect(() => {
     setFollowingStatus(areFollowing)
+    didMount.current = false
     if (
       currentUserInfo &&
       !onOwnPage &&

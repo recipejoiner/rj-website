@@ -54,10 +54,10 @@ const UpdateProfileImage: React.FC<UpdateProfileImageProps> = ({
   })
 
   return (
-    <React.Fragment>
-      <form onSubmit={onSubmit}>
+    <div className="h-full w-full">
+      <form className="h-full" onSubmit={onSubmit}>
         <label
-          className={`${linkStyle} text-blue-600 focus:text-red-700 cursor-pointer`}
+          className={`${linkStyle} flex flex-row items-center justify-center -mt-5 h-full border-none text-base text-blue-600 focus:text-red-700 cursor-pointer`}
         >
           Upload Photo
           <input
@@ -71,7 +71,7 @@ const UpdateProfileImage: React.FC<UpdateProfileImageProps> = ({
           />
         </label>
       </form>
-    </React.Fragment>
+    </div>
   )
 }
 

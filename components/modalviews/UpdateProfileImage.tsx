@@ -48,7 +48,13 @@ const UpdateProfileImage: React.FC<UpdateProfileImageProps> = ({}) => {
       })
   })
 
-  return <React.Fragment></React.Fragment>
+  return (
+    <React.Fragment>
+      <form onSubmit={onSubmit}>
+        <input name="profileImage" type="file" accept="image/*" />
+      </form>
+    </React.Fragment>
+  )
 }
 
 export default UpdateProfileImage

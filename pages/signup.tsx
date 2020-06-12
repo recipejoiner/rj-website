@@ -130,7 +130,7 @@ const SignUpPage: NextPage<SignUpPageProps> = ({}) => {
               }
             />
             <ul className="pt-2">
-              {loginErrs.map((err) => {
+              {signUpErrs.map((err) => {
                 return (
                   <li
                     key={err.message}

@@ -2,8 +2,9 @@ import React from 'react'
 import Head from 'next/head'
 import { NextPage } from 'next'
 import { useForm } from 'react-hook-form'
+import { GraphQLError } from 'graphql'
 
-import client, { gqlError } from 'requests/client'
+import client from 'requests/client'
 import { SignUpReturnType, SignUpVarsType, SIGN_UP } from 'requests/auth'
 import { setCookie, redirectTo } from 'helpers/methods'
 import { withHomeRedirect } from 'helpers/auth'
@@ -14,7 +15,9 @@ import { TextFormItem, PasswordFormItem } from 'components/forms/Fields'
 interface SignUpPageProps {}
 
 const SignUpPage: NextPage<SignUpPageProps> = ({}) => {
-  const [loginErrs, setLoginErrs] = React.useState<Array<gqlError>>([])
+  const [loginErrs, setLoginErrs] = React.useState<
+    Array<readonly GraphQLError[]>
+  >([])
 
   const { register, handleSubmit, watch, errors } = useForm<SignUpVarsType>()
   const onSubmit = handleSubmit((variables: SignUpVarsType) => {

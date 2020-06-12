@@ -25,6 +25,8 @@ const UpdateProfileImage: React.FC<UpdateProfileImageProps> = ({
   const [selectedFile, setSelectedFile] = React.useState<File | undefined>()
   const [preview, setPreview] = React.useState<string | undefined>()
 
+  const [imageErrs, setImageErrs] = React.useState<readonly GraphQLError[]>([])
+
   // create a preview as a side effect, whenever selected file is changed
   React.useEffect(() => {
     if (!selectedFile) {
@@ -39,6 +41,8 @@ const UpdateProfileImage: React.FC<UpdateProfileImageProps> = ({
     if (filesize <= 5) {
       setPreview(objectUrl)
       onSubmit()
+    } else {
+      setImageErrs([new GraphQLError("Image can't be larger than 5mb!")])
     }
 
     // Free memory when ever this component is unmounted
@@ -55,13 +59,12 @@ const UpdateProfileImage: React.FC<UpdateProfileImageProps> = ({
     setSelectedFile(e.target.files[0])
   }
 
-  const [imageErrs, setImageErrs] = React.useState<readonly GraphQLError[]>([])
-
   const { register, handleSubmit, watch, errors } = useForm<{
     files: FileList
   }>()
 
   const onSubmit = handleSubmit(({ files }) => {
+    setImageErrs([]) // clear the errors if any were set
     const variables: SetProfileImageVarsType = {
       profileImage: files[0],
     }
@@ -97,7 +100,7 @@ const UpdateProfileImage: React.FC<UpdateProfileImageProps> = ({
         <label
           className={`${linkStyle} flex flex-row items-center justify-center -mt-5 h-full border-none text-base text-blue-600 focus:text-red-700 cursor-pointer`}
         >
-          {selectedFile ? (
+          {selectedFile && imageErrs.length === 0 ? (
             <div className="w-48 h-48">
               <ReactLoading
                 type="bubbles"
@@ -112,8 +115,18 @@ const UpdateProfileImage: React.FC<UpdateProfileImageProps> = ({
               />
             </div>
           ) : (
-            'Upload Photo'
+            <div>
+              Upload Photo
+              {imageErrs.map((err) => {
+                return (
+                  <span className="absolute block text-center text-sm text-red-600 left-0 w-full mt-2">
+                    {err.message}
+                  </span>
+                )
+              })}
+            </div>
           )}
+
           <input
             className="hidden"
             name="files"

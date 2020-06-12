@@ -3,7 +3,8 @@ import Head from 'next/head'
 import { NextPage } from 'next'
 import Link from 'next/link'
 import { useForm } from 'react-hook-form'
-import {GraphQLError} from 'graphql'
+import { GraphQLError } from 'graphql'
+
 import client from 'requests/client'
 import { UserLoginType, LoginVarsType, LOGIN } from 'requests/auth'
 import { setCookie, redirectTo } from 'helpers/methods'
@@ -36,19 +37,19 @@ const LoginPage: NextPage<LoginPageProps> = ({}) => {
       })
       .then((res) => {
         const { data }: { data?: UserLoginType } = res || {}
-        if (res.errors){
+        if (res.errors) {
           setLoginErrs(res.errors)
-        }
-        else if (!!data && !!data.result) {
+        } else if (!!data && !!data.result) {
           setCookie('UserToken', data?.result.user.token)
           redirectTo('/')
-        }
-        else {
+        } else {
           throw 'Data is missing!'
         }
       })
       .catch((err) => {
-        setLoginErrs(err.graphQLErrors || ["message: 'Sorry Something Broke :('"])
+        setLoginErrs(
+          err.graphQLErrors || ["message: 'Sorry Something Broke :('"]
+        )
         console.log(loginErrs)
       })
   })

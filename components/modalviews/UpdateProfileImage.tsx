@@ -32,8 +32,14 @@ const UpdateProfileImage: React.FC<UpdateProfileImageProps> = ({
       return
     }
 
+    const filesize = selectedFile.size / 1024 / 1024 //megabytes
+
     const objectUrl = URL.createObjectURL(selectedFile)
-    setPreview(objectUrl)
+
+    if (filesize <= 5) {
+      setPreview(objectUrl)
+      onSubmit()
+    }
 
     // Free memory when ever this component is unmounted
     return () => URL.revokeObjectURL(objectUrl)
@@ -94,14 +100,14 @@ const UpdateProfileImage: React.FC<UpdateProfileImageProps> = ({
           {selectedFile ? (
             <div className="w-48 h-48">
               <ReactLoading
-                type="spokes"
+                type="bubbles"
                 height={''}
                 width={''}
                 className="absolute w-48 h-48 z-100 opacity-90"
               />
-              <div className="absolute w-48 h-48 bg-black rounded-full opacity-50 z-90" />
+              <div className="absolute w-48 h-48 bg-black rounded-full opacity-25 z-90 backdrop-blur" />
               <img
-                className="object-cover w-full h-48 rounded-full opacity-75"
+                className="object-cover w-full h-48 rounded-full opacity-75 filter-grayscale"
                 src={preview}
               />
             </div>

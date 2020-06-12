@@ -1,7 +1,8 @@
 import React from 'react'
 import { useForm } from 'react-hook-form'
+import { GraphQLError } from 'graphql'
 
-import client, { gqlError } from 'requests/client'
+import client from 'requests/client'
 import { getToken } from 'helpers/auth'
 import {
   SetProfileImageReturnType,
@@ -19,7 +20,7 @@ const UpdateProfileImage: React.FC<UpdateProfileImageProps> = ({
   const linkStyle =
     'w-full px-8 py-4 block font-semibold hover:text-gray-700 focus:text-gray-900 text-center text-sm tracking-widest border-b border-gray-300 focus:outline-none focus:shadow-outline'
 
-  const [imageErrs, setImageErrs] = React.useState<Array<gqlError>>([])
+  const [imageErrs, setImageErrs] = React.useState<readonly GraphQLError[]>([])
 
   const { register, handleSubmit, watch, errors } = useForm<{
     files: FileList
@@ -41,7 +42,9 @@ const UpdateProfileImage: React.FC<UpdateProfileImageProps> = ({
       })
       .then((res) => {
         const { data }: { data?: SetProfileImageReturnType } = res || {}
-        if (!!data) {
+        if (res.errors) {
+          setImageErrs(res.errors)
+        } else if (!!data) {
           updateProfileImageUrl(data.result.user.profileImageUrl)
         } else {
           throw 'Data is missing!'

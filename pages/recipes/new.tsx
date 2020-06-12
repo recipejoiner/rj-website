@@ -2,12 +2,13 @@ import Head from 'next/head'
 import { NextPage } from 'next'
 import { useForm } from 'react-hook-form'
 import * as React from 'react'
+import { GraphQLError } from 'graphql'
 
 import { getToken } from 'helpers/auth'
 import { redirectTo } from 'helpers/methods'
 import { withLoginRedirect } from 'helpers/auth'
 
-import client, { gqlError } from 'requests/client'
+import client from 'requests/client'
 
 import {
   RecipeFormReturnType,
@@ -27,7 +28,9 @@ import RecipeForm from 'components/forms/RecipeForm'
 interface NewRecipePageProps {}
 
 const NewRecipePage: NextPage<NewRecipePageProps> = ({}) => {
-  const [newRecipeErrs, setNewRecipeErrs] = React.useState<Array<gqlError>>([])
+  const [newRecipeErrs, setNewRecipeErrs] = React.useState<
+    readonly GraphQLError[]
+  >([])
 
   const { register, handleSubmit, watch, errors, control } = useForm<
     CreateRecipeVars

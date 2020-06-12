@@ -1,6 +1,6 @@
 import * as React from 'react'
 
-import { gqlError } from 'requests/client'
+import { GraphQLError } from 'graphql'
 
 import {
   TextFormItem,
@@ -32,7 +32,9 @@ const RecipeForm: React.FC<RecipeFormProps> = ({
   numOfStepsInit = 1,
   numOfIngrsInit = [0],
 }) => {
-  const [newRecipeErrs, setNewRecipeErrs] = React.useState<Array<gqlError>>([])
+  const [newRecipeErrs, setNewRecipeErrs] = React.useState<
+    readonly GraphQLError[]
+  >([])
 
   const [numOfSteps, setNumOfSteps] = React.useState(numOfStepsInit)
   // array where each index is the stepInd and the value is the number of ingredients at that step

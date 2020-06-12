@@ -15,9 +15,9 @@ import { TextFormItem, PasswordFormItem } from 'components/forms/Fields'
 interface SignUpPageProps {}
 
 const SignUpPage: NextPage<SignUpPageProps> = ({}) => {
-  const [loginErrs, setLoginErrs] = React.useState<
-    Array<readonly GraphQLError[]>
-  >([])
+  const [signUpErrs, setSignUpErrs] = React.useState<readonly GraphQLError[]>(
+    []
+  )
 
   const { register, handleSubmit, watch, errors } = useForm<SignUpVarsType>()
   const onSubmit = handleSubmit((variables: SignUpVarsType) => {
@@ -35,7 +35,9 @@ const SignUpPage: NextPage<SignUpPageProps> = ({}) => {
       })
       .then((res) => {
         const { data }: { data?: SignUpReturnType } = res || {}
-        if (!!data) {
+        if (res.errors) {
+          setSignUpErrs(res.errors)
+        } else if (!!data) {
           setCookie('UserToken', data?.signUp.user.token)
           redirectTo('/')
         } else {
@@ -43,8 +45,8 @@ const SignUpPage: NextPage<SignUpPageProps> = ({}) => {
         }
       })
       .catch((err) => {
-        setLoginErrs(err.graphQLErrors)
-        console.log(loginErrs)
+        setSignUpErrs(err.graphQLErrors)
+        console.log(signUpErrs)
       })
   })
 

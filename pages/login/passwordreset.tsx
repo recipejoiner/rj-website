@@ -2,8 +2,9 @@ import React from 'react'
 import Head from 'next/head'
 import { NextPage, GetServerSideProps } from 'next'
 import { useForm } from 'react-hook-form'
+import { GraphQLError } from 'graphql'
 
-import client, { gqlError } from 'requests/client'
+import client from 'requests/client'
 import {
   UserLoginType,
   PasswordResetVarsType,
@@ -20,9 +21,9 @@ interface PasswordResetPageProps {
 const PasswordResetPage: NextPage<PasswordResetPageProps> = ({
   resetPasswordToken,
 }) => {
-  const [pwRecoveryErrs, setPwRecoveryErrs] = React.useState<Array<gqlError>>(
-    []
-  )
+  const [pwRecoveryErrs, setPwRecoveryErrs] = React.useState<
+    readonly GraphQLError[]
+  >([])
 
   const { register, handleSubmit, watch, errors } = useForm<
     PasswordResetVarsType
@@ -45,7 +46,9 @@ const PasswordResetPage: NextPage<PasswordResetPageProps> = ({
       })
       .then((res) => {
         const { data }: { data?: UserLoginType } = res || {}
-        if (!!data) {
+        if (res.errors) {
+          setPwRecoveryErrs(res.errors)
+        } else if (!!data) {
           setCookie('UserToken', data?.result.user.token)
           redirectTo('/')
         } else {

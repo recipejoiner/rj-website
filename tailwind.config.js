@@ -1,6 +1,18 @@
 module.exports = {
   purge: false, // purgecss is configured in postcss.purge.js
   theme: {
+    filter: {
+      // defaults to {}
+      none: 'none',
+      grayscale: 'grayscale(1)',
+      invert: 'invert(1)',
+      sepia: 'sepia(1)',
+    },
+    backdropFilter: {
+      // defaults to {}
+      none: 'none',
+      blur: 'blur(20px)',
+    },
     spacing: {
       px: '1px',
       '0': '0',
@@ -110,6 +122,9 @@ module.exports = {
     },
     extend: {},
   },
-  variants: {},
-  plugins: [],
+  variants: {
+    filter: ['responsive'], // defaults to ['responsive']
+    backdropFilter: ['responsive'], // defaults to ['responsive']
+  },
+  plugins: [require('tailwindcss-filters')],
 }

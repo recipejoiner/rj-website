@@ -35,15 +35,4 @@ client.query({
 });
 */
 
-interface errLoc {
-  column: number
-  line: number
-}
-
-export interface gqlError {
-  locations?: Array<errLoc>
-  message: string
-  path?: Array<string>
-}
-
 export default client

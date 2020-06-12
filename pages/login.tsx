@@ -3,8 +3,8 @@ import Head from 'next/head'
 import { NextPage } from 'next'
 import Link from 'next/link'
 import { useForm } from 'react-hook-form'
-
-import client, { gqlError } from 'requests/client'
+import {GraphQLError} from 'graphql'
+import client from 'requests/client'
 import { UserLoginType, LoginVarsType, LOGIN } from 'requests/auth'
 import { setCookie, redirectTo } from 'helpers/methods'
 import { withHomeRedirect } from 'helpers/auth'
@@ -14,7 +14,7 @@ import { TextFormItem, PasswordFormItem } from 'components/forms/Fields'
 interface LoginPageProps {}
 
 const LoginPage: NextPage<LoginPageProps> = ({}) => {
-  const [loginErrs, setLoginErrs] = React.useState<Array<gqlError>>([])
+  const [loginErrs, setLoginErrs] = React.useState<readonly GraphQLError[]>([])
 
   const { register, handleSubmit, watch, errors } = useForm<LoginVarsType>()
 
@@ -36,15 +36,19 @@ const LoginPage: NextPage<LoginPageProps> = ({}) => {
       })
       .then((res) => {
         const { data }: { data?: UserLoginType } = res || {}
-        if (!!data) {
+        if (res.errors){
+          setLoginErrs(res.errors)
+        }
+        else if (!!data && !!data.result) {
           setCookie('UserToken', data?.result.user.token)
           redirectTo('/')
-        } else {
+        }
+        else {
           throw 'Data is missing!'
         }
       })
       .catch((err) => {
-        setLoginErrs(err.graphQLErrors)
+        setLoginErrs(err.graphQLErrors || ["message: 'Sorry Something Broke :('"])
         console.log(loginErrs)
       })
   })

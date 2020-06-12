@@ -47,8 +47,9 @@ const PasswordRecoveryPage: NextPage<PasswordRecoveryPageProps> = ({
       })
       .then((res) => {
         const { data }: { data?: SendResetPasswordType } = res || {}
-        console.log('data', data)
-        if (!!data) {
+        if (res.errors) {
+          setPwRecoveryErrs(res.errors)
+        } else if (!!data) {
           if (data.result == true) {
             setMessage('Check your email for further instructions.')
           } else {

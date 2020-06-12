@@ -50,7 +50,9 @@ const NewRecipePage: NextPage<NewRecipePageProps> = ({}) => {
       })
       .then((res) => {
         const { data }: { data?: RecipeFormReturnType } = res || {}
-        if (data) {
+        if (res.errors) {
+          setNewRecipeErrs(res.errors)
+        } else if (data) {
           const { result } = data.mutation || {}
           const { by, handle } = result || {}
           const { username } = by || {}

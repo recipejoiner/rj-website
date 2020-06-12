@@ -2,8 +2,9 @@ import React from 'react'
 import Head from 'next/head'
 import { NextPage, GetServerSideProps } from 'next'
 import { useForm } from 'react-hook-form'
+import { GraphQLError } from 'graphql'
 
-import client, { gqlError } from 'requests/client'
+import client from 'requests/client'
 import {
   SendResetPasswordType,
   SendResetPasswordVarsType,
@@ -20,9 +21,9 @@ interface PasswordRecoveryPageProps {
 const PasswordRecoveryPage: NextPage<PasswordRecoveryPageProps> = ({
   resetPasswordToken,
 }) => {
-  const [pwRecoveryErrs, setPwRecoveryErrs] = React.useState<Array<gqlError>>(
-    []
-  )
+  const [pwRecoveryErrs, setPwRecoveryErrs] = React.useState<
+    readonly GraphQLError[]
+  >([])
 
   const [message, setMessage] = React.useState('')
 

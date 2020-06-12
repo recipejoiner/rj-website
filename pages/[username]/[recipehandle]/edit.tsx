@@ -4,6 +4,7 @@ import { GetServerSideProps } from 'next'
 import { useForm } from 'react-hook-form'
 import * as React from 'react'
 import Router from 'next/router'
+import { GraphQLError } from 'graphql'
 
 import { getToken } from 'helpers/auth'
 import { redirectTo } from 'helpers/methods'
@@ -12,7 +13,7 @@ import {
   CURRENT_USER_LOGIN_CHECK,
 } from 'requests/auth'
 
-import client, { gqlError } from 'requests/client'
+import client from 'requests/client'
 
 import {
   RecipeType,
@@ -39,7 +40,9 @@ const EditRecipePage: NextPage<EditRecipePageProps> = ({
   numOfStepsInit,
   numOfIngrsInit,
 }) => {
-  const [newRecipeErrs, setNewRecipeErrs] = React.useState<Array<gqlError>>([])
+  const [newRecipeErrs, setNewRecipeErrs] = React.useState<
+    readonly GraphQLError[]
+  >([])
 
   const { register, handleSubmit, watch, errors, control, reset } = useForm<
     EditRecipeVars

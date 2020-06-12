@@ -92,16 +92,16 @@ const UpdateProfileImage: React.FC<UpdateProfileImageProps> = ({
           className={`${linkStyle} flex flex-row items-center justify-center -mt-5 h-full border-none text-base text-blue-600 focus:text-red-700 cursor-pointer`}
         >
           {selectedFile ? (
-            <div className="w-20 h-20">
+            <div className="w-48 h-48">
               <ReactLoading
                 type="spokes"
                 height={''}
                 width={''}
-                className="absolute h-16 w-16 m-2 z-100 opacity-90"
+                className="absolute w-48 h-48 z-100 opacity-90"
               />
-              <div className="absolute h-20 w-20 bg-black rounded-full opacity-50 z-90" />
+              <div className="absolute w-48 h-48 bg-black rounded-full opacity-50 z-90" />
               <img
-                className="object-cover w-full h-20 rounded-full opacity-75"
+                className="object-cover w-full h-48 rounded-full opacity-75"
                 src={preview}
               />
             </div>

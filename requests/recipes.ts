@@ -215,19 +215,21 @@ export const RECIPE_BY_ID = gql`
 
 export interface RecipeInputIngredient {
   name: string
-  amount: number
+  quantity: number
   unit: string
 }
 interface RecipeInputStep {
   stepNum: number
-  stepTime: number
-  description: string
+  stepTime?: number
+  action: string
+  temperatureInF?: number
+  location?: string
   ingredients: Array<RecipeInputIngredient> // not required
 }
 export interface RecipeInput {
   title: string
-  description: string
-  servings: string
+  yield: string
+  totalTimeInMin: number
   steps: Array<RecipeInputStep>
 }
 export interface CreateRecipeVars {

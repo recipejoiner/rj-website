@@ -1,4 +1,5 @@
 import * as React from 'react'
+import { useForm } from 'react-hook-form'
 
 import { GraphQLError } from 'graphql'
 
@@ -9,56 +10,189 @@ import {
   HiddenFormItem,
 } from 'components/forms/Fields'
 
+const INGREDIENTS = ['cheese', 'milk', 'eggs']
+const UNIT = ['pound', 'pinch']
+const LOCATION = ['oven', 'fridge']
+const ACTION = ['cut', 'mix']
+const TEMPLEVEL = ['low', 'medium', 'high']
+
 interface RecipeFormProps {
-  register: any
-  onSubmit: any
+  //register: any
+  //onSubmit: any
   watch: any
-  errors: any
+  // errors: any
   control: any
   formTitle: string
   submitBtnTxt?: string
-  numOfStepsInit?: number
-  numOfIngrsInit?: Array<number>
+  allStepsInit?: Array<any>
+  stepInit: number
+  reviewModeInit: boolean
+}
+interface step {
+  [ingredient: string]: string | number
+  action: string
+  quantity: number
+  unit: string
+  tempNum: number
+  tempLevel: string
+  time: number
+  location: string
+  customInfo: string
+  media: string
 }
 
 const RecipeForm: React.FC<RecipeFormProps> = ({
-  register,
-  onSubmit,
+  //register,
+  //onSubmit,
   watch,
-  errors,
+  //errors,
   control,
   formTitle,
   submitBtnTxt = 'Create Recipe',
-  numOfStepsInit = 1,
-  numOfIngrsInit = [0],
+  allStepsInit = [
+    {
+      ingredient: '',
+      action: '',
+      quantity: 0,
+      unit: '',
+      tempNum: 0,
+      tempLevel: '',
+      time: 0,
+      location: '',
+      customInfo: '',
+      media: '',
+    },
+  ],
+  stepInit = 0,
+  reviewModeInit = false,
 }) => {
   const [newRecipeErrs, setNewRecipeErrs] = React.useState<
     readonly GraphQLError[]
   >([])
 
-  const [numOfSteps, setNumOfSteps] = React.useState(numOfStepsInit)
-  // array where each index is the stepInd and the value is the number of ingredients at that step
-  const [numOfIngrs, setNumOfIngrs] = React.useState(numOfIngrsInit)
+  const { register, handleSubmit, errors } = useForm()
+  const [allSteps, setAllSteps] = React.useState<Array<step>>(allStepsInit)
+  const [stepNum, setStep] = React.useState(stepInit)
+  const [reviewMode, setReviewMode] = React.useState(reviewModeInit)
 
+  const onSubmit = (data: any) => {
+    console.log(data)
+    setStep(stepNum + 1)
+  }
   const addStep = () => {
-    if (numOfSteps < 50) {
-      setNumOfSteps(numOfSteps + 1)
-
-      setNumOfIngrs([...numOfIngrs, 0])
+    let newStep: step = {
+      ingredient: '',
+      action: '',
+      quantity: 0,
+      unit: '',
+      tempNum: 0,
+      tempLevel: '',
+      time: 0,
+      location: '',
+      customInfo: '',
+      media: '',
     }
+    setAllSteps((allSteps) => [...allSteps, newStep])
   }
 
-  const removeStep = () => {
-    if (numOfSteps > 1) {
-      setNumOfSteps(numOfSteps - 1)
-
-      setNumOfIngrs(numOfIngrs.slice(0, -1))
-    }
+  const handleChange = (e: { target: { name: any; value: any } }) => {
+    const { name, value }: { name: string; value: string } = e.target
+    let updateSteps = [...allSteps]
+    updateSteps[stepNum][name] = value
+    setAllSteps(updateSteps)
   }
 
-  return (
+  //create new step when current step does not yet exist
+  !allSteps[stepNum] ? addStep() : ''
+
+  // React.useEffect(() => console.log(errors))
+
+  return !reviewMode ? (
     <React.Fragment>
-      <div className="w-screen bg-gray-100 min-h-screen -mt-14 md:-mt-16">
+      <form onSubmit={handleSubmit(onSubmit)}>
+        <select
+          name="ingredient"
+          ref={register({ required: true })}
+          onChange={handleChange}
+          defaultValue={allSteps[stepNum]?.ingredient}
+        >
+          {INGREDIENTS.map((ingredient: any) => {
+            return <option value={ingredient}>{ingredient}</option>
+          })}
+        </select>
+        <input
+          type="number"
+          placeholder="quantity"
+          name="quantity"
+          ref={register({ required: true, min: 1 })}
+          onChange={handleChange}
+        />
+        <select name="unit" ref={register} onChange={handleChange}>
+          {UNIT.map((ingredient: any) => {
+            return <option value={ingredient}>{ingredient}</option>
+          })}
+        </select>
+        <input
+          type="number"
+          placeholder="temperature number"
+          name="tempNum"
+          ref={register({ max: 500 })}
+          onChange={handleChange}
+        />
+        <select name="tempLevel" ref={register} onChange={handleChange}>
+          {TEMPLEVEL.map((ingredient: any) => {
+            return <option value={ingredient}>{ingredient}</option>
+          })}
+        </select>
+        <select name="location" ref={register} onChange={handleChange}>
+          {LOCATION.map((ingredient: any) => {
+            return <option value={ingredient}>{ingredient}</option>
+          })}
+        </select>
+        <textarea
+          name="customInfo"
+          ref={register({ maxLength: 300 })}
+          onChange={handleChange}
+        />
+        <input type="submit" value="Next Step" />
+        <input
+          onSubmit={() => setReviewMode(true)}
+          type="submit"
+          value="Finish Recipe"
+        />
+      </form>
+    </React.Fragment>
+  ) : (
+    <React.Fragment></React.Fragment>
+  )
+}
+
+export default RecipeForm
+
+/*
+
+if building
+  if step number does not exist
+    create new step
+  set step action
+  set step ingredients
+  set step quantity
+  set step unit
+  set step temp
+  set step time
+  set step location
+  set step custom info
+  set step media
+  if next step
+    repeat
+  else if finish
+    go to reviewing
+  else if select different number
+    go to step number 
+else if reviewing
+
+
+<div className="w-screen bg-gray-100 min-h-screen -mt-14 md:-mt-16">
         <h1 className="header-text text-center pt-20 md:pt-26">{formTitle}</h1>
         <div className="w-full max-w-2xl m-auto pt-0 md:pt-5">
           <form
@@ -325,7 +459,5 @@ const RecipeForm: React.FC<RecipeFormProps> = ({
         </div>
       </div>
     </React.Fragment>
-  )
-}
 
-export default RecipeForm
+*/

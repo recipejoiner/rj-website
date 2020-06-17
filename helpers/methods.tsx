@@ -120,6 +120,14 @@ export function toMixedNumber(num: number) {
   }
 }
 
+export function removeEmptyFields(data: any) {
+  Object.keys(data).forEach((key) => {
+    if (data[key] === '' || data[key] == null) {
+      delete data[key]
+    }
+  })
+}
+
 // EXPERIMENTAL METHOD
 export function ensureVarIsSet(variable: any) {
   return new Promise(function (resolve, reject) {

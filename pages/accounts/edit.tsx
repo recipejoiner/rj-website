@@ -11,7 +11,7 @@ import {
   UPDATE_USER,
 } from 'requests/users'
 import { redirectTo } from 'helpers/methods'
-import { withLoginRedirect } from 'helpers/auth'
+import { withLoginRedirect, getToken } from 'helpers/auth'
 import { PasswordRequirements } from 'helpers/regex'
 
 import { TextFormItem, PasswordFormItem } from 'components/forms/Fields'
@@ -27,7 +27,6 @@ const UpdateUserPage: NextPage<UpdateUserPageProps> = ({}) => {
     UpdateUserVarsType
   >()
   const onSubmit = handleSubmit((variables: UpdateUserVarsType) => {
-    const token = process.env.NEXT_PUBLIC_RJ_API_TOKEN || ''
     client
       .mutate({
         mutation: UPDATE_USER,
@@ -35,7 +34,7 @@ const UpdateUserPage: NextPage<UpdateUserPageProps> = ({}) => {
         context: {
           // example of setting the headers with context per operation
           headers: {
-            authorization: `Bearer ${token}`,
+            authorization: `Bearer ${getToken()}`,
           },
         },
       })
@@ -122,7 +121,7 @@ const UpdateUserPage: NextPage<UpdateUserPageProps> = ({}) => {
               label="New Password"
               returnVar="newPassword"
               register={register({
-                validate: PasswordRequirements,
+                validate: watch('newPassword') ? PasswordRequirements : {},
               })}
               errorMessage={errors.newPassword && errors.newPassword.message}
             />

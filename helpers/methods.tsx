@@ -110,6 +110,12 @@ export function toMixedNumber(num: number) {
 
   if (numerator === 0) {
     return <span>{wholeNum}</span>
+  } else if (wholeNum === 0) {
+    return (
+      <span>
+        <sup>{numerator.toFixed(0)}</sup>⁄<sub>{denominator.toFixed(0)}</sub>
+      </span>
+    )
   } else {
     return (
       <span>

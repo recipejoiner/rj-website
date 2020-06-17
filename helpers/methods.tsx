@@ -126,10 +126,14 @@ export function toMixedNumber(num: number) {
   }
 }
 
-export function removeEmptyFields(data: any) {
+// For sanitizing form inputs.
+// SkipKeys is for if you want to skip those keys, eg a user's bio - should be able to set this to an empty string.
+export function removeEmptyFields(data: any, skipKeys?: Array<any>) {
   Object.keys(data).forEach((key) => {
-    if (data[key] === '' || data[key] == null) {
-      delete data[key]
+    if (!skipKeys?.includes(key)) {
+      if (data[key] === '' || data[key] == null) {
+        delete data[key]
+      }
     }
   })
 }

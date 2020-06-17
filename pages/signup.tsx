@@ -102,7 +102,7 @@ const SignUpPage: NextPage<SignUpPageProps> = ({}) => {
               register={register}
             />
             <TextFormItem
-              label="Usernane"
+              label="Username"
               returnVar="username"
               placeholder="arimendelow"
               register={register}

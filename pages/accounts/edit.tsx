@@ -10,7 +10,7 @@ import {
   UpdateUserVarsType,
   UPDATE_USER,
 } from 'requests/users'
-import { redirectTo } from 'helpers/methods'
+import { redirectTo, removeEmptyFields } from 'helpers/methods'
 import { withLoginRedirect, getToken } from 'helpers/auth'
 import { PasswordRequirements } from 'helpers/regex'
 
@@ -27,6 +27,7 @@ const UpdateUserPage: NextPage<UpdateUserPageProps> = ({}) => {
     UpdateUserVarsType
   >()
   const onSubmit = handleSubmit((variables: UpdateUserVarsType) => {
+    removeEmptyFields(variables)
     client
       .mutate({
         mutation: UPDATE_USER,

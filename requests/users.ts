@@ -140,3 +140,50 @@ export const SET_PROFILE_IMAGE = gql`
     }
   }
 `
+
+export interface UpdateUserReturnType {
+  result: {
+    user: {
+      username: string
+    }
+  }
+}
+
+export interface UpdateUserVarsType {
+  password: string | null
+  newPassword: string | null
+  newPasswordConfirmation: string | null
+  email: string | null
+  firstName: string | null
+  lastName: string | null
+  username: string | null
+  profileImage: File | null
+}
+
+export const UPDATE_USER = gql`
+  mutation UpdateUser(
+    $password: String
+    $newPassword: String
+    $newPasswordConfirmation: String
+    $email: String
+    $firstName: String
+    $lastName: String
+    $username: String
+    $profileImage: File
+  ) {
+    result: updateUser(
+      password: $password
+      newPassword: $newPassword
+      newPasswordConfirmation: $newPasswordConfirmation
+      email: $email
+      firstName: $firstName
+      lastName: $lastName
+      username: $username
+      profileImage: $profileImage
+    ) {
+      user {
+        username
+      }
+    }
+  }
+`

@@ -104,37 +104,28 @@ export const ALL_USER_RECIPES_BY_USERNAME = gql`
     }
   }
 `
-
-export interface IngredientType {
-  ingredientInfo: {
-    name: string
-  }
+interface IngredientInputType {
+  [id: string]: number | string
+  name: string
   quantity: number
-  unit: {
-    name: string
-  }
+  unit: string
 }
 
-export interface RecipeStepType {
-  stepNum: number
-  stepTime: number
+export interface RecipeInputStepType {
+  [action: string]: string | number | Array<IngredientInputType>
+  ingredients: Array<IngredientInputType>
+  tempNum: number
+  tempLevel: string
+  time: number
+  location: string
+  customInfo: string
+}
+
+export interface RecipeInputType {
+  title: string
   description: string
-  ingredients: Array<IngredientType>
-}
-
-export interface RecipeType {
-  result: {
-    by: {
-      username: string
-    }
-    id: string
-    title: string
-    handle: string
-    description: string
-    servings: string
-    ingredients: Array<IngredientType>
-    steps: Array<RecipeStepType>
-  }
+  servings?: string
+  steps: Array<RecipeInputStepType>
 }
 
 export const RECIPE_BY_USERNAME_AND_HANDLE = gql`
@@ -213,27 +204,8 @@ export const RECIPE_BY_ID = gql`
   }
 `
 
-export interface RecipeInputIngredient {
-  name: string
-  quantity: number
-  unit: string
-}
-interface RecipeInputStep {
-  stepNum: number
-  stepTime?: number
-  action: string
-  temperatureInF?: number
-  location?: string
-  ingredients: Array<RecipeInputIngredient> // not required
-}
-export interface RecipeInput {
-  title: string
-  yield: string
-  totalTimeInMin: number
-  steps: Array<RecipeInputStep>
-}
 export interface CreateRecipeVars {
-  attributes: RecipeInput
+  attributes: RecipeInputType
 }
 export interface RecipeFormReturnType {
   mutation: {
@@ -260,7 +232,7 @@ export const CREATE_RECIPE = gql`
 
 export interface EditRecipeVars {
   existingRecipeId: number
-  attributes: RecipeInput
+  attributes: RecipeInputType
 }
 // uses same types as CREATE_RECIPE
 export const EDIT_RECIPE = gql`

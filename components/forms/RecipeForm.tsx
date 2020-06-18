@@ -2,7 +2,7 @@ import * as React from 'react'
 
 import { GraphQLError } from 'graphql'
 
-// import {RecipeType, RecipeStepType, IngredientType} from '../../requests/recipes'
+import { RecipeInputType, RecipeInputStepType } from '../../requests/recipes'
 interface Error {
   key: string
   error: string
@@ -10,27 +10,10 @@ interface Error {
 }
 
 interface RecipeFormProps {
-  allStepsInit?: Array<any>
+  recipeInit?: RecipeInputType
   stepInit?: number
   reviewModeInit?: boolean
   errorsInit?: Array<any>
-}
-
-interface IngredientType {
-  [id: string]: number | string
-  name: string
-  quantity: number
-  unit: string
-}
-
-interface RecipeStepType {
-  [action: string]: string | number | Array<IngredientType>
-  ingredients: Array<IngredientType>
-  tempNum: number
-  tempLevel: string
-  time: number
-  location: string
-  customInfo: string
 }
 
 const NewIngredient = () => ({
@@ -41,13 +24,20 @@ const NewIngredient = () => ({
 })
 //create new step
 const NewStep = () => ({
-  ingredients: [NewIngredient()],
   action: '',
+  ingredients: [NewIngredient()],
   tempNum: 0,
   tempLevel: '',
   time: 0,
   location: '',
   customInfo: '',
+})
+
+const NewRecipe = () => ({
+  title: '',
+  description: '',
+  servings: '',
+  steps: [NewStep()],
 })
 
 //create a new error
@@ -75,7 +65,7 @@ const ErrorField = ({
 }
 
 const RecipeForm: React.FC<RecipeFormProps> = ({
-  allStepsInit = [NewStep()],
+  recipeInit = NewRecipe(),
   stepInit = 0,
   reviewModeInit = false,
   errorsInit = [],
@@ -83,16 +73,11 @@ const RecipeForm: React.FC<RecipeFormProps> = ({
   const [newRecipeErrs, setNewRecipeErrs] = React.useState<
     readonly GraphQLError[]
   >([])
-
-  const [allSteps, setAllSteps] = React.useState<Array<RecipeStepType>>(
-    allStepsInit
-  )
+  const [recipe, setRecipe] = React.useState<RecipeInputType>(recipeInit)
   const [currentStep, setCurrentStep] = React.useState(stepInit)
   const [reviewMode, setReviewMode] = React.useState(reviewModeInit)
   const [errors, setErrors] = React.useState<Array<Error>>(errorsInit)
   const [loaded, setLoaded] = React.useState(false)
-
-  React.useEffect(() => setLoaded(true), [])
 
   const createError = (key: string, error: string, message: string) => {
     if (!getError(key).length) {
@@ -115,19 +100,19 @@ const RecipeForm: React.FC<RecipeFormProps> = ({
   }
 
   const createStep = () => {
-    let newStep: RecipeStepType = NewStep()
-    allSteps.push(newStep)
-    setAllSteps(allSteps)
+    let recipeCopy = JSON.parse(JSON.stringify(recipe))
+    let newStep: RecipeInputStepType = NewStep()
+    recipeCopy.steps.push(newStep)
+    setRecipe(recipeCopy)
   }
 
   const deleteStep = (stepNum: number) => {
     if (stepNum > -1) {
-      let allStepsCopy = [...allSteps]
-      if (allStepsCopy.length == 1) allStepsCopy[0] = NewStep()
-      else allStepsCopy.splice(stepNum, 1)
-      setAllSteps(allStepsCopy)
+      let recipeCopy = JSON.parse(JSON.stringify(recipe))
+      if (recipeCopy.steps.length == 1) recipeCopy.steps[0] = NewStep()
+      else recipeCopy.steps.splice(stepNum, 1)
+      setRecipe(recipeCopy)
       goToStep(currentStep - 1)
-      console.log(allSteps)
     }
   }
 
@@ -138,9 +123,10 @@ const RecipeForm: React.FC<RecipeFormProps> = ({
 
   const submitStep = () => {
     if (validateStepState(currentStep)) {
-      currentStep == allSteps.length ? createStep() : goToStep(currentStep + 1)
+      currentStep == recipe.steps.length
+        ? createStep()
+        : goToStep(currentStep + 1)
     }
-    console.log(allSteps)
   }
 
   const hasValue = (errorKey: string, value: any) => {
@@ -163,7 +149,7 @@ const RecipeForm: React.FC<RecipeFormProps> = ({
       time,
       location,
       customInfo,
-    } = allSteps[stepNum]
+    } = recipe.steps[stepNum]
     if (
       //REQUIRED VALUES VALIDATION HERE (will return after first group of errors found)
       !hasValue('action', action) ||
@@ -180,25 +166,26 @@ const RecipeForm: React.FC<RecipeFormProps> = ({
   }
 
   const createIngredient = () => {
-    let updatedSteps = [...allSteps]
-    updatedSteps[currentStep].ingredients.push(NewIngredient())
-    setAllSteps(updatedSteps)
+    let recipeCopy = JSON.parse(JSON.stringify(recipe))
+    recipeCopy.steps[currentStep].ingredients.push(NewIngredient())
+    setRecipe(recipeCopy)
   }
 
   const deleteIngredient = (ingredientId: string) => {
-    let updatedSteps = [...allSteps]
-    let toReplace = updatedSteps[currentStep].ingredients.filter(
+    let recipeCopy = JSON.parse(JSON.stringify(recipe))
+    let toDelete = recipeCopy.steps[currentStep].ingredients.filter(
       (ing) => ing.id == ingredientId
     )
     //remove any errors attached
     deleteError(ingredientId)
 
-    let index = updatedSteps[currentStep].ingredients.indexOf(toReplace[0])
+    let index = recipeCopy.steps[currentStep].ingredients.indexOf(toDelete[0])
     if (index > -1) {
-      let removed = updatedSteps[currentStep].ingredients.splice(index, 1)
-      setAllSteps(updatedSteps)
+      let removed = recipeCopy.steps[currentStep].ingredients.splice(index, 1)
+      setRecipe(recipeCopy)
       //there should always be at least one empty ingredient
-      if (updatedSteps[currentStep].ingredients.length <= 0) createIngredient()
+      if (recipeCopy.steps[currentStep].ingredients.length <= 0)
+        createIngredient()
       return removed
     }
   }
@@ -211,26 +198,33 @@ const RecipeForm: React.FC<RecipeFormProps> = ({
       value,
       id,
     }: { name: string; value: string; id?: string } = data.target
-    let allStepsCopy = [...allSteps]
+    let recipeCopy = JSON.parse(JSON.stringify(recipe))
     updateError(id || name, value)
 
     if (id) {
-      let ingredientCopy = allStepsCopy[currentStep].ingredients.filter(
+      let ingredientCopy = recipeCopy.steps[currentStep].ingredients.filter(
         (ing) => ing.id == id
       )[0]
-      let index = allStepsCopy[currentStep].ingredients.indexOf(ingredientCopy)
+      let index = recipeCopy.steps[currentStep].ingredients.indexOf(
+        ingredientCopy
+      )
       if (ingredientCopy && index > -1) {
         ingredientCopy[name] = value
-        allStepsCopy[currentStep].ingredients[index] = ingredientCopy
+        recipeCopy.steps[currentStep].ingredients[index] = ingredientCopy
       }
-    } else allStepsCopy[currentStep][name] = value
-
-    setAllSteps(allStepsCopy)
+    } else {
+      recipeCopy.steps[currentStep][name] = value
+    }
+    console.log('recipe', recipe)
+    console.log('recipe copy', recipeCopy)
+    setRecipe(recipeCopy)
   }
+  React.useEffect(() => setLoaded(true), [])
 
-  //create new step when current step does not yet exist
-  !allSteps[currentStep] ? createStep() : ''
-
+  // console.log('recipe', recipe)
+  // console.log('current step', currentStep)
+  // console.log('review mode', reviewMode)
+  // console.log('errors', errors)
   return loaded && !reviewMode ? (
     <React.Fragment>
       <div className="max-w-sm w-11/12 mt-8 mx-auto  p-6 bg-white rounded-lg shadow-xl">
@@ -252,16 +246,16 @@ const RecipeForm: React.FC<RecipeFormProps> = ({
             type="text"
             placeholder="ACTION"
             name="action"
-            value={allSteps[currentStep].action.toString() || ''}
+            value={recipe.steps[currentStep].action || ''}
             onChange={handleChange}
           ></input>
           <ErrorField name="action" errors={errors} />
         </div>
-        {allSteps[currentStep].ingredients.map((ing) => (
+        {recipe.steps[currentStep].ingredients.map((ing) => (
           <div className="bg-orange-100 p-1 my-4">
             <span
               className="float-right"
-              onClick={() => deleteIngredient(ing.id)}
+              onClick={() => deleteIngredient(ing.id.toString())}
             >
               <svg
                 className="fill-current h-6 w-6 text-pink-300 mx-auto"
@@ -279,7 +273,7 @@ const RecipeForm: React.FC<RecipeFormProps> = ({
                   className="bg-transparent w-full text-4xl text-gray-700 mr-3 py-1 leading-tight focus:outline-none  border-b-4 border-black "
                   type="text"
                   placeholder="INGREDIENT"
-                  id={ing.id}
+                  id={ing.id.toString()}
                   name="name"
                   onChange={handleChange}
                   value={ing.name || ''}
@@ -291,7 +285,7 @@ const RecipeForm: React.FC<RecipeFormProps> = ({
                   className="bg-transparent w-full text-3xl text-gray-700 mr-3 py-1 leading-tight focus:outline-none  border-b-4 border-black "
                   type="text"
                   placeholder="Quantity"
-                  id={ing.id}
+                  id={ing.id.toString()}
                   name="quantity"
                   onChange={handleChange}
                   value={ing.quantity || ''}
@@ -303,7 +297,7 @@ const RecipeForm: React.FC<RecipeFormProps> = ({
                   className="bg-transparent w-full text-3xl text-gray-700 mr-3 py-1 leading-tight focus:outline-none  border-b-4 border-black "
                   type="text"
                   placeholder="Unit"
-                  id={ing.id}
+                  id={ing.id.toString()}
                   name="unit"
                   onChange={handleChange}
                   value={ing.unit || ''}
@@ -326,7 +320,7 @@ const RecipeForm: React.FC<RecipeFormProps> = ({
               type="text"
               placeholder="Temp"
               name="tempLevel"
-              value={allSteps[currentStep].tempLevel || ''}
+              value={recipe.steps[currentStep].tempLevel || ''}
               onChange={handleChange}
             ></input>
             <ErrorField name="tempLevel" errors={errors} />
@@ -337,7 +331,7 @@ const RecipeForm: React.FC<RecipeFormProps> = ({
               type="text"
               placeholder="Time"
               name="time"
-              value={allSteps[currentStep].time || ''}
+              value={recipe.steps[currentStep].time || ''}
               onChange={handleChange}
             ></input>
             <ErrorField name="time" errors={errors} />
@@ -348,7 +342,7 @@ const RecipeForm: React.FC<RecipeFormProps> = ({
               type="text"
               placeholder="Location."
               name="location"
-              value={allSteps[currentStep].location || ''}
+              value={recipe.steps[currentStep].location}
               onChange={handleChange}
             ></input>
             <ErrorField name="location" errors={errors} />

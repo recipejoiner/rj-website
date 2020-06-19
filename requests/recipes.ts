@@ -111,6 +111,7 @@ interface IngredientInputType {
   unit: string
 }
 
+//add stepNum, resultsFromStep as alternative to ingredients
 export interface RecipeInputStepType {
   [id: string]: string | number | Array<IngredientInputType>
   action: string

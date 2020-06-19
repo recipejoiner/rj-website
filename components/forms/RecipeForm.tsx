@@ -3,6 +3,11 @@ import { GraphQLError } from 'graphql'
 
 import { RecipeInputType, RecipeInputStepType } from '../../requests/recipes'
 
+const THERMOMETER =
+  'data:image/svg+xml;base64,PD94bWwgdmVyc2lvbj0iMS4wIiBlbmNvZGluZz0iaXNvLTg4NTktMSI/Pg0KPCEtLSBHZW5lcmF0b3I6IEFkb2JlIElsbHVzdHJhdG9yIDE5LjAuMCwgU1ZHIEV4cG9ydCBQbHVnLUluIC4gU1ZHIFZlcnNpb246IDYuMDAgQnVpbGQgMCkgIC0tPg0KPHN2ZyB2ZXJzaW9uPSIxLjEiIGlkPSJDYXBhXzEiIHhtbG5zPSJodHRwOi8vd3d3LnczLm9yZy8yMDAwL3N2ZyIgeG1sbnM6eGxpbms9Imh0dHA6Ly93d3cudzMub3JnLzE5OTkveGxpbmsiIHg9IjBweCIgeT0iMHB4Ig0KCSB2aWV3Qm94PSIwIDAgNDQ4IDQ0OCIgc3R5bGU9ImVuYWJsZS1iYWNrZ3JvdW5kOm5ldyAwIDAgNDQ4IDQ0ODsiIHhtbDpzcGFjZT0icHJlc2VydmUiPg0KPGc+DQoJPGc+DQoJCTxwYXRoIGQ9Ik0zMDMuODksMjU3LjA4N1Y4MC4xOTFDMzAzLjg5LDM1LjkwMywyNjguMTU2LDAsMjIzLjgzNiwwYy00NC4yODIsMC03OS45NjEsMzQuNDk2LTc5Ljk2MSw3OC43ODRWMjU2DQoJCQljLTE5Ljc1LDIwLjI1Ni0zMi4xMzMsNDkuMjc5LTMyLjEzMyw3OS44MDhDMTExLjc0MiwzOTcuNzQ1LDE2Miw0NDgsMjI0LDQ0OGM2MS45NjksMCwxMTIuMjU4LTUwLjI1NiwxMTIuMjU4LTExMi4xOTINCgkJCUMzMzYuMjU4LDMwNS4xMiwzMjMuNzU4LDI3Ny4zNzUsMzAzLjg5LDI1Ny4wODd6IE0yMjQsNDE2Yy00NC4yNSwwLTgwLjI1OC0zNS45NzQtODAuMjU4LTgwLjE5Mg0KCQkJYzAtMjEuMTg2LDguNjE3LTQyLjY3LDIzLjA0Ny01Ny40N2w5LjA4Ni05LjMyVjI1NlY3OC43ODRjMC0yNi4yMzQsMjEuMDctNDYuNzg0LDQ3Ljk2MS00Ni43ODQNCgkJCWMyNi41LDAsNDguMDU0LDIxLjYxOCw0OC4wNTQsNDguMTkxdjE3Ni44OTd2MTMuMDYxbDkuMTQxLDkuMzNjMTQuOTc3LDE1LjI5NCwyMy4yMjYsMzUuMjk5LDIzLjIyNiw1Ni4zMjkNCgkJCUMzMDQuMjU4LDM4MC4wMjUsMjY4LjI1OCw0MTYsMjI0LDQxNnoiLz4NCgk8L2c+DQo8L2c+DQo8Zz4NCgk8Zz4NCgkJPHBhdGggZD0iTTI0MCwyODkuODgzYzAtNzUuMjE0LDAtNTkuMDA0LDAtMTQ1Ljg4NGgtMzJjMCw4Ny4wMTYsMCw3MC41NTQsMCwxNDUuODg2Yy0xNi4wMDQsOS4zMTEtMzIsMjAuMjQ0LTMyLDQ1LjkyMg0KCQkJYzAsMjYuNDY2LDIxLjUzMSw0OCw0OCw0OHM0OC0yMS41MzQsNDgtNDhDMjcyLDMxMC4xMzEsMjU2LjAwNCwyOTkuMTk3LDI0MCwyODkuODgzeiIvPg0KCTwvZz4NCjwvZz4NCjxnPg0KPC9nPg0KPGc+DQo8L2c+DQo8Zz4NCjwvZz4NCjxnPg0KPC9nPg0KPGc+DQo8L2c+DQo8Zz4NCjwvZz4NCjxnPg0KPC9nPg0KPGc+DQo8L2c+DQo8Zz4NCjwvZz4NCjxnPg0KPC9nPg0KPGc+DQo8L2c+DQo8Zz4NCjwvZz4NCjxnPg0KPC9nPg0KPGc+DQo8L2c+DQo8Zz4NCjwvZz4NCjwvc3ZnPg0K'
+const IMAGE =
+  'data:image/svg+xml;base64,PD94bWwgdmVyc2lvbj0iMS4wIj8+CjxzdmcgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIiBpZD0iTGF5ZXJfMSIgZGF0YS1uYW1lPSJMYXllciAxIiB2aWV3Qm94PSIwIDAgNTEyIDUxMiIgd2lkdGg9IjUxMiIgaGVpZ2h0PSI1MTIiPjx0aXRsZT5waW4gbG9jYXRpb24gbmF2aWdhdGlvbjwvdGl0bGU+PHBhdGggZD0iTTE1NC4xNTQsMTc0LjMxOWE0Ny4zNjgsNDcuMzY4LDAsMSwwLTQ3LjM2OC00Ny4zNjhBNDcuNDIxLDQ3LjQyMSwwLDAsMCwxNTQuMTU0LDE3NC4zMTlabTAtODIuNzM1YTM1LjM2OCwzNS4zNjgsMCwxLDEtMzUuMzY4LDM1LjM2N0EzNS40MDcsMzUuNDA3LDAsMCwxLDE1NC4xNTQsOTEuNTg0WiIvPjxwYXRoIGQ9Ik00MjYuNDgyLDIxNi42NDl2LTgzLjNhNDIuODE5LDQyLjgxOSwwLDAsMC00Mi43NzEtNDIuNzcxSDM3MS4zMjZWODcuMzgxQTQyLjgyLDQyLjgyLDAsMCwwLDMyOC41NTQsNDQuNjFINTIuNzcxQTQyLjgxOSw0Mi44MTksMCwwLDAsMTAsODcuMzgxVjI3Mi40NDNhNDIuODIsNDIuODIsMCwwLDAsNDIuNzcxLDQyLjc3Mkg2NS4xNTd2My4xOTJhNDIuODIsNDIuODIsMCwwLDAsNDIuNzcxLDQyLjc3MmgxMzMuMjJjMTEuODkyLDYwLjQ2LDY1LjI5MywxMDYuMjExLDEyOS4xODcsMTA2LjIxMSw3Mi42LDAsMTMxLjY2NS01OS4wNjUsMTMxLjY2NS0xMzEuNjY1QTEzMS44MzIsMTMxLjgzMiwwLDAsMCw0MjYuNDgyLDIxNi42NDlaTTM4My43MTEsMTAyLjU3NGEzMC44MDYsMzAuODA2LDAsMCwxLDMwLjc3MSwzMC43NzF2NzguMzM3YTEzMS4wMDYsMTMxLjAwNiwwLDAsMC00My4xNTYtNy42MXYtMTAxLjVaTTUyLjc3MSw1Ni42MUgzMjguNTU0YTMwLjgwNiwzMC44MDYsMCwwLDEsMzAuNzcyLDMwLjc3MVYyMDQuNTNhMTMwLjc4OCwxMzAuNzg4LDAsMCwwLTU4Ljc2LDE5LjUyMWwtMjcuODgtMTcuOTFhMjYuOSwyNi45LDAsMCwwLTM1LjAwOCwzLjQ1N2wtMjcuODY2LDI5LjAzOC02NC4zMjYtMzkuOTA3QTI3LjEyNiwyNy4xMjYsMCwwLDAsMTE0LjYsMjAwLjM3TDIyLDI2MS43Vjg3LjM4MUEzMC44MDYsMzAuODA2LDAsMCwxLDUyLjc3MSw1Ni42MVptMTkzLjU2NSwxNjEuM2ExNC45NzEsMTQuOTcxLDAsMCwxLDE5LjU0Ny0xLjg4Yy4wNy4wNS4xNDIuMS4yMTUuMTQ1bDIzLjgxNCwxNS4zYTEzMS42MjMsMTMxLjYyMywwLDAsMC00Ny4xNzEsNzEuNzQ2SDE2NC40NzNabS0yMjQuMTMsNTguMDUsOTkuMjIyLTY1LjcxNmMuMTQ1LS4wOTUuMjg1LS4yLjQyMS0uM2ExNS4wOTIsMTUuMDkyLDAsMCwxLDE3LjMxMS0xLjAwOWw2Mi4xNTgsMzguNTYxLTUzLjQ3Nyw1NS43MjdINTIuNzcxQTMwLjgxMiwzMC44MTIsMCwwLDEsMjIuMjA2LDI3NS45NTZabTg1LjcyMiw3My4yMjNhMzAuODA2LDMwLjgwNiwwLDAsMS0zMC43NzEtMzAuNzcydi0zLjE5MkgyNDAuMjc0YTEzMi4zNjksMTMyLjM2OSwwLDAsMC0uOTIyLDMzLjk2NFpNMzcwLjMzNSw0NTUuMzlBMTE5LjY2NSwxMTkuNjY1LDAsMSwxLDQ5MCwzMzUuNzI1LDExOS44LDExOS44LDAsMCwxLDM3MC4zMzUsNDU1LjM5WiIvPjxwYXRoIGQ9Ik00MjkuOTQ4LDI3Ni4xMWE1MC44Niw1MC44NiwwLDAsMC03NS45MTgsNjcuNDM1bC01Ni40NSw1Ni40NDlhNiw2LDAsMCwwLDguNDg2LDguNDg1bDU2LjQ0Ni01Ni40NDdhNTAuODYyLDUwLjg2MiwwLDAsMCw2Ny40MzYtNzUuOTIxWm0tOC40ODUsNjMuNDUyYTM4Ljg0OSwzOC44NDksMCwxLDEsMC01NC45NjVoMEEzOC45MTEsMzguOTExLDAsMCwxLDQyMS40NjMsMzM5LjU2MloiLz48cGF0aCBkPSJNNDEyLjY1NCwzMTguNjI4YTEyLjg1MiwxMi44NTIsMCwwLDEtMTEuMjUsMTEuMjQ5LDYsNiwwLDAsMCwuNzEsMTEuOTU4LDYuMTE1LDYuMTE1LDAsMCwwLC43MjQtLjA0NCwyNC44MjQsMjQuODI0LDAsMCwwLDIxLjczLTIxLjcyOSw2LDYsMCwxLDAtMTEuOTE0LTEuNDM0WiIvPjwvc3ZnPgo='
+
 interface Error {
   key: string
   error: string
@@ -152,10 +157,10 @@ const RecipeForm: React.FC<RecipeFormProps> = ({
     )
   }
 
-  const submitStep = () => {
+  const submitStep = (index: number) => {
     if (validateStep(currentStep)) {
       if (currentStep === recipe.steps.length - 1) createStep()
-      goToStep(currentStep + 1)
+      goToStep(index)
     }
   }
 
@@ -216,147 +221,212 @@ const RecipeForm: React.FC<RecipeFormProps> = ({
   // console.log('errors', errors)
   return loaded && !reviewMode ? (
     <React.Fragment>
-      <div className="max-w-sm w-11/12 mt-8 mx-auto  p-6 bg-white rounded-lg shadow-xl">
-        <span className="float-right" onClick={() => deleteStep(currentStep)}>
-          <svg
-            className="fill-current h-6 w-6 text-pink-300 mx-auto"
-            role="button"
-            xmlns="http://www.w3.org/2000/svg"
-            viewBox="0 0 20 20"
-          >
-            <title>Close</title>
-            <path d="M14.348 14.849a1.2 1.2 0 0 1-1.697 0L10 11.819l-2.651 3.029a1.2 1.2 0 1 1-1.697-1.697l2.758-3.15-2.759-3.152a1.2 1.2 0 1 1 1.697-1.697L10 8.183l2.651-3.031a1.2 1.2 0 1 1 1.697 1.697l-2.758 3.152 2.758 3.15a1.2 1.2 0 0 1 0 1.698z" />
-          </svg>
-        </span>
-        {/* Inputs */}
-        <div className="w-full">
-          <input
-            className="bg-transparent w-full text-4xl text-gray-700 mr-3 py-1 leading-tight focus:outline-none  border-b-4 border-black "
-            type="text"
-            placeholder="ACTION"
-            name="action"
-            value={recipe.steps[currentStep].action || ''}
-            onChange={handleChange}
-          ></input>
-          <ErrorField name="action" errors={errors} />
-        </div>
-        {recipe.steps[currentStep].ingredients.map((ing) => (
-          <div className="bg-orange-100 p-1 my-4">
-            <span
-              className="float-right"
-              onClick={() => deleteIngredient(ing.id.toString())}
+      <div className="max-w-md mx-auto">
+        {!!currentStep &&
+          recipe.steps.map((step) => {
+            let index = recipe.steps.indexOf(step)
+            if (index < currentStep) {
+              return (
+                <div
+                  className=" w-10/12 mt-2 cursor-pointer"
+                  onClick={() => submitStep(index)}
+                >
+                  <div className="grid grid-cols-3 bg-gray-300 text-xl p-4 bg-white rounded-lg shadow-s">
+                    <span className="rounded-full h-8 w-8 text-center bg-white">
+                      {index + 1}
+                    </span>
+
+                    <div>{recipe.steps[index].action}</div>
+                    <div>
+                      {recipe.steps[index].ingredients.map(
+                        (ing) => ing.name + ' '
+                      )}
+                    </div>
+                  </div>
+                </div>
+              )
+            }
+          })}
+        <span className="mt-8 text-6xl">Step {currentStep + 1}</span>
+        <div className=" mt-1 mx-auto mt-1 p-6 bg-white rounded-lg shadow-xl">
+          <span className="float-right" onClick={() => deleteStep(currentStep)}>
+            <svg
+              className="fill-current h-6 w-6 text-pink-300 mx-auto"
+              role="button"
+              xmlns="http://www.w3.org/2000/svg"
+              viewBox="0 0 20 20"
             >
-              <svg
-                className="fill-current h-6 w-6 text-pink-300 mx-auto"
-                role="button"
-                xmlns="http://www.w3.org/2000/svg"
-                viewBox="0 0 20 20"
-              >
-                <title>Close</title>
-                <path d="M14.348 14.849a1.2 1.2 0 0 1-1.697 0L10 11.819l-2.651 3.029a1.2 1.2 0 1 1-1.697-1.697l2.758-3.15-2.759-3.152a1.2 1.2 0 1 1 1.697-1.697L10 8.183l2.651-3.031a1.2 1.2 0 1 1 1.697 1.697l-2.758 3.152 2.758 3.15a1.2 1.2 0 0 1 0 1.698z" />
-              </svg>
-            </span>
-            <div className="grid grid-cols-2 grid-rows-2 gap-4">
-              <div className="col-span-2">
-                <input
-                  className="bg-transparent w-full text-4xl text-gray-700 mr-3 py-1 leading-tight focus:outline-none  border-b-4 border-black "
-                  type="text"
-                  placeholder="INGREDIENT"
-                  id={ing.id + '-name'}
-                  name="name"
-                  onChange={handleChange}
-                  value={ing.name || ''}
-                ></input>
-                <ErrorField name={ing.id + '-name'} errors={errors} />
+              <title>Close</title>
+              <path d="M14.348 14.849a1.2 1.2 0 0 1-1.697 0L10 11.819l-2.651 3.029a1.2 1.2 0 1 1-1.697-1.697l2.758-3.15-2.759-3.152a1.2 1.2 0 1 1 1.697-1.697L10 8.183l2.651-3.031a1.2 1.2 0 1 1 1.697 1.697l-2.758 3.152 2.758 3.15a1.2 1.2 0 0 1 0 1.698z" />
+            </svg>
+          </span>
+          {/* Inputs */}
+          <div className="grid grid-cols-2  col-gap-4">
+            <div className=" ">
+              <input
+                className="bg-transparent w-full text-3xl text-gray-700 mr-3 py-1 leading-tight focus:outline-none  border-b-4 border-black "
+                type="text"
+                placeholder="ACTION"
+                name="action"
+                value={recipe.steps[currentStep].action || ''}
+                onChange={handleChange}
+              ></input>
+              <ErrorField name="action" errors={errors} />
+            </div>
+            {/* temp/time/location */}
+            <div className="grid grid-cols-3 col-gap-1 content-end">
+              <div className="">
+                <div>
+                  <input
+                    className="bg-fixed bg-transparent w-full text-xl text-gray-700 mr-3 py-1 leading-tight focus:outline-none border-b-2 border-black"
+                    type="text"
+                    placeholder="Temp"
+                    name="tempLevel"
+                    value={recipe.steps[currentStep].tempLevel || ''}
+                    onChange={handleChange}
+                  ></input>
+                </div>
+                <ErrorField name="tempLevel" errors={errors} />
               </div>
-              <div className="row-start-2 col-start-1">
+              <div className="">
                 <input
-                  className="bg-transparent w-full text-3xl text-gray-700 mr-3 py-1 leading-tight focus:outline-none  border-b-4 border-black "
+                  className="bg-transparent w-full text-xl text-gray-700 mr-3 py-1 leading-tight focus:outline-none border-b-2 border-black"
                   type="text"
-                  placeholder="Quantity"
-                  id={ing.id + '-quantity'}
-                  name="quantity"
+                  placeholder="Time"
+                  name="time"
+                  value={recipe.steps[currentStep].time || ''}
                   onChange={handleChange}
-                  value={ing.quantity || ''}
                 ></input>
-                <ErrorField name={ing.id + '-quantity'} errors={errors} />
+                <ErrorField name="time" errors={errors} />
               </div>
-              <div className="row-start-2 col-start-2">
+              <div className="">
                 <input
-                  className="bg-transparent w-full text-3xl text-gray-700 mr-3 py-1 leading-tight focus:outline-none  border-b-4 border-black "
+                  className="bg-transparent w-full text-xl text-gray-700 mr-3 py-1 leading-tight focus:outline-none border-b-2 border-black"
                   type="text"
-                  placeholder="Unit"
-                  id={ing.id + '-unit'}
-                  name="unit"
+                  placeholder="Tool"
+                  name="location"
+                  value={recipe.steps[currentStep].location}
                   onChange={handleChange}
-                  value={ing.unit || ''}
                 ></input>
-                <ErrorField name={ing.id + '-unit'} errors={errors} />
+                <ErrorField name="location" errors={errors} />
               </div>
             </div>
           </div>
-        ))}
-        <button
-          className="bg-gray-300 hover:bg-gray-400 text-gray-800 font-bold py-2 px-4 rounded mb-4 "
-          onClick={createIngredient}
-        >
-          Add Ingredient
-        </button>
-        <div className="grid grid-cols-3 gap-4">
-          <div className="">
-            <input
-              className="bg-transparent w-full text-xl text-gray-700 mr-3 py-1 leading-tight focus:outline-none  border-b-4 border-black "
-              type="text"
-              placeholder="Temp"
-              name="tempLevel"
-              value={recipe.steps[currentStep].tempLevel || ''}
-              onChange={handleChange}
-            ></input>
-            <ErrorField name="tempLevel" errors={errors} />
-          </div>
-          <div className="col-span-1">
-            <input
-              className="bg-transparent w-full text-xl text-gray-700 mr-3 py-1 leading-tight focus:outline-none  border-b-4 border-black "
-              type="text"
-              placeholder="Time"
-              name="time"
-              value={recipe.steps[currentStep].time || ''}
-              onChange={handleChange}
-            ></input>
-            <ErrorField name="time" errors={errors} />
-          </div>
-          <div className="span-1">
-            <input
-              className="bg-transparent w-full text-xl text-gray-700 mr-3 py-1 leading-tight focus:outline-none  border-b-4 border-black "
-              type="text"
-              placeholder="Location."
-              name="location"
-              value={recipe.steps[currentStep].location}
-              onChange={handleChange}
-            ></input>
-            <ErrorField name="location" errors={errors} />
+
+          {/* ingredients */}
+          {recipe.steps[currentStep].ingredients.map((ing) => (
+            <div className=" my-4">
+              <span
+                className="float-right"
+                onClick={() => deleteIngredient(ing.id.toString())}
+              >
+                <svg
+                  className="fill-current h-6 w-6 text-pink-300 mx-auto"
+                  role="button"
+                  xmlns="http://www.w3.org/2000/svg"
+                  viewBox="0 0 20 20"
+                >
+                  <title>Close</title>
+                  <path d="M14.348 14.849a1.2 1.2 0 0 1-1.697 0L10 11.819l-2.651 3.029a1.2 1.2 0 1 1-1.697-1.697l2.758-3.15-2.759-3.152a1.2 1.2 0 1 1 1.697-1.697L10 8.183l2.651-3.031a1.2 1.2 0 1 1 1.697 1.697l-2.758 3.152 2.758 3.15a1.2 1.2 0 0 1 0 1.698z" />
+                </svg>
+              </span>
+              <div className="grid grid-cols-2 col-gap-4">
+                <div className="self-end ">
+                  <input
+                    className="bg-transparent w-full text-3xl text-gray-700 mr-3 py-1 leading-tight focus:outline-none  border-b-4 border-black "
+                    type="text"
+                    placeholder="INGREDIENT"
+                    id={ing.id + '-name'}
+                    name="name"
+                    onChange={handleChange}
+                    value={ing.name || ''}
+                  ></input>
+                  <ErrorField name={ing.id + '-name'} errors={errors} />
+                </div>
+                <div className="grid grid-cols-2 col-gap-1 content-end">
+                  <div className="">
+                    <input
+                      className="bg-transparent w-full text-xl text-gray-700 mr-3 py-1 leading-tight focus:outline-none  border-b-2 border-black"
+                      type="text"
+                      placeholder="Quantity"
+                      id={ing.id + '-quantity'}
+                      name="quantity"
+                      onChange={handleChange}
+                      value={ing.quantity || ''}
+                    ></input>
+                    <ErrorField name={ing.id + '-quantity'} errors={errors} />
+                  </div>
+                  <div className="col-auto">
+                    <input
+                      className="bg-transparent w-full text-xl text-gray-700 mr-3 py-1 leading-tight focus:outline-none  border-b-2 border-black"
+                      type="text"
+                      placeholder="Unit"
+                      id={ing.id + '-unit'}
+                      name="unit"
+                      onChange={handleChange}
+                      value={ing.unit || ''}
+                    ></input>
+                    <ErrorField name={ing.id + '-unit'} errors={errors} />
+                  </div>
+                </div>
+              </div>
+            </div>
+          ))}
+          <button
+            className="bg-gray-300 hover:bg-gray-400 text-gray-800 py-1 px-4 rounded mb-4 "
+            onClick={createIngredient}
+          >
+            Add Ingredient
+          </button>
+
+          <div className="grid grid-cols-2 w-full  h-40 ">
+            <div className=" grid items-center bg-gray-100">
+              <img className="w-1/2 m-auto" src={IMAGE} />
+            </div>
+            <textarea
+              placeholder="Custom Info"
+              className="resize-none h-full w-full text-xl border border-black rounded p-1 outline-none"
+            ></textarea>
           </div>
         </div>
         {/* Buttons */}
-        <div className="w-full mt-8">
-          <div className="grid col-gap-4 grid-cols-3">
+        <div className="w-full mt-8 mb-8">
+          <div className="grid col-gap-4 grid-cols-2">
             <button
-              className="bg-gray-300 hover:bg-gray-400 text-gray-800 font-bold py-2 px-4 rounded"
-              onClick={() => goToStep(currentStep - 1)}
+              className="bg-gray-300 hover:bg-gray-400  text-xl text-gray-800 font-bold py-2 px-4 rounded"
+              onClick={() => submitStep(currentStep + 1)}
             >
-              Prev
+              Next Step
             </button>
-            <button
-              className="bg-gray-300 hover:bg-gray-400 text-gray-800 font-bold py-2 px-4 rounded"
-              onClick={submitStep}
-            >
-              Next
-            </button>
-            <button className="bg-gray-300 hover:bg-gray-400 text-gray-800 font-bold py-2 px-4 rounded">
+            <button className="bg-gray-300 hover:bg-gray-400 text-xl text-gray-800 font-bold py-2 px-4 rounded">
               Finish
             </button>
           </div>
         </div>
+        {recipe.steps.map((step) => {
+          let index = recipe.steps.indexOf(step)
+          if (index > currentStep) {
+            return (
+              <div
+                className=" w-10/12 mt-2 cursor-pointer"
+                onClick={() => submitStep(index)}
+              >
+                <div className="grid grid-cols-3 bg-gray-300 text-xl p-4 bg-white rounded-lg shadow-s">
+                  <span className="rounded-full h-8 w-8 text-center bg-white">
+                    {index + 1}
+                  </span>
+
+                  <div>{recipe.steps[index].action}</div>
+                  <div>
+                    {recipe.steps[index].ingredients.map(
+                      (ing) => ing.name + ' '
+                    )}
+                  </div>
+                </div>
+              </div>
+            )
+          }
+        })}
       </div>
     </React.Fragment>
   ) : (

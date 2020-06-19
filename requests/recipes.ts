@@ -112,7 +112,8 @@ interface IngredientInputType {
 }
 
 export interface RecipeInputStepType {
-  [action: string]: string | number | Array<IngredientInputType>
+  [id: string]: string | number | Array<IngredientInputType>
+  action: string
   ingredients: Array<IngredientInputType>
   tempNum: number
   tempLevel: string

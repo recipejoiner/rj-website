@@ -1,8 +1,8 @@
 import * as React from 'react'
-
 import { GraphQLError } from 'graphql'
 
 import { RecipeInputType, RecipeInputStepType } from '../../requests/recipes'
+
 interface Error {
   key: string
   error: string
@@ -22,7 +22,7 @@ const NewIngredient = () => ({
   quantity: 0,
   unit: '',
 })
-//create new step
+
 const NewStep = () => ({
   action: '',
   ingredients: [NewIngredient()],
@@ -40,7 +40,6 @@ const NewRecipe = () => ({
   steps: [NewStep()],
 })
 
-//create a new error
 const NewError = (key: string, error: string, message: string) => ({
   key: key,
   error: error,
@@ -121,48 +120,43 @@ const RecipeForm: React.FC<RecipeFormProps> = ({
     setCurrentStep(stepNum)
   }
 
-  const submitStep = () => {
-    if (validateStepState(currentStep)) {
-      currentStep == recipe.steps.length
-        ? createStep()
-        : goToStep(currentStep + 1)
-    }
-  }
-
-  const hasValue = (errorKey: string, value: any) => {
+  const validateValue = (errorKey: string, value: any, validation: string) => {
     let ret = true
-    if (!value) {
-      createError(errorKey, 'required', 'This field is required.')
-      ret = false
-    } else if (value && getError(errorKey).length) deleteError(errorKey)
+    switch (validation) {
+      case 'required':
+        if (!value) {
+          createError(errorKey, 'required', 'This field is required.')
+          ret = false
+        }
+        break
+      default:
+        break
+    }
+    //if no errors with key remove old error from error object
+    if (!!ret && getError(errorKey).length) deleteError(errorKey)
     return ret
   }
 
-  const validateStepState = (stepNum: number) => {
-    let valid = true
-    //all variables declared now for future testing if needed
-    const {
-      ingredients,
-      action,
-      tempNum,
-      tempLevel,
-      time,
-      location,
-      customInfo,
-    } = recipe.steps[stepNum]
-    if (
-      //REQUIRED VALUES VALIDATION HERE (will return after first group of errors found)
-      !hasValue('action', action) ||
+  const validateStep = (stepNum: number) => {
+    const { ingredients, action } = recipe.steps[stepNum]
+    return (
+      //action
+      validateValue('action', action, 'required') &&
+      //ingredients
       ingredients.map((ing) => {
         return (
-          !hasValue(ing.id + '-name', ing.name) ||
-          !hasValue(ing.id + '-quantity', ing.quantity)
+          validateValue(ing.id + '-name', ing.name, 'required') &&
+          validateValue(ing.id + '-quantity', ing.quantity, 'required')
         )
       })[0]
-    ) {
-      valid = false
+    )
+  }
+
+  const submitStep = () => {
+    if (validateStep(currentStep)) {
+      if (currentStep === recipe.steps.length - 1) createStep()
+      goToStep(currentStep + 1)
     }
-    return valid
   }
 
   const createIngredient = () => {
@@ -174,20 +168,17 @@ const RecipeForm: React.FC<RecipeFormProps> = ({
   const deleteIngredient = (ingredientId: string) => {
     let recipeCopy = JSON.parse(JSON.stringify(recipe))
     let toDelete = recipeCopy.steps[currentStep].ingredients.filter(
-      (ing) => ing.id == ingredientId
-    )
-    //remove any errors attached
-    deleteError(ingredientId)
-
-    let index = recipeCopy.steps[currentStep].ingredients.indexOf(toDelete[0])
+      (ing: { id: string }) => ing.id == ingredientId
+    )[0]
+    let index = recipeCopy.steps[currentStep].ingredients.indexOf(toDelete)
     if (index > -1) {
-      let removed = recipeCopy.steps[currentStep].ingredients.splice(index, 1)
-      setRecipe(recipeCopy)
+      recipeCopy.steps[currentStep].ingredients.splice(index, 1)
       //there should always be at least one empty ingredient
       if (recipeCopy.steps[currentStep].ingredients.length <= 0)
-        createIngredient()
-      return removed
+        recipeCopy.steps[currentStep].ingredients.push(NewIngredient())
+      setRecipe(recipeCopy)
     }
+    deleteError(ingredientId)
   }
 
   const handleChange = (data: {
@@ -199,11 +190,10 @@ const RecipeForm: React.FC<RecipeFormProps> = ({
       id,
     }: { name: string; value: string; id?: string } = data.target
     let recipeCopy = JSON.parse(JSON.stringify(recipe))
-    updateError(id || name, value)
-
-    if (id) {
+    //if ingredient
+    if (!!id) {
       let ingredientCopy = recipeCopy.steps[currentStep].ingredients.filter(
-        (ing) => ing.id == id
+        (ing: { id: string }) => ing.id == id.substring(0, id.indexOf('-'))
       )[0]
       let index = recipeCopy.steps[currentStep].ingredients.indexOf(
         ingredientCopy
@@ -215,9 +205,8 @@ const RecipeForm: React.FC<RecipeFormProps> = ({
     } else {
       recipeCopy.steps[currentStep][name] = value
     }
-    console.log('recipe', recipe)
-    console.log('recipe copy', recipeCopy)
     setRecipe(recipeCopy)
+    updateError(id || name, value)
   }
   React.useEffect(() => setLoaded(true), [])
 
@@ -273,7 +262,7 @@ const RecipeForm: React.FC<RecipeFormProps> = ({
                   className="bg-transparent w-full text-4xl text-gray-700 mr-3 py-1 leading-tight focus:outline-none  border-b-4 border-black "
                   type="text"
                   placeholder="INGREDIENT"
-                  id={ing.id.toString()}
+                  id={ing.id + '-name'}
                   name="name"
                   onChange={handleChange}
                   value={ing.name || ''}
@@ -285,7 +274,7 @@ const RecipeForm: React.FC<RecipeFormProps> = ({
                   className="bg-transparent w-full text-3xl text-gray-700 mr-3 py-1 leading-tight focus:outline-none  border-b-4 border-black "
                   type="text"
                   placeholder="Quantity"
-                  id={ing.id.toString()}
+                  id={ing.id + '-quantity'}
                   name="quantity"
                   onChange={handleChange}
                   value={ing.quantity || ''}
@@ -297,7 +286,7 @@ const RecipeForm: React.FC<RecipeFormProps> = ({
                   className="bg-transparent w-full text-3xl text-gray-700 mr-3 py-1 leading-tight focus:outline-none  border-b-4 border-black "
                   type="text"
                   placeholder="Unit"
-                  id={ing.id.toString()}
+                  id={ing.id + '-unit'}
                   name="unit"
                   onChange={handleChange}
                   value={ing.unit || ''}

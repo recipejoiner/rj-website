@@ -2,6 +2,7 @@ import * as React from 'react'
 import { GraphQLError } from 'graphql'
 
 import { RecipeInputType, RecipeInputStepType } from '../../requests/recipes'
+import { setupMaster } from 'cluster'
 
 const THERMOMETER =
   'data:image/svg+xml;base64,PD94bWwgdmVyc2lvbj0iMS4wIiBlbmNvZGluZz0iaXNvLTg4NTktMSI/Pg0KPCEtLSBHZW5lcmF0b3I6IEFkb2JlIElsbHVzdHJhdG9yIDE5LjAuMCwgU1ZHIEV4cG9ydCBQbHVnLUluIC4gU1ZHIFZlcnNpb246IDYuMDAgQnVpbGQgMCkgIC0tPg0KPHN2ZyB2ZXJzaW9uPSIxLjEiIGlkPSJDYXBhXzEiIHhtbG5zPSJodHRwOi8vd3d3LnczLm9yZy8yMDAwL3N2ZyIgeG1sbnM6eGxpbms9Imh0dHA6Ly93d3cudzMub3JnLzE5OTkveGxpbmsiIHg9IjBweCIgeT0iMHB4Ig0KCSB2aWV3Qm94PSIwIDAgNDQ4IDQ0OCIgc3R5bGU9ImVuYWJsZS1iYWNrZ3JvdW5kOm5ldyAwIDAgNDQ4IDQ0ODsiIHhtbDpzcGFjZT0icHJlc2VydmUiPg0KPGc+DQoJPGc+DQoJCTxwYXRoIGQ9Ik0zMDMuODksMjU3LjA4N1Y4MC4xOTFDMzAzLjg5LDM1LjkwMywyNjguMTU2LDAsMjIzLjgzNiwwYy00NC4yODIsMC03OS45NjEsMzQuNDk2LTc5Ljk2MSw3OC43ODRWMjU2DQoJCQljLTE5Ljc1LDIwLjI1Ni0zMi4xMzMsNDkuMjc5LTMyLjEzMyw3OS44MDhDMTExLjc0MiwzOTcuNzQ1LDE2Miw0NDgsMjI0LDQ0OGM2MS45NjksMCwxMTIuMjU4LTUwLjI1NiwxMTIuMjU4LTExMi4xOTINCgkJCUMzMzYuMjU4LDMwNS4xMiwzMjMuNzU4LDI3Ny4zNzUsMzAzLjg5LDI1Ny4wODd6IE0yMjQsNDE2Yy00NC4yNSwwLTgwLjI1OC0zNS45NzQtODAuMjU4LTgwLjE5Mg0KCQkJYzAtMjEuMTg2LDguNjE3LTQyLjY3LDIzLjA0Ny01Ny40N2w5LjA4Ni05LjMyVjI1NlY3OC43ODRjMC0yNi4yMzQsMjEuMDctNDYuNzg0LDQ3Ljk2MS00Ni43ODQNCgkJCWMyNi41LDAsNDguMDU0LDIxLjYxOCw0OC4wNTQsNDguMTkxdjE3Ni44OTd2MTMuMDYxbDkuMTQxLDkuMzNjMTQuOTc3LDE1LjI5NCwyMy4yMjYsMzUuMjk5LDIzLjIyNiw1Ni4zMjkNCgkJCUMzMDQuMjU4LDM4MC4wMjUsMjY4LjI1OCw0MTYsMjI0LDQxNnoiLz4NCgk8L2c+DQo8L2c+DQo8Zz4NCgk8Zz4NCgkJPHBhdGggZD0iTTI0MCwyODkuODgzYzAtNzUuMjE0LDAtNTkuMDA0LDAtMTQ1Ljg4NGgtMzJjMCw4Ny4wMTYsMCw3MC41NTQsMCwxNDUuODg2Yy0xNi4wMDQsOS4zMTEtMzIsMjAuMjQ0LTMyLDQ1LjkyMg0KCQkJYzAsMjYuNDY2LDIxLjUzMSw0OCw0OCw0OHM0OC0yMS41MzQsNDgtNDhDMjcyLDMxMC4xMzEsMjU2LjAwNCwyOTkuMTk3LDI0MCwyODkuODgzeiIvPg0KCTwvZz4NCjwvZz4NCjxnPg0KPC9nPg0KPGc+DQo8L2c+DQo8Zz4NCjwvZz4NCjxnPg0KPC9nPg0KPGc+DQo8L2c+DQo8Zz4NCjwvZz4NCjxnPg0KPC9nPg0KPGc+DQo8L2c+DQo8Zz4NCjwvZz4NCjxnPg0KPC9nPg0KPGc+DQo8L2c+DQo8Zz4NCjwvZz4NCjxnPg0KPC9nPg0KPGc+DQo8L2c+DQo8Zz4NCjwvZz4NCjwvc3ZnPg0K'
@@ -24,7 +25,7 @@ interface RecipeFormProps {
 const NewIngredient = () => ({
   id: Date.now().toString(),
   name: '',
-  quantity: 0,
+  quantity: 1,
   unit: '',
 })
 
@@ -45,10 +46,16 @@ const NewRecipe = () => ({
   steps: [NewStep()],
 })
 
-const NewError = (key: string, error: string, message: string) => ({
+const NewError = (
+  key: string,
+  error: string,
+  message: string,
+  step: number
+) => ({
   key: key,
   error: error,
   message: message,
+  step: step,
 })
 
 const ErrorField = ({
@@ -58,7 +65,7 @@ const ErrorField = ({
   name: string
   errors: Array<Error>
 }) => {
-  const error = errors.filter((err) => err.key == name)[0]
+  const error = errors.filter((err) => err.key === name)[0]
   return error ? (
     <React.Fragment>
       <span className="text-sm text-red-600">{error.message}</span>
@@ -85,7 +92,7 @@ const RecipeForm: React.FC<RecipeFormProps> = ({
 
   const createError = (key: string, error: string, message: string) => {
     if (!getError(key).length) {
-      let err: Error = NewError(key, error, message)
+      let err: Error = NewError(key, error, message, currentStep)
       setErrors((errors) => [...errors, err])
     }
   }
@@ -124,6 +131,11 @@ const RecipeForm: React.FC<RecipeFormProps> = ({
     if (stepNum < 0) stepNum = 0
     setCurrentStep(stepNum)
   }
+  const submitRecipe = () => {
+    if (!!recipe.title) {
+      //submit recipe
+    }
+  }
 
   const validateValue = (errorKey: string, value: any, validation: string) => {
     let ret = true
@@ -148,15 +160,26 @@ const RecipeForm: React.FC<RecipeFormProps> = ({
       //action
       validateValue('action', action, 'required') &&
       //ingredients
-      ingredients.map((ing) => {
-        return (
-          validateValue(ing.id + '-name', ing.name, 'required') &&
-          validateValue(ing.id + '-quantity', ing.quantity, 'required')
-        )
-      })[0]
+      ingredients
+        .map((ing) => {
+          return (
+            validateValue(ing.id + '-name', ing.name, 'required') &&
+            validateValue(ing.id + '-quantity', ing.quantity, 'required')
+          )
+        })
+        .indexOf(false) < 0
     )
   }
 
+  const goToReview = () => {
+    let totalSteps = recipe.steps.length
+    let badSteps = []
+    for (let index = 0; index < totalSteps; index++) {
+      if (!validateStep(index)) badSteps.push(index)
+    }
+    if (!!badSteps.length) goToStep(badSteps[0])
+    else setReviewMode(true)
+  }
   const submitStep = (index: number) => {
     if (validateStep(currentStep)) {
       if (currentStep === recipe.steps.length - 1) createStep()
@@ -207,6 +230,8 @@ const RecipeForm: React.FC<RecipeFormProps> = ({
         ingredientCopy[name] = value
         recipeCopy.steps[currentStep].ingredients[index] = ingredientCopy
       }
+    } else if (!!reviewMode) {
+      recipeCopy[name] = value
     } else {
       recipeCopy.steps[currentStep][name] = value
     }
@@ -215,10 +240,6 @@ const RecipeForm: React.FC<RecipeFormProps> = ({
   }
   React.useEffect(() => setLoaded(true), [])
 
-  // console.log('recipe', recipe)
-  // console.log('current step', currentStep)
-  // console.log('review mode', reviewMode)
-  // console.log('errors', errors)
   return loaded && !reviewMode ? (
     <React.Fragment>
       <div className="max-w-md mx-auto">
@@ -229,7 +250,7 @@ const RecipeForm: React.FC<RecipeFormProps> = ({
               return (
                 <div
                   className=" w-10/12 mt-2 cursor-pointer"
-                  onClick={() => submitStep(index)}
+                  onClick={() => goToStep(index)}
                 >
                   <div className="grid grid-cols-3 bg-gray-300 text-xl p-4 bg-white rounded-lg shadow-s">
                     <span className="rounded-full h-8 w-8 text-center bg-white">
@@ -260,7 +281,6 @@ const RecipeForm: React.FC<RecipeFormProps> = ({
               <path d="M14.348 14.849a1.2 1.2 0 0 1-1.697 0L10 11.819l-2.651 3.029a1.2 1.2 0 1 1-1.697-1.697l2.758-3.15-2.759-3.152a1.2 1.2 0 1 1 1.697-1.697L10 8.183l2.651-3.031a1.2 1.2 0 1 1 1.697 1.697l-2.758 3.152 2.758 3.15a1.2 1.2 0 0 1 0 1.698z" />
             </svg>
           </span>
-          {/* Inputs */}
           <div className="grid grid-cols-2  col-gap-4">
             <div className=" ">
               <input
@@ -273,7 +293,6 @@ const RecipeForm: React.FC<RecipeFormProps> = ({
               ></input>
               <ErrorField name="action" errors={errors} />
             </div>
-            {/* temp/time/location */}
             <div className="grid grid-cols-3 col-gap-1 content-end">
               <div className="">
                 <div>
@@ -312,8 +331,6 @@ const RecipeForm: React.FC<RecipeFormProps> = ({
               </div>
             </div>
           </div>
-
-          {/* ingredients */}
           {recipe.steps[currentStep].ingredients.map((ing) => (
             <div className=" my-4">
               <span
@@ -378,7 +395,6 @@ const RecipeForm: React.FC<RecipeFormProps> = ({
           >
             Add Ingredient
           </button>
-
           <div className="grid grid-cols-2 w-full  h-40 ">
             <div className=" grid items-center bg-gray-100">
               <img className="w-1/2 m-auto" src={IMAGE} />
@@ -398,7 +414,10 @@ const RecipeForm: React.FC<RecipeFormProps> = ({
             >
               Next Step
             </button>
-            <button className="bg-gray-300 hover:bg-gray-400 text-xl text-gray-800 font-bold py-2 px-4 rounded">
+            <button
+              className="bg-gray-300 hover:bg-gray-400 text-xl text-gray-800 font-bold py-2 px-4 rounded"
+              onClick={goToReview}
+            >
               Finish
             </button>
           </div>
@@ -431,7 +450,63 @@ const RecipeForm: React.FC<RecipeFormProps> = ({
     </React.Fragment>
   ) : (
     //review mode
-    <React.Fragment></React.Fragment>
+    <React.Fragment>
+      <div className="max-w-md mt-8 mx-auto">
+        <div className="m-2 mb-8">
+          <input
+            className="bg-transparent w-full text-5xl text-gray-700 mr-3 py-1 leading-tight focus:outline-none  border-b-4 border-black "
+            type="text"
+            placeholder="Title"
+            name="title"
+            value={recipe.title || ''}
+            onChange={handleChange}
+          ></input>
+          <ErrorField name="action" errors={errors} />
+        </div>
+        {recipe.steps.map((step) => {
+          let index = recipe.steps.indexOf(step)
+          return (
+            <div
+              className=" w-10/12 my-2 cursor-pointer"
+              onClick={() => {
+                setReviewMode(false)
+                goToStep(index)
+              }}
+            >
+              <div className="grid grid-cols-3 bg-gray-300 text-xl p-4 bg-white rounded-lg shadow-s">
+                <span className="rounded-full h-8 w-8 text-center bg-white">
+                  {index + 1}
+                </span>
+
+                <div>{recipe.steps[index].action}</div>
+                <div>
+                  {recipe.steps[index].ingredients.map((ing) => ing.name + ' ')}
+                </div>
+              </div>
+            </div>
+          )
+        })}
+        <div className="grid grid-cols-3 grid-rows-3 my-8">
+          {Array.from(Array(9)).map(() => {
+            return (
+              <div className="grid items-center bg-gray-100 m-2 rounded">
+                <img className="w-1/2 m-auto" src={IMAGE} />
+              </div>
+            )
+          })}
+        </div>
+        <textarea
+          placeholder="Description and tags"
+          className="resize-none h-full w-full text-xl border border-black rounded p-1 outline-none"
+        ></textarea>
+      </div>
+      <button
+        className="bg-gray-300 hover:bg-gray-400 text-gray-800 py-1 px-4 rounded mb-4 "
+        onClick={submitRecipe}
+      >
+        Post Recipe
+      </button>
+    </React.Fragment>
   )
 }
 

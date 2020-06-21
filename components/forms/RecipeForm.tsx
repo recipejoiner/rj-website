@@ -1,6 +1,5 @@
 import * as React from 'react'
 import { GraphQLError } from 'graphql'
-
 import { RecipeInputType, RecipeInputStepType } from '../../requests/recipes'
 import { setupMaster } from 'cluster'
 
@@ -22,6 +21,11 @@ interface RecipeFormProps {
   errorsInit?: Array<any>
 }
 
+const NewUseResultFromStep = () => ({
+  id: Date.now().toString(),
+  value: '',
+})
+
 const NewIngredient = () => ({
   id: Date.now().toString(),
   name: '',
@@ -31,7 +35,8 @@ const NewIngredient = () => ({
 
 const NewStep = () => ({
   action: '',
-  ingredients: [NewIngredient()],
+  ingredients: [],
+  useResultsFromStep: [],
   tempNum: 0,
   tempLevel: '',
   time: 0,
@@ -132,7 +137,7 @@ const RecipeForm: React.FC<RecipeFormProps> = ({
     setCurrentStep(stepNum)
   }
   const submitRecipe = () => {
-    if (!!recipe.title) {
+    if (validateValue('title', recipe.title, 'required')) {
       //submit recipe
     }
   }
@@ -155,11 +160,16 @@ const RecipeForm: React.FC<RecipeFormProps> = ({
   }
 
   const validateStep = (stepNum: number) => {
-    const { ingredients, action } = recipe.steps[stepNum]
+    const { ingredients, action, useResultsFromStep } = recipe.steps[stepNum]
+    if (!ingredients.length && !useResultsFromStep.length) {
+      createError(
+        'step',
+        'required',
+        'Please add an Ingredient or Result From Step'
+      )
+    } else deleteError('step')
     return (
-      //action
       validateValue('action', action, 'required') &&
-      //ingredients
       ingredients
         .map((ing) => {
           return (
@@ -167,7 +177,13 @@ const RecipeForm: React.FC<RecipeFormProps> = ({
             validateValue(ing.id + '-quantity', ing.quantity, 'required')
           )
         })
-        .indexOf(false) < 0
+        .indexOf(false) < 0 &&
+      useResultsFromStep
+        .map((step) => {
+          return validateValue(step.id, step.value, 'required')
+        })
+        .indexOf(false) < 0 &&
+      !getError('step').length
     )
   }
 
@@ -201,14 +217,55 @@ const RecipeForm: React.FC<RecipeFormProps> = ({
     let index = recipeCopy.steps[currentStep].ingredients.indexOf(toDelete)
     if (index > -1) {
       recipeCopy.steps[currentStep].ingredients.splice(index, 1)
-      //there should always be at least one empty ingredient
-      if (recipeCopy.steps[currentStep].ingredients.length <= 0)
-        recipeCopy.steps[currentStep].ingredients.push(NewIngredient())
       setRecipe(recipeCopy)
     }
     deleteError(ingredientId)
   }
 
+  const createUseResultsFromStep = () => {
+    let recipeCopy = JSON.parse(JSON.stringify(recipe))
+    recipeCopy.steps[currentStep].useResultsFromStep.push(
+      NewUseResultFromStep()
+    )
+    setRecipe(recipeCopy)
+  }
+
+  const deleteUseResultsFromStep = (id: string) => {
+    let recipeCopy = JSON.parse(JSON.stringify(recipe))
+    let toDelete = recipeCopy.steps[currentStep].useResultsFromStep.filter(
+      (step: { id: string }) => step.id === id
+    )[0]
+    let index = recipeCopy.steps[currentStep].useResultsFromStep.indexOf(
+      toDelete
+    )
+    if (index > -1) {
+      recipeCopy.steps[currentStep].useResultsFromStep.splice(index, 1)
+      setRecipe(recipeCopy)
+    }
+    deleteError(id)
+  }
+  const updateValue = (field: string, name: string, value: string) => {
+    let recipeCopy = JSON.parse(JSON.stringify(recipe))
+    console.log(field, name, value)
+    switch (field) {
+      case 'useResultsFromStep':
+        let index = recipeCopy.steps[currentStep].useResultsFromStep.indexOf(
+          recipeCopy.steps[currentStep].useResultsFromStep.filter(
+            (step: { id: string }) => step.id === name
+          )[0]
+        )
+        if (
+          (index > -1 && Number(value) <= currentStep && Number(value) > 0) ||
+          value === ''
+        ) {
+          recipeCopy.steps[currentStep].useResultsFromStep[index].value = value
+          setRecipe(recipeCopy)
+        }
+        break
+      default:
+        break
+    }
+  }
   const handleChange = (data: {
     target: { name: any; value: any; id?: any }
   }) => {
@@ -277,7 +334,7 @@ const RecipeForm: React.FC<RecipeFormProps> = ({
               xmlns="http://www.w3.org/2000/svg"
               viewBox="0 0 20 20"
             >
-              <title>Close</title>
+              <title>Delete</title>
               <path d="M14.348 14.849a1.2 1.2 0 0 1-1.697 0L10 11.819l-2.651 3.029a1.2 1.2 0 1 1-1.697-1.697l2.758-3.15-2.759-3.152a1.2 1.2 0 1 1 1.697-1.697L10 8.183l2.651-3.031a1.2 1.2 0 1 1 1.697 1.697l-2.758 3.152 2.758 3.15a1.2 1.2 0 0 1 0 1.698z" />
             </svg>
           </span>
@@ -331,6 +388,7 @@ const RecipeForm: React.FC<RecipeFormProps> = ({
               </div>
             </div>
           </div>
+
           {recipe.steps[currentStep].ingredients.map((ing) => (
             <div className=" my-4">
               <span
@@ -343,7 +401,7 @@ const RecipeForm: React.FC<RecipeFormProps> = ({
                   xmlns="http://www.w3.org/2000/svg"
                   viewBox="0 0 20 20"
                 >
-                  <title>Close</title>
+                  <title>Delete</title>
                   <path d="M14.348 14.849a1.2 1.2 0 0 1-1.697 0L10 11.819l-2.651 3.029a1.2 1.2 0 1 1-1.697-1.697l2.758-3.15-2.759-3.152a1.2 1.2 0 1 1 1.697-1.697L10 8.183l2.651-3.031a1.2 1.2 0 1 1 1.697 1.697l-2.758 3.152 2.758 3.15a1.2 1.2 0 0 1 0 1.698z" />
                 </svg>
               </span>
@@ -389,12 +447,64 @@ const RecipeForm: React.FC<RecipeFormProps> = ({
               </div>
             </div>
           ))}
+          {currentStep > 0 &&
+            recipe.steps[currentStep].useResultsFromStep.map((step) => (
+              <div className=" my-4">
+                <span
+                  className="float-right"
+                  onClick={() => deleteUseResultsFromStep(step.id)}
+                >
+                  <svg
+                    className="fill-current h-6 w-6 text-pink-300 mx-auto"
+                    role="button"
+                    xmlns="http://www.w3.org/2000/svg"
+                    viewBox="0 0 20 20"
+                  >
+                    <title>Delete</title>
+                    <path d="M14.348 14.849a1.2 1.2 0 0 1-1.697 0L10 11.819l-2.651 3.029a1.2 1.2 0 1 1-1.697-1.697l2.758-3.15-2.759-3.152a1.2 1.2 0 1 1 1.697-1.697L10 8.183l2.651-3.031a1.2 1.2 0 1 1 1.697 1.697l-2.758 3.152 2.758 3.15a1.2 1.2 0 0 1 0 1.698z" />
+                  </svg>
+                </span>
+                <div className="grid grid-cols-3 col-gap-4">
+                  <span className="text-2xl col-span-2">
+                    Use Result From Step:
+                  </span>
+                  <div className="self-end ">
+                    <input
+                      className="bg-transparent text-center w-full text-2xl text-gray-700 mr-3 py-1 leading-tight focus:outline-none  border-b-2 border-black "
+                      type="number"
+                      min="1"
+                      max={currentStep}
+                      placeholder="Step"
+                      id={step.id}
+                      name="useResultsFromStep"
+                      onChange={(e) =>
+                        updateValue(
+                          'useResultsFromStep',
+                          e.target.id,
+                          e.target.value
+                        )
+                      }
+                      value={step.value || ''}
+                    ></input>
+                    <ErrorField name={step.id} errors={errors} />
+                  </div>
+                </div>
+              </div>
+            ))}
           <button
             className="bg-gray-300 hover:bg-gray-400 text-gray-800 py-1 px-4 rounded mb-4 "
             onClick={createIngredient}
           >
             Add Ingredient
           </button>
+          {currentStep > 0 && (
+            <button
+              className="bg-gray-300 hover:bg-gray-400 text-gray-800 py-1 px-4 rounded ml-4 mb-4 "
+              onClick={createUseResultsFromStep}
+            >
+              Add Results from Step
+            </button>
+          )}
           <div className="grid grid-cols-2 w-full  h-40 ">
             <div className=" grid items-center bg-gray-100">
               <img className="w-1/2 m-auto" src={IMAGE} />
@@ -405,7 +515,6 @@ const RecipeForm: React.FC<RecipeFormProps> = ({
             ></textarea>
           </div>
         </div>
-        {/* Buttons */}
         <div className="w-full mt-8 mb-8">
           <div className="grid col-gap-4 grid-cols-2">
             <button
@@ -446,6 +555,7 @@ const RecipeForm: React.FC<RecipeFormProps> = ({
             )
           }
         })}
+        <ErrorField name="step" errors={errors} />
       </div>
     </React.Fragment>
   ) : (
@@ -461,7 +571,7 @@ const RecipeForm: React.FC<RecipeFormProps> = ({
             value={recipe.title || ''}
             onChange={handleChange}
           ></input>
-          <ErrorField name="action" errors={errors} />
+          <ErrorField name="title" errors={errors} />
         </div>
         {recipe.steps.map((step) => {
           let index = recipe.steps.indexOf(step)

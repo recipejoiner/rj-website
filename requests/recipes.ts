@@ -113,9 +113,10 @@ interface IngredientInputType {
 
 //add stepNum, resultsFromStep as alternative to ingredients
 export interface RecipeInputStepType {
-  [id: string]: string | number | Array<IngredientInputType>
+  [id: string]: string | number | Array<any>
   action: string
   ingredients: Array<IngredientInputType>
+  useResultsFromStep: Array<{ id: string; value: string }>
   tempNum: number
   tempLevel: string
   time: number

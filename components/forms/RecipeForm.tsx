@@ -214,7 +214,6 @@ const RecipeForm: React.FC<RecipeFormProps> = ({
   const submitRecipe = () => {
     if (validateValue('title', recipe.title, 'required')) {
       submit({ attributes: recipe })
-      console.log('from recipeform')
     }
   }
 

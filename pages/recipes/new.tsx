@@ -87,7 +87,7 @@ const NewRecipePage: NextPage<NewRecipePageProps> = ({}) => {
         />
         {/* OpenGraph tags end */}
       </Head>
-      <RecipeForm onSubmit={onSubmit} />
+      <RecipeForm submit={onSubmit} />
     </React.Fragment>
   )
 }

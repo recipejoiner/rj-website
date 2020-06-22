@@ -360,7 +360,7 @@ const RecipeForm: React.FC<RecipeFormProps> = ({
 
   return loaded && !reviewMode ? (
     <React.Fragment>
-      <div className="max-w-2xl mx-auto">
+      <div className="max-w-xl mx-auto">
         {!!currentStep &&
           recipe.steps.map((step) => {
             let index = recipe.steps.indexOf(step)
@@ -392,11 +392,11 @@ const RecipeForm: React.FC<RecipeFormProps> = ({
               ></input>
               <ErrorField name="action" errors={errors} />
             </div>
-            <div className="grid grid-cols-3 col-gap-1 content-end bg-gray-100 p-2 rounded">
-              <div className="">
+            <div className="grid grid-cols-3 col-gap-1 content-end mb-2">
+              <div className="bg-gray-100 p-2 rounded">
                 <div>
                   <input
-                    className="bg-fixed bg-transparent w-full text-xl   py-1 leading-tight focus:outline-none border-b-2 border-black"
+                    className="bg-fixed bg-transparent w-full text-xl leading-tight focus:outline-none "
                     type="text"
                     placeholder="Temp"
                     name="tempLevel"
@@ -406,9 +406,9 @@ const RecipeForm: React.FC<RecipeFormProps> = ({
                 </div>
                 <ErrorField name="tempLevel" errors={errors} />
               </div>
-              <div className="">
+              <div className="bg-gray-100 p-2 rounded">
                 <input
-                  className="bg-transparent w-full text-xl   py-1 leading-tight focus:outline-none border-b-2 border-black"
+                  className="bg-transparent w-full text-xl leading-tight focus:outline-none "
                   type="text"
                   placeholder="Time"
                   name="time"
@@ -417,9 +417,9 @@ const RecipeForm: React.FC<RecipeFormProps> = ({
                 ></input>
                 <ErrorField name="time" errors={errors} />
               </div>
-              <div className="">
+              <div className="bg-gray-100 p-2 rounded">
                 <input
-                  className="bg-transparent w-full text-xl  py-1 leading-tight focus:outline-none border-b-2 border-black"
+                  className="bg-transparent w-full text-xl leading-tight focus:outline-none "
                   type="text"
                   placeholder="Tool"
                   name="location"
@@ -512,14 +512,14 @@ const RecipeForm: React.FC<RecipeFormProps> = ({
           <div className="flex justify-end">
             <div className="w-6/12 flex justify-between">
               <button
-                className="bg-blue-111 focus:outline-none text-gray-800 p-4 rounded m-4 w-6/12"
+                className="bg-blue-111 focus:outline-none text-gray-800 p-2 rounded m-4 w-6/12"
                 onClick={createIngredient}
               >
                 + Ingredient
               </button>
               {currentStep > 0 && (
                 <button
-                  className="bg-blue-111 focus:outline-none text-gray-800 p-4 rounded m-4 w-6/12"
+                  className="bg-blue-111 focus:outline-none text-gray-800 p-2 rounded m-4 w-6/12"
                   onClick={createUseResultsFromStep}
                 >
                   + Result
@@ -540,13 +540,13 @@ const RecipeForm: React.FC<RecipeFormProps> = ({
         <div className="w-full mt-8 mb-8">
           <div className="grid col-gap-4 grid-cols-2">
             <button
-              className=" bg-yellow-111 hover:bg-yellow-222 focus:outline-none text-xl text-gray-800 font-bold py-2 px-4 rounded"
+              className=" bg-blue-111 focus:outline-none text-xl text-gray-800 font-bold py-2 px-4 rounded"
               onClick={() => submitStep(currentStep + 1)}
             >
               Next Step
             </button>
             <button
-              className="bg-orange-111  hover:bg-orange-222 focus:outline-none text-xl text-gray-800 font-bold py-2 px-4 rounded"
+              className="bg-orange-111 focus:outline-none text-xl text-gray-800 font-bold py-2 px-4 rounded"
               onClick={goToReview}
             >
               Finish
@@ -570,51 +570,53 @@ const RecipeForm: React.FC<RecipeFormProps> = ({
   ) : (
     //review mode
     <React.Fragment>
-      <div className="max-w-md mt-8 mx-auto">
-        <div className="m-2 mb-8">
-          <input
-            className="bg-transparent w-full text-5xl text-gray-700  py-1 leading-tight focus:outline-none  border-b-4 border-black "
-            type="text"
-            placeholder="Title"
-            name="title"
-            value={recipe.title || ''}
-            onChange={handleChange}
-          ></input>
-          <ErrorField name="title" errors={errors} />
-        </div>
-        {recipe.steps.map((step) => {
-          let index = recipe.steps.indexOf(step)
-          return (
-            <StepMiniView
-              recipe={recipe}
-              stepIndex={index}
-              onClick={() => {
-                setReviewMode(false)
-                goToStep(index)
-              }}
-            />
-          )
-        })}
-        <div className="grid grid-cols-3 grid-rows-3 my-8">
-          {Array.from(Array(9)).map(() => {
+      <div className="max-w-xl mt-8 mx-auto">
+        <div className=" mt-1 mx-auto mt-1 p-6 bg-white rounded-lg shadow-xl border-purple-111 border-2">
+          <div className="m-2 mb-8">
+            <input
+              className="bg-transparent w-full text-5xl text-gray-700  py-1 leading-tight focus:outline-none  border-b-4 border-black "
+              type="text"
+              placeholder="Title"
+              name="title"
+              value={recipe.title || ''}
+              onChange={handleChange}
+            ></input>
+            <ErrorField name="title" errors={errors} />
+          </div>
+          {recipe.steps.map((step) => {
+            let index = recipe.steps.indexOf(step)
             return (
-              <div className="grid items-center bg-gray-100 m-2 rounded">
-                <img className="w-1/2 m-auto" src={IMAGE} />
-              </div>
+              <StepMiniView
+                recipe={recipe}
+                stepIndex={index}
+                onClick={() => {
+                  setReviewMode(false)
+                  goToStep(index)
+                }}
+              />
             )
           })}
+          <div className="grid grid-cols-3 grid-rows-3 my-8">
+            {Array.from(Array(9)).map(() => {
+              return (
+                <div className="grid items-center bg-gray-100 m-2 rounded">
+                  <img className="w-1/2 m-auto" src={IMAGE} />
+                </div>
+              )
+            })}
+          </div>
+          <textarea
+            placeholder="Description and tags"
+            className="resize-none h-full w-full text-xl text-gray-700 bg-gray-111 rounded p-4 outline-none"
+          ></textarea>
         </div>
-        <textarea
-          placeholder="Description and tags"
-          className="resize-none h-full w-full text-xl border border-black rounded p-1 outline-none"
-        ></textarea>
+        <button
+          className="bg-orange-111 w-full focus:outline-none text-xl text-gray-800 font-bold p-4 my-4 rounded"
+          onClick={submitRecipe}
+        >
+          Post Recipe
+        </button>
       </div>
-      <button
-        className="bg-gray-300 hover:bg-gray-400 text-gray-800 py-1 px-4 rounded mb-4 "
-        onClick={submitRecipe}
-      >
-        Post Recipe
-      </button>
     </React.Fragment>
   )
 }

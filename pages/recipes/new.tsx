@@ -1,6 +1,5 @@
 import Head from 'next/head'
 import { NextPage } from 'next'
-import { useForm } from 'react-hook-form'
 import * as React from 'react'
 import { GraphQLError } from 'graphql'
 
@@ -25,13 +24,8 @@ const NewRecipePage: NextPage<NewRecipePageProps> = ({}) => {
     readonly GraphQLError[]
   >([])
 
-  const { register, handleSubmit, watch, errors, control } = useForm<
-    CreateRecipeVars
-  >()
   // console.log('attributes', watch('attributes'))
-  const onSubmit = handleSubmit((variables: CreateRecipeVars) => {
-    console.log('submitting...')
-    console.log(variables)
+  const onSubmit = (variables: CreateRecipeVars) => {
     client
       .mutate({
         mutation: CREATE_RECIPE,
@@ -61,7 +55,7 @@ const NewRecipePage: NextPage<NewRecipePageProps> = ({}) => {
         console.log(err)
         setNewRecipeErrs(err.graphQLErrors)
       })
-  })
+  }
 
   const title = 'New Recipe - RecipeJoiner'
   const description =

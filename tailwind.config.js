@@ -1,3 +1,7 @@
+const {
+  colors
+} = require('tailwindcss/defaultTheme')
+
 module.exports = {
   purge: false, // purgecss is configured in postcss.purge.js
   theme: {
@@ -120,7 +124,47 @@ module.exports = {
       '4xl': '1rem',
       full: '9999px',
     },
-    extend: {},
+    extend: {
+      colors: {
+        purple: {
+          ...colors.purple,
+          '111': '#D7D7FF',
+          '222': '#63316D',
+        },
+        yellow: {
+          ...colors.yellow,
+          '111': '#FFF39D',
+          '222': '#F8EC7D',
+          '333': '#E2D574',
+        },
+        orange: {
+          ...colors.orange,
+          '111': '#FFDECC',
+          '222': '#E48E66',
+          '333': '#CC7350',
+        },
+        blue: {
+          ...colors.blue,
+          '111': '#C7EBFF',
+          '222': '#6FE3FF'
+        },
+        green: {
+          ...colors.green,
+          '111': '#E2FFE2',
+          '222': '#69E781'
+        },
+        gray: {
+          ...colors.gray,
+          '111': '#E3E9ED',
+          '222': '#5F7D95',
+          '333': '#374957'
+        },
+        red: {
+          ...colors.red,
+          '111': '#FB5252'
+        }
+      }
+    },
   },
   variants: {
     filter: ['responsive'], // defaults to ['responsive']

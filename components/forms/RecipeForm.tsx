@@ -1,6 +1,10 @@
 import * as React from 'react'
 import { GraphQLError } from 'graphql'
-import { RecipeInputType, RecipeInputStepType } from '../../requests/recipes'
+import {
+  RecipeInputType,
+  RecipeInputStepType,
+  CreateRecipeVars,
+} from '../../requests/recipes'
 import { setupMaster } from 'cluster'
 
 //start GLOBAL VARIABLES
@@ -22,7 +26,7 @@ interface RecipeFormProps {
   stepInit?: number
   reviewModeInit?: boolean
   errorsInit?: Array<any>
-  submit: any
+  submit: (attributes: CreateRecipeVars) => void
 }
 //end INTERFACES
 
@@ -92,25 +96,24 @@ const DeleteX = ({
   title,
   className,
 }: {
-  onClick: (event: React.MouseEvent<HTMLDivElement>) => void
+  onClick: (event: React.MouseEvent<SVGSVGElement>) => void
   title?: string
   className?: string
 }) => {
   return (
-    <span
-      className={(className || '') + ' text-gray-300 hover:text-pink-300'}
+    <svg
       onClick={onClick}
+      className={
+        (className || '') +
+        ' text-gray-111 hover:text-pink-300 fill-current mx-auto h-6 w-6 '
+      }
+      role="button"
+      xmlns="http://www.w3.org/2000/svg"
+      viewBox="0 0 20 20"
     >
-      <svg
-        className="fill-current mx-auto h-6 w-6"
-        role="button"
-        xmlns="http://www.w3.org/2000/svg"
-        viewBox="0 0 20 20"
-      >
-        <title>{title || 'Delete'}</title>
-        <path d="M14.348 14.849a1.2 1.2 0 0 1-1.697 0L10 11.819l-2.651 3.029a1.2 1.2 0 1 1-1.697-1.697l2.758-3.15-2.759-3.152a1.2 1.2 0 1 1 1.697-1.697L10 8.183l2.651-3.031a1.2 1.2 0 1 1 1.697 1.697l-2.758 3.152 2.758 3.15a1.2 1.2 0 0 1 0 1.698z" />
-      </svg>
-    </span>
+      <title>{title || 'Delete'}</title>
+      <path d="M14.348 14.849a1.2 1.2 0 0 1-1.697 0L10 11.819l-2.651 3.029a1.2 1.2 0 1 1-1.697-1.697l2.758-3.15-2.759-3.152a1.2 1.2 0 1 1 1.697-1.697L10 8.183l2.651-3.031a1.2 1.2 0 1 1 1.697 1.697l-2.758 3.152 2.758 3.15a1.2 1.2 0 0 1 0 1.698z" />
+    </svg>
   )
 }
 const StepMiniView = ({
@@ -124,7 +127,7 @@ const StepMiniView = ({
 }) => {
   return (
     <div className=" w-10/12 my-2 cursor-pointer" onClick={onClick}>
-      <div className="grid grid-cols-3 bg-gray-300 text-xl p-4 bg-white rounded-lg shadow-s">
+      <div className="grid grid-cols-3 bg-gray-111 text-xl p-4 bg-white rounded-lg shadow-s">
         <span className="rounded-full h-8 w-8 text-center bg-white">
           {stepIndex + 1}
         </span>
@@ -210,7 +213,7 @@ const RecipeForm: React.FC<RecipeFormProps> = ({
 
   const submitRecipe = () => {
     if (validateValue('title', recipe.title, 'required')) {
-      submit(recipe)
+      submit({ attributes: recipe })
       console.log('from recipeform')
     }
   }
@@ -357,7 +360,7 @@ const RecipeForm: React.FC<RecipeFormProps> = ({
 
   return loaded && !reviewMode ? (
     <React.Fragment>
-      <div className="max-w-md mx-auto">
+      <div className="max-w-2xl mx-auto">
         {!!currentStep &&
           recipe.steps.map((step) => {
             let index = recipe.steps.indexOf(step)
@@ -376,11 +379,11 @@ const RecipeForm: React.FC<RecipeFormProps> = ({
           className="mt-8 float-right"
           onClick={() => deleteStep(currentStep)}
         />
-        <div className=" mt-1 mx-auto mt-1 p-6 bg-white rounded-lg shadow-xl">
+        <div className=" mt-1 mx-auto mt-1 p-6 bg-white rounded-lg shadow-xl border-purple-111 border-2">
           <div className="grid grid-cols-2  col-gap-4">
-            <div className=" ">
+            <div className=" p-2 rounded">
               <input
-                className="bg-transparent w-full text-3xl text-gray-700 mr-3 py-1 leading-tight focus:outline-none  border-b-4 border-black "
+                className="bg-transparent w-full text-3xl text-gray-700  py-1 leading-tight focus:outline-none  border-b-4 border-black "
                 type="text"
                 placeholder="ACTION"
                 name="action"
@@ -389,11 +392,11 @@ const RecipeForm: React.FC<RecipeFormProps> = ({
               ></input>
               <ErrorField name="action" errors={errors} />
             </div>
-            <div className="grid grid-cols-3 col-gap-1 content-end">
+            <div className="grid grid-cols-3 col-gap-1 content-end bg-gray-100 p-2 rounded">
               <div className="">
                 <div>
                   <input
-                    className="bg-fixed bg-transparent w-full text-xl text-gray-700 mr-3 py-1 leading-tight focus:outline-none border-b-2 border-black"
+                    className="bg-fixed bg-transparent w-full text-xl   py-1 leading-tight focus:outline-none border-b-2 border-black"
                     type="text"
                     placeholder="Temp"
                     name="tempLevel"
@@ -405,7 +408,7 @@ const RecipeForm: React.FC<RecipeFormProps> = ({
               </div>
               <div className="">
                 <input
-                  className="bg-transparent w-full text-xl text-gray-700 mr-3 py-1 leading-tight focus:outline-none border-b-2 border-black"
+                  className="bg-transparent w-full text-xl   py-1 leading-tight focus:outline-none border-b-2 border-black"
                   type="text"
                   placeholder="Time"
                   name="time"
@@ -416,7 +419,7 @@ const RecipeForm: React.FC<RecipeFormProps> = ({
               </div>
               <div className="">
                 <input
-                  className="bg-transparent w-full text-xl text-gray-700 mr-3 py-1 leading-tight focus:outline-none border-b-2 border-black"
+                  className="bg-transparent w-full text-xl  py-1 leading-tight focus:outline-none border-b-2 border-black"
                   type="text"
                   placeholder="Tool"
                   name="location"
@@ -429,28 +432,16 @@ const RecipeForm: React.FC<RecipeFormProps> = ({
           </div>
 
           {recipe.steps[currentStep].ingredients.map((ing) => (
-            <div className=" my-4">
-              <DeleteX
-                className="float-right"
-                onClick={() => deleteIngredient(ing.id.toString())}
-              />
+            <div className="mt-4 p-2 rounded">
               <div className="grid grid-cols-2 col-gap-4">
-                <div className="self-end ">
-                  <input
-                    className="bg-transparent w-full text-3xl text-gray-700 mr-3 py-1 leading-tight focus:outline-none  border-b-4 border-black "
-                    type="text"
-                    placeholder="INGREDIENT"
-                    id={ing.id + '-name'}
-                    name="name"
-                    onChange={handleChange}
-                    value={ing.name || ''}
-                  ></input>
-                  <ErrorField name={ing.id + '-name'} errors={errors} />
-                </div>
-                <div className="grid grid-cols-2 col-gap-1 content-end">
+                <div className="grid grid-cols-3 p-2 col-gap-1 content-end">
+                  <DeleteX
+                    className="self-center"
+                    onClick={() => deleteIngredient(ing.id.toString())}
+                  />
                   <div className="">
                     <input
-                      className="bg-transparent w-full text-xl text-gray-700 mr-3 py-1 leading-tight focus:outline-none  border-b-2 border-black"
+                      className="bg-transparent w-full text-xl text-gray-700 bg-gray-100 rounded text-center p-2 leading-tight focus:outline-none"
                       type="text"
                       placeholder="Quantity"
                       id={ing.id + '-quantity'}
@@ -462,7 +453,7 @@ const RecipeForm: React.FC<RecipeFormProps> = ({
                   </div>
                   <div className="col-auto">
                     <input
-                      className="bg-transparent w-full text-xl text-gray-700 mr-3 py-1 leading-tight focus:outline-none  border-b-2 border-black"
+                      className="bg-transparent w-full text-xl text-gray-700  bg-gray-100 rounded text-center p-2 leading-tight focus:outline-none"
                       type="text"
                       placeholder="Unit"
                       id={ing.id + '-unit'}
@@ -473,27 +464,41 @@ const RecipeForm: React.FC<RecipeFormProps> = ({
                     <ErrorField name={ing.id + '-unit'} errors={errors} />
                   </div>
                 </div>
+                <div className="pb-2 self-end">
+                  <input
+                    className="bg-transparent w-full text-3xl text-gray-700 py-1 leading-tight focus:outline-none  border-b-4 border-black "
+                    type="text"
+                    placeholder="INGREDIENT"
+                    id={ing.id + '-name'}
+                    name="name"
+                    onChange={handleChange}
+                    value={ing.name || ''}
+                  ></input>
+                  <ErrorField name={ing.id + '-name'} errors={errors} />
+                </div>
               </div>
             </div>
           ))}
           {currentStep > 0 &&
             recipe.steps[currentStep].useResultsFromStep.map((step) => (
-              <div className=" my-4">
-                <DeleteX
-                  className="float-right"
-                  onClick={() => deleteUseResultsFromStep(step.id)}
-                />
-                <div className="grid grid-cols-3 col-gap-4">
-                  <span className="text-2xl col-span-2">
-                    Use Result From Step:
-                  </span>
-                  <div className="self-end ">
+              <div className="mt-4 p-2 rounded">
+                <div className="grid grid-cols-2 col-gap-4">
+                  <div className="grid grid-cols-3 p-2 col-gap-1 content-start">
+                    <DeleteX
+                      className="self-center"
+                      onClick={() => deleteUseResultsFromStep(step.id)}
+                    />
+                    <span className="text-xl col-span-2 p-2 bg-gray-100 rounded text-center text-gray-700">
+                      Use Result From:
+                    </span>
+                  </div>
+                  <div className="pb-2 ">
                     <input
-                      className="bg-transparent text-center w-full text-2xl text-gray-700 mr-3 py-1 leading-tight focus:outline-none  border-b-2 border-black "
+                      className="bg-transparent  w-full text-3xl text-gray-700  py-1 leading-tight focus:outline-none  border-b-4 border-black "
                       type="number"
                       min="1"
                       max={currentStep}
-                      placeholder="Step"
+                      placeholder="STEP"
                       id={step.id}
                       name="useResultsFromStep"
                       onChange={handleChange}
@@ -504,40 +509,44 @@ const RecipeForm: React.FC<RecipeFormProps> = ({
                 </div>
               </div>
             ))}
-          <button
-            className="bg-gray-300 hover:bg-gray-400 text-gray-800 py-1 px-4 rounded m-4 "
-            onClick={createIngredient}
-          >
-            Add Ingredient
-          </button>
-          {currentStep > 0 && (
-            <button
-              className="bg-gray-300 hover:bg-gray-400 text-gray-800 py-1 px-4 rounded m-4 "
-              onClick={createUseResultsFromStep}
-            >
-              Add Result from Step
-            </button>
-          )}
-          <div className="grid grid-cols-2 w-full  h-40 ">
+          <div className="flex justify-end">
+            <div className="w-6/12 flex justify-between">
+              <button
+                className="bg-blue-111 focus:outline-none text-gray-800 p-4 rounded m-4 w-6/12"
+                onClick={createIngredient}
+              >
+                + Ingredient
+              </button>
+              {currentStep > 0 && (
+                <button
+                  className="bg-blue-111 focus:outline-none text-gray-800 p-4 rounded m-4 w-6/12"
+                  onClick={createUseResultsFromStep}
+                >
+                  + Result
+                </button>
+              )}
+            </div>
+          </div>
+          <div className="grid grid-cols-2 p-2 w-full h-40 rounded gap-4">
             <div className=" grid items-center bg-gray-100">
               <img className="w-1/2 m-auto" src={IMAGE} />
             </div>
             <textarea
-              placeholder="Custom Info"
-              className="resize-none h-full w-full text-xl border border-black rounded p-1 outline-none"
+              placeholder="More Details"
+              className="resize-none h-full w-full text-xl bg-gray-100 rounded p-4 outline-none"
             ></textarea>
           </div>
         </div>
         <div className="w-full mt-8 mb-8">
           <div className="grid col-gap-4 grid-cols-2">
             <button
-              className="bg-gray-300 hover:bg-gray-400  text-xl text-gray-800 font-bold py-2 px-4 rounded"
+              className=" bg-yellow-111 hover:bg-yellow-222 focus:outline-none text-xl text-gray-800 font-bold py-2 px-4 rounded"
               onClick={() => submitStep(currentStep + 1)}
             >
               Next Step
             </button>
             <button
-              className="bg-gray-300 hover:bg-gray-400 text-xl text-gray-800 font-bold py-2 px-4 rounded"
+              className="bg-orange-111  hover:bg-orange-222 focus:outline-none text-xl text-gray-800 font-bold py-2 px-4 rounded"
               onClick={goToReview}
             >
               Finish
@@ -564,7 +573,7 @@ const RecipeForm: React.FC<RecipeFormProps> = ({
       <div className="max-w-md mt-8 mx-auto">
         <div className="m-2 mb-8">
           <input
-            className="bg-transparent w-full text-5xl text-gray-700 mr-3 py-1 leading-tight focus:outline-none  border-b-4 border-black "
+            className="bg-transparent w-full text-5xl text-gray-700  py-1 leading-tight focus:outline-none  border-b-4 border-black "
             type="text"
             placeholder="Title"
             name="title"

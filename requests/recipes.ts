@@ -125,7 +125,7 @@ export interface RecipeInputStepType {
 
 export interface RecipeInputType {
   title: string
-  description: string
+  description?: string
   servings?: string
   steps: Array<RecipeInputStepType>
 }

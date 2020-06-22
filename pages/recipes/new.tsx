@@ -30,6 +30,8 @@ const NewRecipePage: NextPage<NewRecipePageProps> = ({}) => {
   >()
   // console.log('attributes', watch('attributes'))
   const onSubmit = handleSubmit((variables: CreateRecipeVars) => {
+    console.log('submitting...')
+    console.log(variables)
     client
       .mutate({
         mutation: CREATE_RECIPE,
@@ -85,7 +87,7 @@ const NewRecipePage: NextPage<NewRecipePageProps> = ({}) => {
         />
         {/* OpenGraph tags end */}
       </Head>
-      <RecipeForm />
+      <RecipeForm onSubmit={onSubmit} />
     </React.Fragment>
   )
 }

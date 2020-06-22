@@ -22,6 +22,7 @@ interface RecipeFormProps {
   stepInit?: number
   reviewModeInit?: boolean
   errorsInit?: Array<any>
+  onSubmit: any
 }
 //end INTERFACES
 
@@ -147,6 +148,7 @@ const RecipeForm: React.FC<RecipeFormProps> = ({
   stepInit = 0,
   reviewModeInit = false,
   errorsInit = [],
+  onSubmit,
 }) => {
   const [newRecipeErrs, setNewRecipeErrs] = React.useState<
     readonly GraphQLError[]
@@ -208,7 +210,8 @@ const RecipeForm: React.FC<RecipeFormProps> = ({
 
   const submitRecipe = () => {
     if (validateValue('title', recipe.title, 'required')) {
-      //submit recipe
+      onSubmit(recipe)
+      console.log('from recipeform')
     }
   }
 

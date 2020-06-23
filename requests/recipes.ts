@@ -104,37 +104,30 @@ export const ALL_USER_RECIPES_BY_USERNAME = gql`
     }
   }
 `
-
-export interface IngredientType {
-  ingredientInfo: {
-    name: string
-  }
+interface IngredientInputType {
+  [id: string]: number | string
+  name: string
   quantity: number
-  unit: {
-    name: string
-  }
+  unit: string
 }
 
-export interface RecipeStepType {
-  stepNum: number
-  stepTime: number
-  description: string
-  ingredients: Array<IngredientType>
+export interface RecipeInputStepType {
+  [id: string]: string | number | Array<any>
+  action: string
+  ingredients: Array<IngredientInputType>
+  useResultsFromStep: Array<{ id: string; value: string }>
+  tempNum: number
+  tempLevel: string
+  time: number
+  location: string
+  customInfo: string
 }
 
-export interface RecipeType {
-  result: {
-    by: {
-      username: string
-    }
-    id: string
-    title: string
-    handle: string
-    description: string
-    servings: string
-    ingredients: Array<IngredientType>
-    steps: Array<RecipeStepType>
-  }
+export interface RecipeInputType {
+  title: string
+  description?: string
+  servings?: string
+  steps: Array<RecipeInputStepType>
 }
 
 export const RECIPE_BY_USERNAME_AND_HANDLE = gql`
@@ -213,25 +206,8 @@ export const RECIPE_BY_ID = gql`
   }
 `
 
-export interface RecipeInputIngredient {
-  name: string
-  amount: number
-  unit: string
-}
-interface RecipeInputStep {
-  stepNum: number
-  stepTime: number
-  description: string
-  ingredients: Array<RecipeInputIngredient> // not required
-}
-export interface RecipeInput {
-  title: string
-  description: string
-  servings: string
-  steps: Array<RecipeInputStep>
-}
 export interface CreateRecipeVars {
-  attributes: RecipeInput
+  attributes: RecipeInputType
 }
 export interface RecipeFormReturnType {
   mutation: {
@@ -258,7 +234,7 @@ export const CREATE_RECIPE = gql`
 
 export interface EditRecipeVars {
   existingRecipeId: number
-  attributes: RecipeInput
+  attributes: RecipeInputType
 }
 // uses same types as CREATE_RECIPE
 export const EDIT_RECIPE = gql`

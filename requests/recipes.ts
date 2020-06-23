@@ -110,15 +110,20 @@ interface IngredientInputType {
   quantity: number
   unit: string
 }
+interface TimeInput {
+  hours: number
+  minutes: number
+  seconds: number
+}
 
 export interface RecipeInputStepType {
-  [id: string]: string | number | Array<any>
+  [id: string]: string | number | Array<any> | any
   action: string
   ingredients: Array<IngredientInputType>
   useResultsFromStep: Array<{ id: string; value: string }>
   tempNum: number
   tempLevel: string
-  time: number
+  time: TimeInput
   location: string
   customInfo: string
 }

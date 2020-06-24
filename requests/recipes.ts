@@ -104,35 +104,48 @@ export const ALL_USER_RECIPES_BY_USERNAME = gql`
     }
   }
 `
-interface IngredientInputType {
-  [id: string]: number | string
-  name: string
+
+export interface IngredientType {
+  ingredientInfo: {
+    name: string
+  }
   quantity: number
-  unit: string
-}
-interface TimeInput {
-  hours: number
-  minutes: number
-  seconds: number
+  unit: {
+    name: string
+  }
 }
 
-export interface RecipeInputStepType {
-  [id: string]: string | number | Array<any> | any
-  action: string
-  ingredients: Array<IngredientInputType>
-  useResultsFromStep: Array<{ id: string; value: string }>
-  tempNum: number
-  tempLevel: string
-  time: TimeInput
-  location: string
-  customInfo: string
+export interface RecipeStepType {
+  stepNum: number
+  stepTime: number
+  additionalInfo?: string
+  tempLevel?: string
+  tempNum?: number
+  action: {
+    name: string
+  }
+  location?: {
+    name: string
+  }
+  useResultsFromStep?: {
+    stepNum: number
+  }
+  ingredients?: Array<IngredientType>
 }
 
-export interface RecipeInputType {
-  title: string
-  description?: string
-  servings?: string
-  steps: Array<RecipeInputStepType>
+export interface RecipeType {
+  result: {
+    by: {
+      username: string
+    }
+    id: string
+    title: string
+    handle: string
+    description: string
+    servings: string
+    ingredients: Array<IngredientType>
+    steps: Array<RecipeStepType>
+  }
 }
 
 export const RECIPE_BY_USERNAME_AND_HANDLE = gql`
@@ -212,6 +225,37 @@ export const RECIPE_BY_ID = gql`
     }
   }
 `
+
+interface IngredientInputType {
+  [id: string]: number | string
+  name: string
+  quantity: number
+  unit: string
+}
+interface TimeInput {
+  hours: number
+  minutes: number
+  seconds: number
+}
+
+export interface RecipeInputStepType {
+  [id: string]: string | number | Array<any> | any
+  action: string
+  ingredients: Array<IngredientInputType>
+  useResultsFromStep: Array<{ id: string; value: string }>
+  tempNum: number
+  tempLevel: string
+  time: TimeInput
+  location: string
+  customInfo: string
+}
+
+export interface RecipeInputType {
+  title: string
+  description?: string
+  servings?: string
+  steps: Array<RecipeInputStepType>
+}
 
 export interface CreateRecipeVars {
   attributes: RecipeInputType

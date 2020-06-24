@@ -23,7 +23,7 @@ interface StepProps {
   step?: RecipeStepType
 }
 const Step: React.FC<StepProps> = ({ step }) => {
-  const { stepNum, stepTime, description, ingredients } = step || {}
+  const { stepNum, stepTime, additionalInfo, ingredients } = step || {}
   return (
     <li className="my-5">
       <h3 className="header-2-text">
@@ -57,7 +57,7 @@ const Step: React.FC<StepProps> = ({ step }) => {
         </ul>
       </div>
       <h3 className="header-3-text">Instructions</h3>
-      <p>{description || <Skeleton count={5} />}</p>
+      <p>{additionalInfo || <Skeleton count={5} />}</p>
     </li>
   )
 }

@@ -1,7 +1,7 @@
 import gql from 'graphql-tag'
 
 export interface CommentNodeType {
-  id: string
+  id: number
   by: {
     username: string
   }
@@ -9,7 +9,7 @@ export interface CommentNodeType {
 }
 
 export const CommentNodeInit: CommentNodeType = {
-  id: '',
+  id: 0,
   by: {
     username: '',
   },
@@ -55,11 +55,12 @@ export interface SubcommentsVarsType {
 
 export const SUBCOMMENTS = gql`
   query getSubcomments($parentId: ID!, $cursor: String) {
-    subcomments(parentId: $parentId, first: 10, after: $cursor) {
+    connection: subcomments(parentId: $parentId, first: 10, after: $cursor) {
       pageInfo {
         hasNextPage
       }
       edges {
+        cursor
         node {
           id
           by {

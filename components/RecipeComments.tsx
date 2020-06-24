@@ -10,6 +10,7 @@ import {
   SUBCOMMENTS,
 } from 'requests/comments'
 import InfiniteScroll, { EdgeType } from 'components/InfiniteScroll'
+import Subcomments from 'components/Subcomments'
 
 type RecipeCommentsProps = {
   username: string
@@ -37,15 +38,20 @@ const RecipeComments: React.FC<RecipeCommentsProps> = ({
           return (
             <ul>
               {edges.map((edge) => {
-                return (
-                  <li
-                    key={edge.cursor}
-                    className="p-2 w-full border border-gray-900"
-                  >
-                    <span className="text-bold">{edge.node.by.username}</span>
-                    <p>{edge.node.content}</p>
-                  </li>
-                )
+                if (edge.node.id !== 0) {
+                  return (
+                    <li
+                      key={edge.cursor}
+                      className="p-2 w-full border border-gray-900"
+                    >
+                      <span className="text-bold">{edge.node.by.username}</span>
+                      <p>{edge.node.content}</p>
+                      <div className="ml-2">
+                        <Subcomments parentId={edge.node.id} />
+                      </div>
+                    </li>
+                  )
+                }
               })}
             </ul>
           )

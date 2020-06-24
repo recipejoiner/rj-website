@@ -7,10 +7,9 @@ import {
 } from '../../requests/recipes'
 import { setupMaster } from 'cluster'
 //start GLOBAL VARIABLES
-const THERMOMETER = require('../../images/icons/thermometer.svg')
-const CUTLERY = require('../../images/icons/cutlery.svg')
+const LOCATION = require('../../images/icons/mixer.svg')
 const IMAGE = require('../../images/icons/add.svg')
-const COOK = require('../../images/icons/fire.svg')
+const TEMPERATURE = require('../../images/icons/fire.svg')
 const TIME = require('../../images/icons/time.svg')
 
 //end GLOBAL VARIABLES
@@ -48,8 +47,7 @@ const NewStep = () => ({
   action: '',
   ingredients: [],
   useResultsFromStep: [],
-  tempNum: 0,
-  tempLevel: '',
+  temperature: '',
   time: { hours: 0, minutes: 0, seconds: 0 },
   location: '',
   customInfo: '',
@@ -391,8 +389,8 @@ const RecipeForm: React.FC<RecipeFormProps> = ({
           onClick={() => deleteStep(currentStep)}
         />
         <div className=" mt-1 mx-auto mt-1 p-6 bg-white rounded-lg shadow-xl border-purple-100 border-2">
-          <div className="grid grid-cols-2  col-gap-4">
-            <div className="p-2 rounded col-span-2">
+          <div className="grid  col-gap-4">
+            <div className="p-2 rounded">
               <input
                 className="bg-transparent w-full text-3xl text-gray-700  py-1 leading-tight focus:outline-none  border-b-4 border-black "
                 type="text"
@@ -403,139 +401,106 @@ const RecipeForm: React.FC<RecipeFormProps> = ({
               ></input>
               <ErrorField name="action" errors={errors} />
             </div>
-            <div className="grid grid-cols-3 col-gap-1 content-end mb-2 col-span-2">
-              <div className="bg-gray-200 p-2 rounded">
-                <div>
-                  {!recipe.steps[currentStep].tempLevel &&
-                  !recipe.steps[currentStep].tempNum ? (
-                    <div className="grid grid-cols-2 gap-2">
-                      <img
-                        src={THERMOMETER}
-                        className="h-12 w-12 m-auto cursor-pointer rounded"
-                        onClick={() => updateValue('tempNum', 350)}
-                      />
-                      <img
-                        src={COOK}
-                        className="h-12 w-12 m-auto cursor-pointer rounded"
-                        onClick={() => updateValue('tempLevel', 'medium')}
-                      />
-                    </div>
-                  ) : !recipe.steps[currentStep].tempLevel ? (
-                    <div className="grid grid-cols-2 gap-2">
-                      <img
-                        src={THERMOMETER}
-                        className="h-12 w-12 m-auto bg-white cursor-pointer rounded"
-                      />
-                      <input
-                        className="bg-white h-12 focus:outline-none p-2 rounded  "
-                        type="number"
-                        min="100"
-                        max="1000"
-                        step="5"
-                        placeholder="Temp"
-                        name="tempNum"
-                        value={recipe.steps[currentStep].tempNum || ''}
-                        onChange={handleChange}
-                      ></input>
-                    </div>
-                  ) : (
-                    <div className="grid grid-cols-2 gap-2">
-                      <select
-                        className="bg-white h-12 focus:outline-none p-2 rounded  "
-                        placeholder="Temp"
-                        name="tempLevel"
-                        value={recipe.steps[currentStep].tempLevel || ''}
-                        onChange={handleChange}
-                      >
-                        <option disabled selected hidden value="">
-                          - Level -
-                        </option>
-                        <option value="high">High</option>
-                        <option value="medium">Medium</option>
-                        <option value="low">Low</option>
-                        <option value="">Cancel</option>
-                      </select>
-                      <img
-                        src={COOK}
-                        className="h-12 w-12 m-auto cursor-pointer rounded"
-                      />
-                    </div>
-                  )}
+            <div className="grid grid-cols-1 grid-rows-3 lg:grid-cols-4 lg:grid-rows-1 col-gap-1 row-gap-2 content-end mb-2">
+              <div className="grid grid-cols-3 bg-gray-200 p-2 rounded ">
+                <img
+                  src={TEMPERATURE}
+                  className="h-8 m-auto cursor-pointer rounded"
+                  onClick={() => updateValue('temperature', '')}
+                />
+                <select
+                  className="bg-white h-12 focus:outline-none p-2 rounded col-span-2  "
+                  placeholder="Temp"
+                  name="temperature"
+                  value={recipe.steps[currentStep].temperature || ''}
+                  onChange={handleChange}
+                >
+                  <option disabled selected hidden value="">
+                    - Temp -
+                  </option>
+                  <option value="high">High</option>
+                  <option value="medium">Medium</option>
+                  <option value="low">Low</option>
+                  <option value="275">275</option>
+                  <option value="300">300</option>
+                  <option value="350">350</option>
+                </select>
+              </div>
+              <div className="bg-gray-200 p-2 rounded lg:col-span-2 grid grid-cols-3">
+                <img
+                  src={TIME}
+                  className="h-8 m-auto cursor-pointer rounded"
+                  onClick={() => {
+                    updateValue('hours', '0')
+                    updateValue('minutes', '0')
+                    updateValue('seconds', '0')
+                  }}
+                />
+                <div className="grid grid-cols-3 gap-1 col-span-2 text-xs ">
+                  <div className="w-full bg-white text-center rounded">
+                    <input
+                      className="text-xl text-center focus:outline-none rounded appearance-none"
+                      type="number"
+                      min="00"
+                      max="48"
+                      step="1"
+                      placeholder="H"
+                      name="hours"
+                      value={recipe.steps[currentStep].time.hours || ''}
+                      onChange={handleChange}
+                    ></input>
+                    Hours
+                  </div>
+                  <div className="w-full bg-white text-center rounded">
+                    <input
+                      className="bg-white text-xl text-center focus:outline-none rounded appearance-none"
+                      type="number"
+                      min="00"
+                      max="60"
+                      step="1"
+                      placeholder="M"
+                      name="minutes"
+                      value={recipe.steps[currentStep].time.minutes || ''}
+                      onChange={handleChange}
+                    ></input>
+                    Minutes
+                  </div>
+                  <div className="w-full bg-white text-center rounded">
+                    <input
+                      className="bg-white text-xl text-center focus:outline-none  rounded appearance-none"
+                      type="number"
+                      min="00"
+                      max="60"
+                      step="1"
+                      placeholder="S"
+                      name="seconds"
+                      value={recipe.steps[currentStep].time.seconds || ''}
+                      onChange={handleChange}
+                    ></input>
+                    Seconds
+                  </div>
                 </div>
               </div>
-              <div className="bg-gray-200 p-2 rounded">
-                <div>
-                  {recipe.steps[currentStep].time.hours ||
-                  recipe.steps[currentStep].time.minutes ||
-                  recipe.steps[currentStep].time.seconds ? (
-                    <div className="grid grid-cols-3 gap-2">
-                      <input
-                        className="bg-white h-12  focus:outline-none p-2 rounded"
-                        type="number"
-                        min="00"
-                        max="48"
-                        step="1"
-                        placeholder="Hours"
-                        name="hours"
-                        value={recipe.steps[currentStep].time.hours || ''}
-                        onChange={handleChange}
-                      ></input>
-                      <input
-                        className="bg-white h-12 focus:outline-none p-2 rounded "
-                        type="number"
-                        min="00"
-                        max="60"
-                        step="1"
-                        placeholder="Minutes"
-                        name="minutes"
-                        value={recipe.steps[currentStep].time.minutes || ''}
-                        onChange={handleChange}
-                      ></input>
-                      <input
-                        className="bg-white h-12  focus:outline-none p-2 rounded "
-                        type="number"
-                        min="00"
-                        max="60"
-                        step="1"
-                        placeholder="Seconds"
-                        name="seconds"
-                        value={recipe.steps[currentStep].time.seconds || ''}
-                        onChange={handleChange}
-                      ></input>
-                    </div>
-                  ) : (
-                    <img
-                      src={TIME}
-                      className="h-12 w-12 m-auto cursor-pointer rounded"
-                      onClick={() => updateValue('minutes', 30)}
-                    />
-                  )}
-                </div>
-              </div>
-              <div className="bg-gray-200 p-2 rounded">
-                {recipe.steps[currentStep].location ? (
-                  <select
-                    className="bg-white h-12 w-full focus:outline-none p-2 rounded "
-                    name="location"
-                    value={recipe.steps[currentStep].location}
-                    onChange={handleChange}
-                  >
-                    {' '}
-                    <option disabled selected hidden value="">
-                      - Level -
-                    </option>
-                    <option value="oven">Oven</option>
-                    <option value="stove">Stove</option>
-                    <option value="blender">Blender</option>
-                    <option value="">Cancel</option>
-                  </select>
-                ) : (
-                  <img
-                    src={CUTLERY}
-                    className="h-12 w-12 m-auto cursor-pointer rounded"
-                    onClick={() => updateValue('location', 'oven')}
-                  />
-                )}
+              <div className="grid grid-cols-3 bg-gray-200 p-2 rounded">
+                <img
+                  src={LOCATION}
+                  className="h-8 m-auto cursor-pointer rounded"
+                  onClick={() => updateValue('location', '')}
+                />
+                <select
+                  className="bg-white h-12 w-full focus:outline-none p-2 rounded col-span-2 "
+                  name="location"
+                  value={recipe.steps[currentStep].location}
+                  onChange={handleChange}
+                >
+                  {' '}
+                  <option disabled selected hidden value="">
+                    - Tool -
+                  </option>
+                  <option value="oven">Oven</option>
+                  <option value="stove">Stove</option>
+                  <option value="blender">Blender</option>
+                </select>
               </div>
             </div>
           </div>
@@ -571,7 +536,7 @@ const RecipeForm: React.FC<RecipeFormProps> = ({
                     >
                       {' '}
                       <option disabled selected hidden value="">
-                        - Level -
+                        - Unit -
                       </option>
                       <option value="oven">Pound</option>
                       <option value="stove">Tbsp</option>

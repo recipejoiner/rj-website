@@ -1,16 +1,25 @@
 import * as React from 'react'
 import { GraphQLError } from 'graphql'
+import TextField from '@material-ui/core/TextField'
+import Autocomplete from '@material-ui/lab/Autocomplete'
+
 import {
   RecipeInputType,
   RecipeInputStepType,
   CreateRecipeVars,
 } from '../../requests/recipes'
-import { setupMaster } from 'cluster'
+
 //start GLOBAL VARIABLES
 const LOCATION = require('../../images/icons/mixer.svg')
 const IMAGE = require('../../images/icons/add.svg')
 const TEMPERATURE = require('../../images/icons/fire.svg')
 const TIME = require('../../images/icons/time.svg')
+const actions = [
+  { name: 'Mix' },
+  { name: 'Cut' },
+  { name: 'Chop' },
+  { name: 'Bake' },
+]
 
 //end GLOBAL VARIABLES
 
@@ -308,7 +317,7 @@ const RecipeForm: React.FC<RecipeFormProps> = ({
   }
 
   const updateValue = (name: string, value: string | number, id?: string) => {
-    console.log(name, value)
+    console.log(name, value, id)
     let recipeCopy = JSON.parse(JSON.stringify(recipe))
     let index = -1
     switch (name) {
@@ -391,15 +400,40 @@ const RecipeForm: React.FC<RecipeFormProps> = ({
         <div className=" mt-1 mx-auto mt-1 p-6 bg-white rounded-lg shadow-xl border-purple-100 border-2">
           <div className="grid  col-gap-4">
             <div className="bg-gray-200 p-2 rounded mb-2 text-center">
-              <input
-                className="bg-white md:text-4xl text-2xl text-center focus:outline-none p-2 rounded"
-                type="text"
-                placeholder="Task"
-                name="action"
-                value={recipe.steps[currentStep].action || ''}
-                onChange={handleChange}
-              ></input>
-              <ErrorField name="action" errors={errors} />
+              <Autocomplete
+                id="action"
+                style={{ width: '100%' }}
+                options={actions}
+                getOptionLabel={(option) => option.name}
+                freeSolo
+                autoHighlight={true}
+                value={
+                  actions.filter(
+                    (e) => e.name === recipe.steps[currentStep].action
+                  )[0] || {}
+                }
+                renderInput={(params) => (
+                  <TextField
+                    {...params}
+                    label="TASK"
+                    variant="outlined"
+                    margin="normal"
+                    error={!!getError('action').length ? true : false}
+                    helperText={
+                      !!getError('action').length
+                        ? getError('action')[0].message
+                        : false
+                    }
+                  />
+                )}
+                onChange={(
+                  event: object,
+                  value: any | any[],
+                  reason: string
+                ) => {
+                  updateValue('action', value ? value.name : '')
+                }}
+              />
             </div>
             <div className="grid grid-cols-1 grid-rows-3 lg:grid-cols-4 lg:grid-rows-1 col-gap-1 row-gap-2 content-end mb-2">
               <div className="grid grid-cols-3 bg-gray-200 p-2 rounded ">

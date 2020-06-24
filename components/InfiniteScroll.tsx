@@ -181,7 +181,11 @@ const InfiniteScroll: React.FC<InfiniteScrollProps<any, any>> = ({
       window.innerHeight + window.scrollY >=
         document.body.offsetHeight - window.innerHeight
     ) {
-      onLoadMore()
+      const { result } = (infiniteScrollData as QueryResultRes<any>) || {}
+      const { connection } = result || infiniteScrollData
+      if (connection.pageInfo.hasNextPage) {
+        onLoadMore()
+      }
     }
   }
 

@@ -141,24 +141,25 @@ export const RECIPE_BY_USERNAME_AND_HANDLE = gql`
       by {
         username
       }
-      id
-      title
-      handle
       description
+      handle
       servings
-      ingredients {
-        ingredientInfo {
-          name
-        }
-        quantity
-        unit {
-          name
-        }
-      }
+      title
       steps {
         stepNum
         stepTime
-        description
+        action {
+          name
+        }
+        tempLevel
+        tempNum
+        location {
+          name
+        }
+        additionalInfo
+        useResultFromStep {
+          stepNum
+        }
         ingredients {
           ingredientInfo {
             name
@@ -179,24 +180,25 @@ export const RECIPE_BY_ID = gql`
       by {
         username
       }
-      id
-      title
-      handle
       description
+      handle
       servings
-      ingredients {
-        ingredientInfo {
-          name
-        }
-        quantity
-        unit {
-          name
-        }
-      }
+      title
       steps {
         stepNum
         stepTime
-        description
+        action {
+          name
+        }
+        tempLevel
+        tempNum
+        location {
+          name
+        }
+        additionalInfo
+        useResultFromStep {
+          stepNum
+        }
         ingredients {
           ingredientInfo {
             name

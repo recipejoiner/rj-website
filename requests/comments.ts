@@ -34,6 +34,7 @@ export const RECIPE_ROOT_COMMENTS_BY_USERNAME_AND_HANDLE = gql`
           hasNextPage
         }
         edges {
+          cursor
           node {
             id
             by {

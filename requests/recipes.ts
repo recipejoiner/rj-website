@@ -121,8 +121,7 @@ export interface RecipeInputStepType {
   action: string
   ingredients: Array<IngredientInputType>
   useResultsFromStep: Array<{ id: string; value: string }>
-  tempNum: number
-  tempLevel: string
+  temperature: string
   time: TimeInput
   location: string
   customInfo: string

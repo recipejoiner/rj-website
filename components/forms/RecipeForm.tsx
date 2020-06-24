@@ -390,11 +390,11 @@ const RecipeForm: React.FC<RecipeFormProps> = ({
         />
         <div className=" mt-1 mx-auto mt-1 p-6 bg-white rounded-lg shadow-xl border-purple-100 border-2">
           <div className="grid  col-gap-4">
-            <div className="p-2 rounded">
+            <div className="bg-gray-200 p-2 rounded mb-2 text-center">
               <input
-                className="bg-transparent w-full text-3xl text-gray-700  py-1 leading-tight focus:outline-none  border-b-4 border-black "
+                className="bg-white md:text-4xl text-2xl text-center focus:outline-none p-2 rounded"
                 type="text"
-                placeholder="ACTION"
+                placeholder="Task"
                 name="action"
                 value={recipe.steps[currentStep].action || ''}
                 onChange={handleChange}
@@ -426,7 +426,7 @@ const RecipeForm: React.FC<RecipeFormProps> = ({
                   <option value="350">350</option>
                 </select>
               </div>
-              <div className="bg-gray-200 p-2 rounded lg:col-span-2 grid grid-cols-3">
+              <div className="bg-gray-200 p-2 rounded lg:col-span-2 grid grid-cols-3 lg:grid-cols-6">
                 <img
                   src={TIME}
                   className="h-8 m-auto cursor-pointer rounded"
@@ -436,7 +436,7 @@ const RecipeForm: React.FC<RecipeFormProps> = ({
                     updateValue('seconds', '0')
                   }}
                 />
-                <div className="grid grid-cols-3 gap-1 col-span-2 text-xs ">
+                <div className="grid grid-cols-3 gap-1 col-span-2 lg:col-span-5 text-xs ">
                   <div className="w-full bg-white text-center rounded">
                     <input
                       className="text-xl text-center focus:outline-none rounded appearance-none"
@@ -506,78 +506,77 @@ const RecipeForm: React.FC<RecipeFormProps> = ({
           </div>
 
           {recipe.steps[currentStep].ingredients.map((ing) => (
-            <div className="mt-4 p-2 rounded">
-              <div className="grid grid-cols-2 col-gap-4">
-                <div className="grid grid-cols-3 p-2 col-gap-1 content-end">
-                  <DeleteX
-                    className="self-center"
-                    onClick={() => deleteIngredient(ing.id.toString())}
-                  />
-                  <div className="p-2  bg-gray-200">
-                    <input
-                      className="bg-white h-12 w-full focus:outline-none p-2 rounded"
-                      type="number"
-                      step="0.25"
-                      placeholder="Quantity"
-                      id={ing.id + '-quantity'}
-                      name="quantity"
-                      onChange={handleChange}
-                      value={ing.quantity || ''}
-                    ></input>
-                    <ErrorField name={ing.id + '-quantity'} errors={errors} />
-                  </div>
-                  <div className="col-auto p-2 bg-gray-200">
-                    <select
-                      className="bg-white h-12 w-full focus:outline-none p-2 rounded "
-                      id={ing.id + '-unit'}
-                      name="unit"
-                      onChange={handleChange}
-                      value={ing.unit || ''}
-                    >
-                      {' '}
-                      <option disabled selected hidden value="">
-                        - Unit -
-                      </option>
-                      <option value="oven">Pound</option>
-                      <option value="stove">Tbsp</option>
-                      <option value="blender">Cup</option>
-                      <option value="">Cancel</option>
-                    </select>
-
-                    <ErrorField name={ing.id + '-unit'} errors={errors} />
-                  </div>
-                </div>
-                <div className="pb-2 self-end">
+            <div className="mt-2 rounded">
+              <div className="rounded text-center grid ">
+                <input
+                  className="bg-white md:text-4xl  text-2xl md:w-1/2 m-auto text-center focus:outline-none p-2 rounded "
+                  type="text"
+                  placeholder="Ingredient"
+                  id={ing.id + '-name'}
+                  name="name"
+                  onChange={handleChange}
+                  value={ing.name || ''}
+                ></input>
+                <ErrorField name={ing.id + '-name'} errors={errors} />
+                <DeleteX
+                  className="absolute text-pink-200"
+                  onClick={() => deleteIngredient(ing.id.toString())}
+                />
+              </div>
+              <div className="grid grid-cols-2 gap-4 bg-gray-200 rounded justify-center w-8/12 m-auto ">
+                <div className="p-2 lg:w-1/2 w-full m-auto">
                   <input
-                    className="bg-transparent w-full text-3xl text-gray-700 py-1 leading-tight focus:outline-none  border-b-4 border-black "
-                    type="text"
-                    placeholder="INGREDIENT"
-                    id={ing.id + '-name'}
-                    name="name"
+                    className="bg-white w-full h-12 focus:outline-none p-2 rounded text-center "
+                    type="number"
+                    step="0.25"
+                    placeholder="Quantity"
+                    id={ing.id + '-quantity'}
+                    name="quantity"
                     onChange={handleChange}
-                    value={ing.name || ''}
+                    value={ing.quantity || ''}
                   ></input>
-                  <ErrorField name={ing.id + '-name'} errors={errors} />
+                  <ErrorField name={ing.id + '-quantity'} errors={errors} />
+                </div>
+                <div className="p-2 lg:w-1/2 w-full m-auto">
+                  <select
+                    className="bg-white w-full h-12 focus:outline-none p-2 rounded  text-center"
+                    id={ing.id + '-unit'}
+                    name="unit"
+                    onChange={handleChange}
+                    value={ing.unit || ''}
+                  >
+                    {' '}
+                    <option disabled selected hidden value="">
+                      - Unit -
+                    </option>
+                    <option value="oven">Pound</option>
+                    <option value="stove">Tbsp</option>
+                    <option value="blender">Cup</option>
+                    <option value="">Cancel</option>
+                  </select>
+                  <ErrorField name={ing.id + '-unit'} errors={errors} />
                 </div>
               </div>
             </div>
           ))}
           {currentStep > 0 &&
             recipe.steps[currentStep].useResultsFromStep.map((step) => (
-              <div className="mt-4 p-2 rounded">
-                <div className="grid grid-cols-2 col-gap-4">
-                  <div className="grid grid-cols-3 p-2 col-gap-1 content-start">
-                    <DeleteX
-                      className="self-center"
-                      onClick={() => deleteUseResultsFromStep(step.id)}
-                    />
-                    <span className="text-xl col-span-2 p-2 bg-gray-200 rounded text-center text-gray-700">
-                      Use Result From:
-                    </span>
-                  </div>
-                  <div className="pb-2 ">
+              <div className="p-2 rounded">
+                <div className="rounded text-center grid ">
+                  <span className="bg-white md:text-4xl text-2xl md:w-1/2 m-auto text-center focus:outline-none p-2 rounded ">
+                    Use Result From
+                  </span>
+
+                  <ErrorField name={step.id} errors={errors} />
+                  <DeleteX
+                    className="absolute text-pink-200"
+                    onClick={() => deleteUseResultsFromStep(step.id)}
+                  />
+                </div>
+                <div className="bg-gray-200 rounded justify-center w-8/12 m-auto ">
+                  <div className="p-2 w-1/2 m-auto">
                     <input
-                      className="bg-transparent  w-full text-3xl text-gray-700  py-1 leading-tight focus:outline-none  border-b-4 border-black "
+                      className="bg-white w-full h-12 focus:outline-none p-2 rounded text-center "
                       type="number"
                       min="1"
                       max={currentStep}
@@ -592,23 +591,21 @@ const RecipeForm: React.FC<RecipeFormProps> = ({
                 </div>
               </div>
             ))}
-          <div className="flex justify-end">
-            <div className="w-6/12 flex justify-between">
+          <div className="w-full flex justify-between">
+            <button
+              className="bg-gray-400 hover:bg-orange-400 focus:outline-none text-gray-800 p-2 rounded m-4 w-6/12"
+              onClick={createIngredient}
+            >
+              Add Ingredient
+            </button>
+            {currentStep > 0 && (
               <button
-                className="bg-blue-100 hover:bg-blue-200 focus:outline-none text-gray-800 p-2 rounded m-4 w-6/12"
-                onClick={createIngredient}
+                className="bg-gray-400 hover:bg-orange-400 focus:outline-none text-gray-800 p-2 rounded m-4 w-6/12"
+                onClick={createUseResultsFromStep}
               >
-                + Ingredient
+                Add Result
               </button>
-              {currentStep > 0 && (
-                <button
-                  className="bg-blue-100 hover:bg-blue-200 focus:outline-none text-gray-800 p-2 rounded m-4 w-6/12"
-                  onClick={createUseResultsFromStep}
-                >
-                  + Result
-                </button>
-              )}
-            </div>
+            )}
           </div>
           <div className="grid grid-cols-2 p-2 w-full h-40 rounded gap-4">
             <div className=" grid items-center bg-gray-200">
@@ -624,13 +621,13 @@ const RecipeForm: React.FC<RecipeFormProps> = ({
         <div className="w-full mt-8 mb-8">
           <div className="grid col-gap-4 grid-cols-2">
             <button
-              className="bg-blue-100 hover:bg-blue-200 focus:outline-none text-xl text-gray-800 font-bold py-2 px-4 rounded"
+              className="bg-orange-400 hover:bg-orange-500 focus:outline-none text-xl text-gray-800 font-bold py-2 px-4 rounded"
               onClick={() => submitStep(currentStep + 1)}
             >
               Next Step
             </button>
             <button
-              className="bg-orange-100 hover:bg-orange-200 focus:outline-none text-xl text-gray-800 font-bold py-2 px-4 rounded"
+              className="bg-orange-300 hover:bg-orange-400 focus:outline-none text-xl text-gray-800 font-bold py-2 px-4 rounded"
               onClick={goToReview}
             >
               Finish

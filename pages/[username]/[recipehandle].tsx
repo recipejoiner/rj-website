@@ -15,6 +15,8 @@ import {
 import { toMixedNumber } from 'helpers/methods'
 import client from 'requests/client'
 
+import RecipeComments from 'components/RecipeComments'
+
 interface RecipeProps {
   recipe: RecipeType
 }
@@ -163,6 +165,9 @@ const RecipePage: NextPage<RecipeProps> = (props) => {
           </ul>
         </div>
       </div>
+      {username && handle && (
+        <RecipeComments username={username} handle={handle} />
+      )}
     </React.Fragment>
   )
 }

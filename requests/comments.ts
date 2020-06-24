@@ -30,6 +30,9 @@ export const RECIPE_ROOT_COMMENTS_BY_USERNAME_AND_HANDLE = gql`
   ) {
     result: recipeBy(username: $username, handle: $handle) {
       connection: rootComments(first: 10, after: $cursor) {
+        pageInfo {
+          hasNextPage
+        }
         edges {
           node {
             id
@@ -52,6 +55,9 @@ export interface SubcommentsVarsType {
 export const SUBCOMMENTS = gql`
   query getSubcomments($parentId: ID!, $cursor: String) {
     subcomments(parentId: $parentId, first: 10, after: $cursor) {
+      pageInfo {
+        hasNextPage
+      }
       edges {
         node {
           id

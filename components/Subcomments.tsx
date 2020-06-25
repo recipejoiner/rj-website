@@ -37,12 +37,14 @@ const Subcomments: React.FC<SubcommentsProps> = ({ parentId }) => {
                         key={edge.cursor}
                         className="p-2 w-full border border-gray-900"
                       >
-                        <span className="text-bold">
+                        <span className="font-bold">
                           {edge.node.by.username}
+                        </span>
+                        <span>
+                          {new Date(edge.node.createdAt).toDateString()}
                         </span>
                         <p>{edge.node.content}</p>
                         <div className="ml-2">
-                          {console.log('get subcomments of id', edge.node.id)}
                           <Subcomments parentId={edge.node.id} />
                         </div>
                       </li>

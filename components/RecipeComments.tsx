@@ -44,7 +44,10 @@ const RecipeComments: React.FC<RecipeCommentsProps> = ({
                       key={edge.cursor}
                       className="p-2 w-full border border-gray-900"
                     >
-                      <span className="text-bold">{edge.node.by.username}</span>
+                      <span className="font-bold">{edge.node.by.username}</span>
+                      <span>
+                        {new Date(edge.node.createdAt).toDateString()}
+                      </span>
                       <p>{edge.node.content}</p>
                       <div className="ml-2">
                         <Subcomments parentId={edge.node.id} />

@@ -2,6 +2,7 @@ import * as React from 'react'
 import { GraphQLError } from 'graphql'
 import TextField from '@material-ui/core/TextField'
 import Autocomplete from '@material-ui/lab/Autocomplete'
+import Select from '@material-ui/core/Select'
 
 import {
   RecipeInputType,
@@ -20,7 +21,34 @@ const actions = [
   { name: 'Chop' },
   { name: 'Bake' },
 ]
-
+const temperatures = [
+  { name: 'High' },
+  { name: 'Medium' },
+  { name: 'Low' },
+  { name: '350F' },
+  { name: '400F' },
+]
+const locations = [
+  { name: 'Stove' },
+  { name: 'Oven' },
+  { name: 'Blender' },
+  { name: 'Microwave' },
+  { name: 'Bowl' },
+]
+const ingredients = [
+  { name: 'Apple' },
+  { name: 'Banana' },
+  { name: 'Coffee' },
+  { name: 'Flour' },
+  { name: 'Rice' },
+]
+const units = [
+  { name: 'Pound' },
+  { name: 'Cup' },
+  { name: 'Pinch' },
+  { name: 'Tablespoon' },
+  { name: 'Whole' },
+]
 //end GLOBAL VARIABLES
 
 //start INTERFACES
@@ -317,7 +345,6 @@ const RecipeForm: React.FC<RecipeFormProps> = ({
   }
 
   const updateValue = (name: string, value: string | number, id?: string) => {
-    console.log(name, value, id)
     let recipeCopy = JSON.parse(JSON.stringify(recipe))
     let index = -1
     switch (name) {
@@ -435,14 +462,50 @@ const RecipeForm: React.FC<RecipeFormProps> = ({
                 }}
               />
             </div>
-            <div className="grid grid-cols-1 grid-rows-3 lg:grid-cols-4 lg:grid-rows-1 col-gap-1 row-gap-2 content-end mb-2">
-              <div className="grid grid-cols-3 bg-gray-200 p-2 rounded ">
+            <div className="grid grid-cols-1 grid-rows-3 lg:grid-cols-3 lg:grid-rows-1 col-gap-1 row-gap-2 content-end mb-2">
+              <div className="grid lg:grid-cols-1 grid-cols-3 bg-gray-200 p-2 rounded ">
                 <img
                   src={TEMPERATURE}
                   className="h-8 m-auto cursor-pointer rounded"
                   onClick={() => updateValue('temperature', '')}
                 />
-                <select
+                <Autocomplete
+                  id="temperature"
+                  className="col-span-2"
+                  style={{ width: '100%' }}
+                  options={temperatures}
+                  getOptionLabel={(option) => option.name}
+                  freeSolo
+                  autoHighlight={true}
+                  value={
+                    temperatures.filter(
+                      (e) => e.name === recipe.steps[currentStep].temperature
+                    )[0] || {}
+                  }
+                  renderInput={(params) => (
+                    <TextField
+                      {...params}
+                      label="TEMP"
+                      variant="outlined"
+                      margin="normal"
+                      error={!!getError('temperature').length ? true : false}
+                      helperText={
+                        !!getError('temperature').length
+                          ? getError('temperature')[0].message
+                          : false
+                      }
+                    />
+                  )}
+                  onChange={(
+                    event: object,
+                    value: any | any[],
+                    reason: string
+                  ) => {
+                    console.log(value)
+                    updateValue('temperature', value ? value.name : '')
+                  }}
+                />
+                {/* <select
                   className="bg-white h-12 focus:outline-none p-2 rounded col-span-2  "
                   placeholder="Temp"
                   name="temperature"
@@ -458,9 +521,9 @@ const RecipeForm: React.FC<RecipeFormProps> = ({
                   <option value="275">275</option>
                   <option value="300">300</option>
                   <option value="350">350</option>
-                </select>
+                </select> */}
               </div>
-              <div className="bg-gray-200 p-2 rounded lg:col-span-2 grid grid-cols-3 lg:grid-cols-6">
+              <div className="grid lg:grid-cols-1 grid-cols-3 bg-gray-200 p-2 rounded ">
                 <img
                   src={TIME}
                   className="h-8 m-auto cursor-pointer rounded"
@@ -470,10 +533,10 @@ const RecipeForm: React.FC<RecipeFormProps> = ({
                     updateValue('seconds', '0')
                   }}
                 />
-                <div className="grid grid-cols-3 gap-1 col-span-2 lg:col-span-5 text-xs ">
-                  <div className="w-full bg-white text-center rounded">
+                <div className="col-span-2 grid grid-cols-3 mt-4 text-center gap-4 text-xs">
+                  <div className="w-full rounded">
                     <input
-                      className="text-xl text-center focus:outline-none rounded appearance-none"
+                      className="text-xl w-full text-center focus:outline-none rounded appearance-none"
                       type="number"
                       min="00"
                       max="48"
@@ -485,9 +548,9 @@ const RecipeForm: React.FC<RecipeFormProps> = ({
                     ></input>
                     Hours
                   </div>
-                  <div className="w-full bg-white text-center rounded">
+                  <div className="w-full rounded">
                     <input
-                      className="bg-white text-xl text-center focus:outline-none rounded appearance-none"
+                      className="text-xl w-full text-center focus:outline-none rounded appearance-none"
                       type="number"
                       min="00"
                       max="60"
@@ -499,9 +562,9 @@ const RecipeForm: React.FC<RecipeFormProps> = ({
                     ></input>
                     Minutes
                   </div>
-                  <div className="w-full bg-white text-center rounded">
+                  <div className="w-full rounded">
                     <input
-                      className="bg-white text-xl text-center focus:outline-none  rounded appearance-none"
+                      className=" text-xl w-full text-center focus:outline-none  rounded appearance-none"
                       type="number"
                       min="00"
                       max="60"
@@ -515,13 +578,48 @@ const RecipeForm: React.FC<RecipeFormProps> = ({
                   </div>
                 </div>
               </div>
-              <div className="grid grid-cols-3 bg-gray-200 p-2 rounded">
+              <div className="grid lg:grid-cols-1 grid-cols-3 bg-gray-200 p-2 rounded">
                 <img
                   src={LOCATION}
                   className="h-8 m-auto cursor-pointer rounded"
                   onClick={() => updateValue('location', '')}
                 />
-                <select
+                <Autocomplete
+                  id="location"
+                  className="col-span-2"
+                  style={{ width: '100%' }}
+                  options={locations}
+                  getOptionLabel={(option) => option.name}
+                  freeSolo
+                  autoHighlight={true}
+                  value={
+                    locations.filter(
+                      (e) => e.name === recipe.steps[currentStep].location
+                    )[0] || {}
+                  }
+                  renderInput={(params) => (
+                    <TextField
+                      {...params}
+                      label="TOOL"
+                      variant="outlined"
+                      margin="normal"
+                      error={!!getError('location').length ? true : false}
+                      helperText={
+                        !!getError('location').length
+                          ? getError('location')[0].message
+                          : false
+                      }
+                    />
+                  )}
+                  onChange={(
+                    event: object,
+                    value: any | any[],
+                    reason: string
+                  ) => {
+                    updateValue('location', value ? value.name : '')
+                  }}
+                />
+                {/* <select
                   className="bg-white h-12 w-full focus:outline-none p-2 rounded col-span-2 "
                   name="location"
                   value={recipe.steps[currentStep].location}
@@ -534,7 +632,7 @@ const RecipeForm: React.FC<RecipeFormProps> = ({
                   <option value="oven">Oven</option>
                   <option value="stove">Stove</option>
                   <option value="blender">Blender</option>
-                </select>
+                </select> */}
               </div>
             </div>
           </div>
@@ -542,54 +640,98 @@ const RecipeForm: React.FC<RecipeFormProps> = ({
           {recipe.steps[currentStep].ingredients.map((ing) => (
             <div className="mt-2 rounded">
               <div className="rounded text-center grid ">
-                <input
-                  className="bg-white md:text-4xl  text-2xl md:w-1/2 m-auto text-center focus:outline-none p-2 rounded "
-                  type="text"
-                  placeholder="Ingredient"
+                <Autocomplete
                   id={ing.id + '-name'}
-                  name="name"
-                  onChange={handleChange}
-                  value={ing.name || ''}
-                ></input>
-                <ErrorField name={ing.id + '-name'} errors={errors} />
+                  className="bg-white md:text-4xl  text-2xl md:w-1/2 m-auto text-center focus:outline-none p-2 rounded "
+                  style={{ width: '100%' }}
+                  options={ingredients}
+                  getOptionLabel={(option) => option.name}
+                  freeSolo
+                  autoHighlight={true}
+                  value={
+                    ingredients.filter((e) => e.name === ing.name)[0] || {}
+                  }
+                  renderInput={(params) => (
+                    <TextField
+                      {...params}
+                      label="INGREDIENT"
+                      variant="outlined"
+                      margin="normal"
+                      error={!!getError(ing.id + '-name').length ? true : false}
+                      helperText={
+                        !!getError(ing.id + '-name').length
+                          ? getError(ing.id + '-name')[0].message
+                          : false
+                      }
+                    />
+                  )}
+                  onChange={(
+                    event: object,
+                    value: any | any[],
+                    reason: string
+                  ) => {
+                    updateValue(
+                      'name',
+                      value ? value.name : '',
+                      ing.id + '-name'
+                    )
+                  }}
+                />
                 <DeleteX
                   className="absolute text-pink-200"
                   onClick={() => deleteIngredient(ing.id.toString())}
                 />
               </div>
-              <div className="grid grid-cols-2 gap-4 bg-gray-200 rounded justify-center w-8/12 m-auto ">
-                <div className="p-2 lg:w-1/2 w-full m-auto">
-                  <input
-                    className="bg-white w-full h-12 focus:outline-none p-2 rounded text-center "
-                    type="number"
-                    step="0.25"
-                    placeholder="Quantity"
-                    id={ing.id + '-quantity'}
-                    name="quantity"
-                    onChange={handleChange}
-                    value={ing.quantity || ''}
-                  ></input>
-                  <ErrorField name={ing.id + '-quantity'} errors={errors} />
-                </div>
-                <div className="p-2 lg:w-1/2 w-full m-auto">
-                  <select
-                    className="bg-white w-full h-12 focus:outline-none p-2 rounded  text-center"
-                    id={ing.id + '-unit'}
-                    name="unit"
-                    onChange={handleChange}
-                    value={ing.unit || ''}
-                  >
-                    {' '}
-                    <option disabled selected hidden value="">
-                      - Unit -
-                    </option>
-                    <option value="oven">Pound</option>
-                    <option value="stove">Tbsp</option>
-                    <option value="blender">Cup</option>
-                    <option value="">Cancel</option>
-                  </select>
-                  <ErrorField name={ing.id + '-unit'} errors={errors} />
-                </div>
+              <div className="grid grid-cols-4 bg-gray-200 rounded justify-center m-auto w-8/12 ">
+                <input
+                  className={
+                    !!getError(ing.id + '-quantity').length
+                      ? 'border-red-600'
+                      : '' +
+                        ' text-center w-full text-2xl focus:outline-none p-2 bg-gray-200 rounded text-center m-auto'
+                  }
+                  type="number"
+                  placeholder="#"
+                  id={ing.id + '-quantity'}
+                  name="quantity"
+                  onChange={handleChange}
+                  value={ing.quantity || ''}
+                />
+                <Autocomplete
+                  id={ing.id + '-unit'}
+                  className="text-center w-full  focus:outline-none p-2 rounded text-center m-auto col-span-3"
+                  style={{ width: '100%' }}
+                  options={units}
+                  getOptionLabel={(option) => option.name}
+                  autoHighlight={true}
+                  value={units.filter((e) => e.name === ing.unit)[0] || {}}
+                  closeIcon=""
+                  renderInput={(params) => (
+                    <TextField
+                      {...params}
+                      label="Unit"
+                      variant="outlined"
+                      margin="normal"
+                      error={!!getError(ing.id + '-unit').length ? true : false}
+                      helperText={
+                        !!getError(ing.id + '-unit').length
+                          ? getError(ing.id + '-unit')[0].message
+                          : false
+                      }
+                    />
+                  )}
+                  onChange={(
+                    event: object,
+                    value: any | any[],
+                    reason: string
+                  ) => {
+                    updateValue(
+                      'unit',
+                      value ? value.name : '',
+                      ing.id + '-unit'
+                    )
+                  }}
+                />
               </div>
             </div>
           ))}

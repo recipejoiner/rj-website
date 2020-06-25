@@ -3,6 +3,7 @@ import gql from 'graphql-tag'
 export interface CommentNodeType {
   id: number
   depth: number
+  createdAt: string
   by: {
     username: string
   }
@@ -12,6 +13,7 @@ export interface CommentNodeType {
 export const CommentNodeInit: CommentNodeType = {
   id: 0,
   depth: 0,
+  createdAt: '',
   by: {
     username: '',
   },
@@ -40,6 +42,7 @@ export const RECIPE_ROOT_COMMENTS_BY_USERNAME_AND_HANDLE = gql`
           node {
             id
             depth
+            createdAt
             by {
               username
             }
@@ -67,6 +70,7 @@ export const SUBCOMMENTS = gql`
         node {
           id
           depth
+          createdAt
           by {
             username
           }

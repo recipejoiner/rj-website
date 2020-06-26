@@ -105,25 +105,16 @@ export const ALL_USER_RECIPES_BY_USERNAME = gql`
   }
 `
 interface IngredientInputType {
-  [id: string]: number | string
+  id: string
   name: string
-  quantity: number
+  quantity: string
   unit: string
-}
-interface TimeInput {
-  hours: number
-  minutes: number
-  seconds: number
 }
 
 export interface RecipeInputStepType {
-  [id: string]: string | number | Array<any> | any
-  action: string
+  [id: string]: string | Array<any> | any
+  stepTitle?: string
   ingredients: Array<IngredientInputType>
-  useResultsFromStep: Array<{ id: string; value: string }>
-  temperature: string
-  time: TimeInput
-  location: string
   customInfo: string
 }
 
@@ -131,6 +122,7 @@ export interface RecipeInputType {
   title: string
   description?: string
   servings?: string
+  time: { hours: number; minutes: number }
   steps: Array<RecipeInputStepType>
 }
 

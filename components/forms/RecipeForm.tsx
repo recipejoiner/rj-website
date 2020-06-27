@@ -5,7 +5,7 @@ import Autocomplete from '@material-ui/lab/Autocomplete'
 
 import {
   RecipeInputType,
-  RecipeInputStepType,
+  RecipeStepType,
   CreateRecipeVars,
 } from '../../requests/recipes'
 
@@ -564,7 +564,7 @@ const RecipeForm: React.FC<RecipeFormProps> = ({
 
   const createStep = () => {
     let recipeCopy = JSON.parse(JSON.stringify(recipe))
-    let newStep: RecipeInputStepType = NewStep()
+    let newStep: RecipeStepType = NewStep()
     recipeCopy.steps.push(newStep)
     setRecipe(recipeCopy)
   }

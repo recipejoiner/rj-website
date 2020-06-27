@@ -251,6 +251,7 @@ export interface RecipeFormReturnType {
     }
   }
 }
+
 export const CREATE_RECIPE = gql`
   mutation createRecipe($attributes: RecipeInput!) {
     mutation: createOrEditRecipe(attributes: $attributes) {

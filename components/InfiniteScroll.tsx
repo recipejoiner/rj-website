@@ -230,11 +230,11 @@ const InfiniteScroll: React.FC<InfiniteScrollProps<any, any>> = ({
     <React.Fragment>
       <div id="_infinitescroll">
         {children(edges)}
-        {!hasNextPage ? (
+        {/* {!hasNextPage ? (
           <span className="block text-center text-gray-400 py-5">
             loaded all data
           </span>
-        ) : null}
+        ) : null} */}
       </div>
     </React.Fragment>
   )

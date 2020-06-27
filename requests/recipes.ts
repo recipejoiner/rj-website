@@ -27,37 +27,7 @@ export interface AllRecipesVarsType {
   cursor: string | null
 }
 
-export interface IngredientType {
-  ingredientInfo: {
-    name: string
-  }
-  quantity: number
-  unit: {
-    name: string
-  }
-}
-export interface RecipeStepType {
-  [id: string]: string | Array<IngredientInputType> | any
-  stepTitle?: string
-  ingredients: Array<IngredientType>
-  customInfo: string
-}
-
-export interface RecipeType {
-  result: {
-    by: {
-      username: string
-    }
-    id: string
-    title: string
-    handle: string
-    description: string
-    servings: string
-    time: TimeType
-    steps: Array<RecipeStepType>
-  }
-}
-
+// need to do shortform recipe types and update the below 2 queries
 export const ALL_RECIPES = gql`
   query getAllRecipes($cursor: String) {
     connection: allRecipes(first: 10, after: $cursor) {
@@ -138,31 +108,61 @@ export const ALL_USER_RECIPES_BY_USERNAME = gql`
   }
 `
 
+export interface IngredientType {
+  ingredientInfo: {
+    name: string
+  }
+  quantity: number
+  unit: {
+    name: string
+  }
+}
+export interface RecipeStepType {
+  [id: string]: string | Array<IngredientInputType> | any
+  stepNum: number
+  stepTitle: string
+  ingredients: Array<IngredientType>
+}
+
+export interface RecipeType {
+  result: {
+    by: {
+      username: string
+    }
+    id: number
+    title: string
+    handle: string
+    description: string
+    servings: number
+    recipeTime: number
+    reactionCount: number
+    commentCount: number
+    steps: Array<RecipeStepType>
+  }
+}
+
+export interface RecipeByUsernameAndHandleVarsType {
+  username: string
+  handle: string
+}
 export const RECIPE_BY_USERNAME_AND_HANDLE = gql`
   query getRecipeByUsernameAndHandle($username: String, $handle: String) {
     result: recipeBy(username: $username, handle: $handle) {
+      id
       by {
         username
       }
       description
+      recipeTime
       handle
       servings
       title
+      reactionCount
+      commentCount
       steps {
         stepNum
-        stepTime
-        action {
-          name
-        }
-        tempLevel
-        tempNum
-        location {
-          name
-        }
+        stepTitle
         additionalInfo
-        useResultFromStep {
-          stepNum
-        }
         ingredients {
           ingredientInfo {
             name
@@ -177,31 +177,27 @@ export const RECIPE_BY_USERNAME_AND_HANDLE = gql`
   }
 `
 
+export interface RecipeByIdVarsType {
+  id: number
+}
 export const RECIPE_BY_ID = gql`
   query getRecipeByID($id: ID) {
     result: recipeBy(id: $id) {
+      id
       by {
         username
       }
       description
+      recipeTime
       handle
       servings
       title
+      reactionCount
+      commentCount
       steps {
         stepNum
-        stepTime
-        action {
-          name
-        }
-        tempLevel
-        tempNum
-        location {
-          name
-        }
+        stepTitle
         additionalInfo
-        useResultFromStep {
-          stepNum
-        }
         ingredients {
           ingredientInfo {
             name

@@ -1,5 +1,4 @@
 import * as React from 'react'
-import Moment from 'moment'
 
 import UserContext from 'helpers/UserContext'
 import {
@@ -7,11 +6,10 @@ import {
   CommentNodeInit,
   RecipeCommentsByUsernameAndHandleVarsType,
   RECIPE_ROOT_COMMENTS_BY_USERNAME_AND_HANDLE,
-  SubcommentsVarsType,
-  SUBCOMMENTS,
 } from 'requests/comments'
 import InfiniteScroll, { EdgeType } from 'components/InfiniteScroll'
-import Subcomments from 'components/Subcomments'
+import Subcomments from 'components/comments/Subcomments'
+import Comment from 'components/comments/Comment'
 
 type RecipeCommentsProps = {
   username: string
@@ -40,21 +38,7 @@ const RecipeComments: React.FC<RecipeCommentsProps> = ({
             <ul>
               {edges.map((edge) => {
                 if (edge.node.id !== 0) {
-                  return (
-                    <li
-                      key={edge.cursor}
-                      className="p-2 w-full border border-gray-900"
-                    >
-                      <span className="font-bold">{edge.node.by.username}</span>
-                      <span>
-                        {new Date(edge.node.createdAt).toDateString()}
-                      </span>
-                      <p>{edge.node.content}</p>
-                      <div className="ml-2">
-                        <Subcomments parentId={edge.node.id} />
-                      </div>
-                    </li>
-                  )
+                  return <Comment key={edge.cursor} commentNode={edge.node} />
                 }
               })}
             </ul>

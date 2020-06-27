@@ -15,7 +15,7 @@ import {
 import { toMixedNumber } from 'helpers/methods'
 import client from 'requests/client'
 
-import RecipeComments from 'components/RecipeComments'
+import RecipeComments from 'components/comments/RecipeComments'
 
 interface RecipeProps {
   recipe: RecipeType

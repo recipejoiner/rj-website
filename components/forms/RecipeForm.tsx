@@ -180,7 +180,7 @@ const RecipeStepMode: React.FC<RecipeStepProps> = ({
 }) => {
   const currentStep = step
 
-  const updateValue = (name: string, value: string | number, id?: string) => {
+  const updateValue = (name: string, value: string, id?: string) => {
     let recipeCopy = JSON.parse(JSON.stringify(recipe))
     let index = -1
     switch (name) {
@@ -194,6 +194,7 @@ const RecipeStepMode: React.FC<RecipeStepProps> = ({
               id && ing.id === id.substring(0, id.indexOf('-'))
           )[0]
         )
+        if (name === 'quantity') value = value.replace(/([^0-9 \/])/g, '')
         if (index > -1)
           recipeCopy.steps[currentStep].ingredients[index][name] = value
         break
@@ -314,6 +315,7 @@ const RecipeStepMode: React.FC<RecipeStepProps> = ({
                   value={ing.quantity || ''}
                   name="quantity"
                   placeholder="#"
+                  type="text"
                   onChange={handleChange}
                 ></input>
                 <Autocomplete

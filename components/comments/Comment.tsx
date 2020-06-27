@@ -9,7 +9,11 @@ interface CommentProps {
 }
 const Comment: React.FC<CommentProps> = ({ commentNode }) => {
   return (
-    <li className="p-1 pl-3 w-full border-l">
+    <li
+      className={`p-1 pl-3 w-full border-l ${
+        commentNode.depth == 0 ? 'pb-3 border-b' : ''
+      }`}
+    >
       <div className="text-sm">
         <span className="font-bold">{commentNode.by.username}</span>
         <span className="text-gray-600">

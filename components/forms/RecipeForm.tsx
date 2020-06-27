@@ -137,7 +137,10 @@ const StepMiniView = ({
   onClick: (event: React.MouseEvent<HTMLDivElement>) => void
 }) => {
   return (
-    <div className=" w-10/12 my-2 cursor-pointer p-2 " onClick={onClick}>
+    <div
+      className="hover:scale-95 transform ease-in duration-200 w-10/12 my-2 cursor-pointer "
+      onClick={onClick}
+    >
       <div className="grid grid-cols-5 border-black border border-b-2 text-xl p-4 rounded-lg ">
         <span className=" text-2xl rounded-full text-center m-auto">
           {stepIndex + 1}
@@ -302,16 +305,20 @@ const RecipeStepMode: React.FC<RecipeStepProps> = ({
               <div className="grid grid-cols-4 rounded justify-center m-auto ">
                 <input
                   id={ing.id + '-quantity'}
-                  className="w-full text-2xl focus:outline-none rounded text-center m-auto"
+                  className={
+                    (getError(ing.id + '-quantity').length
+                      ? 'border border-red-600'
+                      : '') +
+                    ' w-full text-xl border border-black p-3 focus:outline-none rounded text-center m-auto col-span-2'
+                  }
                   value={ing.quantity || ''}
                   name="quantity"
                   placeholder="#"
                   onChange={handleChange}
                 ></input>
-
                 <Autocomplete
                   id={ing.id + '-unit'}
-                  className=" w-full  focus:outline-none p-2 rounded text-center m-auto col-span-3"
+                  className=" w-full  focus:outline-none p-2 rounded text-center m-auto col-span-2"
                   style={{ width: '100%' }}
                   options={units}
                   getOptionLabel={(option) => option.name}
@@ -348,7 +355,7 @@ const RecipeStepMode: React.FC<RecipeStepProps> = ({
           ))}
           <div className="flex justify-center">
             <button
-              className=" border-b-2 w-full focus:outline-none text-xl text-gray-800 font-bold p-4 my-4 border border-black rounded"
+              className="hover:scale-105 transform ease-in duration-200 border-b-2 w-full focus:outline-none text-xl text-gray-800 font-bold p-4 my-4 border border-black rounded"
               onClick={createIngredient}
             >
               Add Ingredient
@@ -661,7 +668,7 @@ const RecipeForm: React.FC<RecipeFormProps> = ({
                 return (
                   <React.Fragment>
                     <DeleteX
-                      className="-mx-6 -my-5 float-left"
+                      className="-mx-6 -my-2 float-left"
                       onClick={() => deleteStep(currentStep)}
                     />
                     <RecipeStepMode
@@ -675,13 +682,13 @@ const RecipeForm: React.FC<RecipeFormProps> = ({
                     <div className="w-full mt-8">
                       <div className="grid col-gap-4 grid-cols-2">
                         <button
-                          className=" border-b-2 w-full focus:outline-none text-xl text-gray-800 font-bold p-4 my-4 border border-black rounded"
+                          className="hover:scale-105 transform ease-in duration-200 border-b-2 w-full focus:outline-none text-xl text-gray-800 font-bold p-4 my-4 border border-black rounded"
                           onClick={goToReview}
                         >
                           Finish
                         </button>
                         <button
-                          className=" border-b-2 w-full focus:outline-none text-xl text-gray-800 font-bold p-4 my-4 border border-black rounded"
+                          className="hover:scale-105 transform ease-in duration-200 border-b-2 w-full focus:outline-none text-xl text-gray-800 font-bold p-4 my-4 border border-black rounded"
                           onClick={() => submitStep(currentStep + 1)}
                         >
                           Next Step
@@ -704,7 +711,7 @@ const RecipeForm: React.FC<RecipeFormProps> = ({
               deleteError={deleteError}
             />
             <button
-              className=" border-b-2 w-full focus:outline-none text-xl text-gray-800 font-bold p-4 my-4 border border-black rounded"
+              className="hover:scale-105 transform ease-in duration-200 border-b-2 w-full focus:outline-none text-xl text-gray-800 font-bold p-4 my-4 border border-black rounded"
               onClick={submitRecipe}
             >
               Post Recipe

@@ -9,11 +9,16 @@ interface CommentProps {
 }
 const Comment: React.FC<CommentProps> = ({ commentNode }) => {
   return (
-    <li className="p-2 w-full border border-gray-900">
-      <span className="font-bold">{commentNode.by.username}</span>
-      <span>{Moment(commentNode.createdAt).fromNow()}</span>
-      <p>{commentNode.content}</p>
-      <div className="ml-2">
+    <li className="pl-2 pt-1 w-full border-l">
+      <div className="text-sm">
+        <span className="font-bold">{commentNode.by.username}</span>
+        <span className="text-gray-600">
+          {' '}
+          • {Moment(commentNode.createdAt).fromNow()}
+        </span>
+      </div>
+      <p className="text-sm">{commentNode.content}</p>
+      <div className="ml-1">
         <Subcomments parentId={commentNode.id} />
       </div>
     </li>

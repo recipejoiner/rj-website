@@ -20,28 +20,26 @@ const Subcomments: React.FC<SubcommentsProps> = ({ parentId }) => {
     cursor: null,
   }
   return (
-    <div id="comments">
-      <InfiniteScroll
-        QUERY={SUBCOMMENTS}
-        hasJustConnection={true}
-        nodeInit={CommentNodeInit}
-        QueryVars={rootCommentVars}
-      >
-        {(edges: Array<EdgeType<CommentNodeType>>) => {
-          if (edges.length > 0) {
-            return (
-              <ul>
-                {edges.map((edge) => {
-                  if (edge.node.id !== 0) {
-                    return <Comment key={edge.cursor} commentNode={edge.node} />
-                  }
-                })}
-              </ul>
-            )
-          }
-        }}
-      </InfiniteScroll>
-    </div>
+    <InfiniteScroll
+      QUERY={SUBCOMMENTS}
+      hasJustConnection={true}
+      nodeInit={CommentNodeInit}
+      QueryVars={rootCommentVars}
+    >
+      {(edges: Array<EdgeType<CommentNodeType>>) => {
+        if (edges.length > 0) {
+          return (
+            <ul>
+              {edges.map((edge) => {
+                if (edge.node.id !== 0) {
+                  return <Comment key={edge.cursor} commentNode={edge.node} />
+                }
+              })}
+            </ul>
+          )
+        }
+      }}
+    </InfiniteScroll>
   )
 }
 

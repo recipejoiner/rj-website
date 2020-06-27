@@ -35,7 +35,7 @@ const RecipeComments: React.FC<RecipeCommentsProps> = ({
       >
         {(edges: Array<EdgeType<CommentNodeType>>) => {
           return (
-            <ul>
+            <ul className="border-b-8 border-gray-400">
               {edges.map((edge) => {
                 if (edge.node.id !== 0) {
                   return <Comment key={edge.cursor} commentNode={edge.node} />

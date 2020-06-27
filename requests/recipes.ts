@@ -213,11 +213,6 @@ export const RECIPE_BY_ID = gql`
 `
 
 //NEW RECIPE
-interface TimeType {
-  hours: number
-  minutes: number
-}
-
 interface IngredientInputType {
   id: string
   name: string
@@ -227,7 +222,9 @@ interface IngredientInputType {
 
 export interface RecipeStepInputType {
   [id: string]: string | Array<IngredientInputType> | any
-  stepTitle?: string
+  stepNum: number
+  stepTitle: string
+  additionalInfo: string
   ingredients: Array<IngredientInputType>
   customInfo: string
 }
@@ -235,8 +232,8 @@ export interface RecipeStepInputType {
 export interface RecipeInputType {
   title: string
   description: string
-  servings: string
-  time: TimeType
+  servings: number
+  recipeTime: number
   steps: Array<RecipeStepInputType>
 }
 

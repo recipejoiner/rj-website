@@ -32,6 +32,7 @@ const units = [
 
 //start INTERFACES
 interface Error {
+  step: number
   key: string
   error: string
   message: string
@@ -70,15 +71,15 @@ const NewRecipe = () => ({
 })
 
 const NewError = (
+  step: number,
   key: string,
   error: string,
-  message: string,
-  step: number
+  message: string
 ) => ({
+  step: step,
   key: key,
   error: error,
   message: message,
-  step: step,
 })
 //end HELPER FUNCTIONS
 
@@ -356,12 +357,14 @@ const RecipeStepMode: React.FC<RecipeStepProps> = ({
         </div>
       </div>
       <div className="text-center mt-4">
-        <div className=" w-full border-black border p-2 h-56 rounded ">
+        <div
+          className={
+            (getError('customInfo').length ? 'border border-red-600' : '') +
+            ' w-full border-black border p-2 h-56 rounded '
+          }
+        >
           <textarea
-            className={
-              (getError('customInfo').length ? 'border border-red-600' : '') +
-              ' resize-none  w-full h-full text-xl bg-white text-gray-800 p-2 outline-none rounded'
-            }
+            className="resize-none  w-full h-full text-xl bg-white text-gray-800 p-2 outline-none rounded"
             placeholder="Describe the step in concise detail!"
             name="customInfo"
             value={recipe.steps[currentStep].customInfo || ''}
@@ -414,9 +417,12 @@ const RecipeReviewMode: React.FC<RecipeReviewProps> = ({
     <React.Fragment>
       <div className="m-2 mb-8">
         <input
-          className="bg-transparent w-full text-5xl text-gray-700  py-1 leading-tight focus:outline-none  border-b-4 border-black "
+          className={
+            (getError('title').length ? 'border-b-2 border-red-600' : '') +
+            ' bg-transparent w-full text-5xl text-gray-700  py-1 leading-tight focus:outline-none  border-b-2 border-black '
+          }
           type="text"
-          placeholder="Title"
+          placeholder="Recipe Title"
           name="title"
           value={recipe.title || ''}
           onChange={handleChange}
@@ -529,13 +535,15 @@ const RecipeForm: React.FC<RecipeFormProps> = ({
 
   const createError = (key: string, error: string, message: string) => {
     if (!getError(key).length) {
-      let err: Error = NewError(key, error, message, currentStep)
+      let err: Error = NewError(currentStep, key, error, message)
       setErrors((errors) => [...errors, err])
     }
   }
 
   const deleteError = (key: string) => {
-    let updatedErrors = errors.filter((err) => err.key != key)
+    let updatedErrors = errors.filter(
+      (err) => err.step !== currentStep && err.key !== key
+    )
     setErrors(updatedErrors)
   }
 
@@ -544,7 +552,7 @@ const RecipeForm: React.FC<RecipeFormProps> = ({
   }
 
   const getError = (key: string) => {
-    return errors.filter((err) => err.key == key)
+    return errors.filter((err) => err.step === currentStep && err.key === key)
   }
 
   const createStep = () => {
@@ -574,6 +582,7 @@ const RecipeForm: React.FC<RecipeFormProps> = ({
   const goToStep = (stepNum: number) => {
     if (stepNum < 0) stepNum = 0
     setCurrentStep(stepNum)
+
     setReviewMode(false)
   }
 

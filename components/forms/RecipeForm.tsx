@@ -137,7 +137,7 @@ const StepMiniView = ({
 }) => {
   return (
     <div className=" w-10/12 my-2 cursor-pointer p-2 " onClick={onClick}>
-      <div className="grid grid-cols-5 bg-gray-200 text-xl p-4 rounded-lg shadow-s">
+      <div className="grid grid-cols-5 border-black border border-b-2 text-xl p-4 rounded-lg ">
         <span className=" text-2xl rounded-full text-center m-auto">
           {stepIndex + 1}
         </span>
@@ -233,147 +233,140 @@ const RecipeStepMode: React.FC<RecipeStepProps> = ({
 
   return (
     <React.Fragment>
-      <div className="mx-auto mt-1 p-6 bg-white rounded-lg shadow-xl ">
-        <div className="grid grid-cols-3">
-          <div className="grid grid-rows-2 col-span-2">
-            <span className="text-4xl">Step {currentStep + 1}:</span>
-            <input
-              className="bg-transparent w-full text-4xl text-gray-700 leading-tight focus:outline-none"
-              type="text"
-              placeholder="Title"
-              name="stepTitle"
-              value={recipe.steps[currentStep].stepTitle || ''}
-              onChange={handleChange}
-            ></input>
-          </div>
-          <div className="text-center rounded">
-            <div className=" grid items-center bg-gray-100 p-4 w-28 h-28 lg:w-32 lg:h-32 m-auto">
-              <img className="m-auto" src={IMAGE} />
-            </div>
+      <div className="grid grid-cols-3">
+        <div className="grid grid-rows-2 col-span-2">
+          <span className="text-4xl">Step {currentStep + 1}:</span>
+          <input
+            className="bg-transparent w-full text-4xl text-gray-700 leading-tight focus:outline-none"
+            type="text"
+            placeholder="Title"
+            name="stepTitle"
+            value={recipe.steps[currentStep].stepTitle || ''}
+            onChange={handleChange}
+          ></input>
+        </div>
+        <div className="text-center rounded">
+          <div className=" grid items-center  p-4 w-28 h-28 lg:w-32 lg:h-32 m-auto">
+            <img className="m-auto" src={IMAGE} />
           </div>
         </div>
+      </div>
 
-        <div className="text-center mt-4">
-          <div className="text-center bg-gray-200 p-2 rounded">
-            {recipe.steps[currentStep].ingredients.map((ing) => (
-              <div className="grid grid-cols-2 mt-2 p-2  rounded bg-white h-full">
-                <div className="rounded text-center grid ">
-                  <Autocomplete
-                    id={ing.id + '-name'}
-                    className="bg-white md:text-4xl  text-2xl md:w-1/2 m-auto text-center focus:outline-none p-2 rounded "
-                    style={{ width: '100%' }}
-                    options={ingredients}
-                    getOptionLabel={(option) => option.name}
-                    freeSolo
-                    autoHighlight={true}
-                    value={
-                      ingredients.filter((e) => e.name === ing.name)[0] || {}
-                    }
-                    renderInput={(params) => (
-                      <TextField
-                        {...params}
-                        label="INGREDIENT"
-                        variant="outlined"
-                        margin="normal"
-                        error={
-                          !!getError(ing.id + '-name').length ? true : false
-                        }
-                        helperText={
-                          !!getError(ing.id + '-name').length
-                            ? getError(ing.id + '-name')[0].message
-                            : false
-                        }
-                      />
-                    )}
-                    onChange={(
-                      event: object,
-                      value: any | any[],
-                      reason: string
-                    ) => {
-                      updateValue(
-                        'name',
-                        value ? value.name : '',
-                        ing.id + '-name'
-                      )
-                    }}
-                  />
-                  <DeleteX
-                    className="absolute text-pink-200"
-                    onClick={() => deleteIngredient(ing.id.toString())}
-                  />
-                </div>
-                <div className="grid grid-cols-4 rounded justify-center m-auto ">
-                  <input
-                    id={ing.id + '-quantity'}
-                    className="w-full text-2xl focus:outline-none rounded text-center m-auto"
-                    value={ing.quantity || ''}
-                    name="quantity"
-                    placeholder="#"
-                    onChange={handleChange}
-                  ></input>
-
-                  <Autocomplete
-                    id={ing.id + '-unit'}
-                    className=" w-full  focus:outline-none p-2 rounded text-center m-auto col-span-3"
-                    style={{ width: '100%' }}
-                    options={units}
-                    getOptionLabel={(option) => option.name}
-                    autoHighlight={true}
-                    value={units.filter((e) => e.name === ing.unit)[0] || {}}
-                    closeIcon=""
-                    renderInput={(params) => (
-                      <TextField
-                        {...params}
-                        label="Unit"
-                        margin="normal"
-                        error={
-                          !!getError(ing.id + '-unit').length ? true : false
-                        }
-                        helperText={
-                          !!getError(ing.id + '-unit').length
-                            ? getError(ing.id + '-unit')[0].message
-                            : false
-                        }
-                      />
-                    )}
-                    onChange={(
-                      event: object,
-                      value: any | any[],
-                      reason: string
-                    ) => {
-                      updateValue(
-                        'unit',
-                        value ? value.name : '',
-                        ing.id + '-unit'
-                      )
-                    }}
-                  />
-                </div>
+      <div className="text-center mt-4">
+        <div className="text-center p-2 rounded">
+          {recipe.steps[currentStep].ingredients.map((ing) => (
+            <div className="grid grid-cols-2 mt-2 p-2  rounded bg-white h-full">
+              <div className="rounded text-center grid ">
+                <Autocomplete
+                  id={ing.id + '-name'}
+                  className="bg-white md:text-4xl  text-2xl md:w-1/2 m-auto text-center focus:outline-none p-2 rounded "
+                  style={{ width: '100%' }}
+                  options={ingredients}
+                  getOptionLabel={(option) => option.name}
+                  freeSolo
+                  autoHighlight={true}
+                  value={
+                    ingredients.filter((e) => e.name === ing.name)[0] || {}
+                  }
+                  renderInput={(params) => (
+                    <TextField
+                      {...params}
+                      label="INGREDIENT"
+                      margin="normal"
+                      error={!!getError(ing.id + '-name').length ? true : false}
+                      helperText={
+                        !!getError(ing.id + '-name').length
+                          ? getError(ing.id + '-name')[0].message
+                          : false
+                      }
+                    />
+                  )}
+                  onChange={(
+                    event: object,
+                    value: any | any[],
+                    reason: string
+                  ) => {
+                    updateValue(
+                      'name',
+                      value ? value.name : '',
+                      ing.id + '-name'
+                    )
+                  }}
+                />
+                <DeleteX
+                  className="absolute"
+                  onClick={() => deleteIngredient(ing.id.toString())}
+                />
               </div>
-            ))}
-            <div className="flex justify-center">
-              <button
-                className="bg-orange-200 hover:bg-orange-300 focus:outline-none text-gray-800 p-2 rounded m-4 w-6/12"
-                onClick={createIngredient}
-              >
-                Add Ingredient
-              </button>
+              <div className="grid grid-cols-4 rounded justify-center m-auto ">
+                <input
+                  id={ing.id + '-quantity'}
+                  className="w-full text-2xl focus:outline-none rounded text-center m-auto"
+                  value={ing.quantity || ''}
+                  name="quantity"
+                  placeholder="#"
+                  onChange={handleChange}
+                ></input>
+
+                <Autocomplete
+                  id={ing.id + '-unit'}
+                  className=" w-full  focus:outline-none p-2 rounded text-center m-auto col-span-3"
+                  style={{ width: '100%' }}
+                  options={units}
+                  getOptionLabel={(option) => option.name}
+                  autoHighlight={true}
+                  value={units.filter((e) => e.name === ing.unit)[0] || {}}
+                  closeIcon=""
+                  renderInput={(params) => (
+                    <TextField
+                      {...params}
+                      label="Unit"
+                      margin="normal"
+                      error={!!getError(ing.id + '-unit').length ? true : false}
+                      helperText={
+                        !!getError(ing.id + '-unit').length
+                          ? getError(ing.id + '-unit')[0].message
+                          : false
+                      }
+                    />
+                  )}
+                  onChange={(
+                    event: object,
+                    value: any | any[],
+                    reason: string
+                  ) => {
+                    updateValue(
+                      'unit',
+                      value ? value.name : '',
+                      ing.id + '-unit'
+                    )
+                  }}
+                />
+              </div>
             </div>
+          ))}
+          <div className="flex justify-center">
+            <button
+              className=" border-b-2 w-full focus:outline-none text-xl text-gray-800 font-bold p-4 my-4 border border-black rounded"
+              onClick={createIngredient}
+            >
+              Add Ingredient
+            </button>
           </div>
         </div>
-        <div className="text-center mt-4">
-          <div className=" w-full bg-gray-200 p-4 h-56 rounded ">
-            <textarea
-              className={
-                (getError('customInfo').length ? 'border border-red-600' : '') +
-                ' resize-none  w-full h-full text-xl bg-white p-2 outline-none rounded'
-              }
-              placeholder="Describe the step in concise detail!"
-              name="customInfo"
-              value={recipe.steps[currentStep].customInfo || ''}
-              onChange={handleChange}
-            ></textarea>
-          </div>
+      </div>
+      <div className="text-center mt-4">
+        <div className=" w-full border-black border p-2 h-56 rounded ">
+          <textarea
+            className={
+              (getError('customInfo').length ? 'border border-red-600' : '') +
+              ' resize-none  w-full h-full text-xl bg-white text-gray-800 p-2 outline-none rounded'
+            }
+            placeholder="Describe the step in concise detail!"
+            name="customInfo"
+            value={recipe.steps[currentStep].customInfo || ''}
+            onChange={handleChange}
+          ></textarea>
         </div>
       </div>
     </React.Fragment>
@@ -419,100 +412,98 @@ const RecipeReviewMode: React.FC<RecipeReviewProps> = ({
   }
   return (
     <React.Fragment>
-      <div className=" mx-auto mt-1 p-6 bg-white rounded-lg shadow-xl border-purple-100 border-2">
-        <div className="m-2 mb-8">
-          <input
-            className="bg-transparent w-full text-5xl text-gray-700  py-1 leading-tight focus:outline-none  border-b-4 border-black "
-            type="text"
-            placeholder="Title"
-            name="title"
-            value={recipe.title || ''}
-            onChange={handleChange}
-          ></input>
+      <div className="m-2 mb-8">
+        <input
+          className="bg-transparent w-full text-5xl text-gray-700  py-1 leading-tight focus:outline-none  border-b-4 border-black "
+          type="text"
+          placeholder="Title"
+          name="title"
+          value={recipe.title || ''}
+          onChange={handleChange}
+        ></input>
+      </div>
+      {recipe.steps.map((step) => {
+        let index = recipe.steps.indexOf(step)
+        return (
+          <StepMiniView
+            recipe={recipe}
+            stepIndex={index}
+            onClick={() => {
+              goToStep(index)
+            }}
+          />
+        )
+      })}
+      <div className="grid grid-cols-3  my-8">
+        <div className=" grid items-center  p-2 w-32 h-32 m-auto">
+          <img className="p-4  m-auto" src={IMAGE} />
+        </div>{' '}
+        <div className=" grid items-center p-2 w-32 h-32 m-auto">
+          <img className="p-4  m-auto" src={IMAGE} />
+        </div>{' '}
+        <div className=" grid items-center  p-2 w-32 h-32 m-auto">
+          <img className="p-4  m-auto" src={IMAGE} />
         </div>
-        {recipe.steps.map((step) => {
-          let index = recipe.steps.indexOf(step)
-          return (
-            <StepMiniView
-              recipe={recipe}
-              stepIndex={index}
-              onClick={() => {
-                goToStep(index)
-              }}
-            />
-          )
-        })}
-        <div className="grid grid-cols-3  my-8">
-          <div className=" grid items-center bg-gray-100 p-2 w-32 h-32 m-auto">
-            <img className="p-4  m-auto" src={IMAGE} />
-          </div>{' '}
-          <div className=" grid items-center bg-gray-100 p-2 w-32 h-32 m-auto">
-            <img className="p-4  m-auto" src={IMAGE} />
-          </div>{' '}
-          <div className=" grid items-center bg-gray-100 p-2 w-32 h-32 m-auto">
-            <img className="p-4  m-auto" src={IMAGE} />
-          </div>
-        </div>
-        <div className="grid  grid-cols-2 bg-gray-200 p-2 gap-4  rounded ">
-          <div className="grid  grid-rows-2 p-2 rounded ">
-            <img src={TIME} className="h-8 m-auto cursor-pointer rounded" />
-            <div className=" grid grid-cols-2 text-center gap-4 text-xs">
-              <div className="w-full rounded">
-                <input
-                  className="text-xl w-full text-center focus:outline-none rounded appearance-none"
-                  type="number"
-                  min="00"
-                  max="48"
-                  step="1"
-                  placeholder="H"
-                  name="hours"
-                  value={recipe.time.hours || ''}
-                  onChange={handleChange}
-                ></input>
-                Hours
-              </div>
-              <div className="w-full rounded">
-                <input
-                  className="text-xl w-full text-center focus:outline-none rounded appearance-none"
-                  type="number"
-                  min="00"
-                  max="60"
-                  step="1"
-                  placeholder="M"
-                  name="minutes"
-                  value={recipe.time.minutes || ''}
-                  onChange={handleChange}
-                ></input>
-                Minutes
-              </div>
-            </div>
-          </div>
-          <div className="grid  grid-rows-2 p-2 rounded text-center text-xs ">
-            <img src={CUTLERY} className="h-8 m-auto cursor-pointer rounded" />
+      </div>
+      <div className="grid  grid-cols-2 border border-black p-2 gap-4  rounded ">
+        <div className="grid  grid-rows-2 p-2 rounded ">
+          <img src={TIME} className="h-8 m-auto cursor-pointer rounded" />
+          <div className=" grid grid-cols-2 text-center gap-4 text-xs">
             <div className="w-full rounded">
               <input
-                className="text-xl w text-center focus:outline-none rounded appearance-none"
+                className="text-xl w-full pl-3 m-auto border border-black text-center focus:outline-none rounded appearance-none"
                 type="number"
-                min="1"
+                min="00"
+                max="48"
                 step="1"
-                placeholder="Servings"
-                name="servings"
-                value={recipe.servings || ''}
+                placeholder="H"
+                name="hours"
+                value={recipe.time.hours || ''}
                 onChange={handleChange}
               ></input>
-              Servings
+              Hours
+            </div>
+            <div className="w-full rounded">
+              <input
+                className="text-xl w-full pl-3 m-auto border border-black text-center focus:outline-none rounded appearance-none"
+                type="number"
+                min="00"
+                max="60"
+                step="1"
+                placeholder="M"
+                name="minutes"
+                value={recipe.time.minutes || ''}
+                onChange={handleChange}
+              ></input>
+              Minutes
             </div>
           </div>
         </div>
-        <div className=" w-full   my-4 h-40 rounded ">
-          <textarea
-            placeholder="Description and tags"
-            className="resize-none h-full w-full text-xl mt-4 text-gray-700 bg-gray-200 rounded p-4 outline-none"
-            name="description"
-            value={recipe.description || ''}
-            onChange={handleChange}
-          ></textarea>
+        <div className="grid  grid-rows-2 p-2 rounded text-center text-xs ">
+          <img src={CUTLERY} className="h-8 m-auto cursor-pointer rounded" />
+          <div className="w-full grid grid-rows-2 text-center justify-center rounded">
+            <input
+              className="text-xl w-8/12 pl-3 m-auto border border-black text-center focus:outline-none rounded appearance-none"
+              type="number"
+              min="1"
+              step="1"
+              placeholder="Servings"
+              name="servings"
+              value={recipe.servings || ''}
+              onChange={handleChange}
+            ></input>
+            Servings
+          </div>
         </div>
+      </div>
+      <div className=" w-full   my-4 h-40 rounded ">
+        <textarea
+          placeholder="Description and tags"
+          className="resize-none h-full w-full text-xl mt-4 text-gray-700 border-black border rounded p-4 outline-none"
+          name="description"
+          value={recipe.description || ''}
+          onChange={handleChange}
+        ></textarea>
       </div>
     </React.Fragment>
   )
@@ -643,73 +634,75 @@ const RecipeForm: React.FC<RecipeFormProps> = ({
   React.useEffect(() => setLoaded(true), [])
 
   return (
-    <div className="max-w-xl lg:my-8 mx-auto">
-      {loaded && !reviewMode ? (
-        <React.Fragment>
-          {recipe.steps.map((step) => {
-            let index = recipe.steps.indexOf(step)
-            if (currentStep !== index) {
-              return (
-                <StepMiniView
-                  recipe={recipe}
-                  stepIndex={index}
-                  onClick={() => goToStep(index)}
-                />
-              )
-            } else {
-              return (
-                <React.Fragment>
-                  <DeleteX
-                    className="m-2 mr-2 float-right"
-                    onClick={() => deleteStep(currentStep)}
-                  />
-                  <RecipeStepMode
+    <div className="max-w-xl lg:my-8 mx-auto font-mono">
+      <div className=" mx-auto mt-1 p-6 bg-white rounded-lg shadow-xl border-black border">
+        {loaded && !reviewMode ? (
+          <React.Fragment>
+            {recipe.steps.map((step) => {
+              let index = recipe.steps.indexOf(step)
+              if (currentStep !== index) {
+                return (
+                  <StepMiniView
                     recipe={recipe}
-                    updateRecipe={updateRecipe}
-                    step={currentStep}
-                    getError={getError}
-                    updateError={updateError}
-                    deleteError={deleteError}
+                    stepIndex={index}
+                    onClick={() => goToStep(index)}
                   />
-                  <div className="w-full mt-8 mb-8">
-                    <div className="grid col-gap-4 grid-cols-2">
-                      <button
-                        className="bg-blue-200 hover:bg-blue-300 focus:outline-none text-xl text-gray-800 font-bold py-2  rounded"
-                        onClick={goToReview}
-                      >
-                        Finish
-                      </button>
-                      <button
-                        className="bg-orange-200 hover:bg-orange-300 focus:outline-none text-xl text-gray-800 font-bold py-2 rounded"
-                        onClick={() => submitStep(currentStep + 1)}
-                      >
-                        Next Step
-                      </button>
+                )
+              } else {
+                return (
+                  <React.Fragment>
+                    <DeleteX
+                      className="-mx-6 -my-5 float-left"
+                      onClick={() => deleteStep(currentStep)}
+                    />
+                    <RecipeStepMode
+                      recipe={recipe}
+                      updateRecipe={updateRecipe}
+                      step={currentStep}
+                      getError={getError}
+                      updateError={updateError}
+                      deleteError={deleteError}
+                    />
+                    <div className="w-full mt-8">
+                      <div className="grid col-gap-4 grid-cols-2">
+                        <button
+                          className=" border-b-2 w-full focus:outline-none text-xl text-gray-800 font-bold p-4 my-4 border border-black rounded"
+                          onClick={goToReview}
+                        >
+                          Finish
+                        </button>
+                        <button
+                          className=" border-b-2 w-full focus:outline-none text-xl text-gray-800 font-bold p-4 my-4 border border-black rounded"
+                          onClick={() => submitStep(currentStep + 1)}
+                        >
+                          Next Step
+                        </button>
+                      </div>
                     </div>
-                  </div>
-                </React.Fragment>
-              )
-            }
-          })}
-        </React.Fragment>
-      ) : (
-        <React.Fragment>
-          <RecipeReviewMode
-            recipe={recipe}
-            updateRecipe={updateRecipe}
-            goToStep={goToStep}
-            getError={getError}
-            updateError={updateError}
-            deleteError={deleteError}
-          />
-          <button
-            className="bg-orange-200 hover:bg-orange-300 w-full focus:outline-none text-xl text-gray-800 font-bold p-4 my-4 rounded"
-            onClick={submitRecipe}
-          >
-            Post Recipe
-          </button>
-        </React.Fragment>
-      )}
+                  </React.Fragment>
+                )
+              }
+            })}
+          </React.Fragment>
+        ) : (
+          <React.Fragment>
+            <RecipeReviewMode
+              recipe={recipe}
+              updateRecipe={updateRecipe}
+              goToStep={goToStep}
+              getError={getError}
+              updateError={updateError}
+              deleteError={deleteError}
+            />
+            <button
+              className=" border-b-2 w-full focus:outline-none text-xl text-gray-800 font-bold p-4 my-4 border border-black rounded"
+              onClick={submitRecipe}
+            >
+              Post Recipe
+            </button>
+          </React.Fragment>
+        )}
+      </div>
     </div>
   )
 }

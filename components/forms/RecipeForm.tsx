@@ -1,22 +1,38 @@
 import * as React from 'react'
 import { GraphQLError } from 'graphql'
+import TextField from '@material-ui/core/TextField'
+import Autocomplete from '@material-ui/lab/Autocomplete'
+
 import {
   RecipeInputType,
-  RecipeInputStepType,
+  RecipeStepType,
   CreateRecipeVars,
 } from '../../requests/recipes'
-import { setupMaster } from 'cluster'
-//start GLOBAL VARIABLES
-const THERMOMETER = require('../../images/icons/thermometer.svg')
-const CUTLERY = require('../../images/icons/cutlery.svg')
-const IMAGE = require('../../images/icons/add.svg')
-const COOK = require('../../images/icons/fire.svg')
-const TIME = require('../../images/icons/time.svg')
 
+//start GLOBAL VARIABLES
+const IMAGE = require('../../images/icons/add.svg')
+const TIME = require('../../images/icons/time.svg')
+const CUTLERY = require('../../images/icons/cutlery.svg')
+
+const ingredients = [
+  { name: 'Apple' },
+  { name: 'Banana' },
+  { name: 'Coffee' },
+  { name: 'Flour' },
+  { name: 'Rice' },
+]
+const units = [
+  { name: 'Pound' },
+  { name: 'Cup' },
+  { name: 'Pinch' },
+  { name: 'Tablespoon' },
+  { name: 'Whole' },
+]
 //end GLOBAL VARIABLES
 
 //start INTERFACES
 interface Error {
+  step: number
   key: string
   error: string
   message: string
@@ -32,26 +48,17 @@ interface RecipeFormProps {
 //end INTERFACES
 
 //start HELPER FUNCTIONS
-const NewUseResultFromStep = () => ({
-  id: Date.now().toString(),
-  value: '',
-})
 
 const NewIngredient = () => ({
   id: Date.now().toString(),
   name: '',
-  quantity: 1,
+  quantity: '',
   unit: '',
 })
 
 const NewStep = () => ({
-  action: '',
+  stepTitle: '',
   ingredients: [],
-  useResultsFromStep: [],
-  tempNum: 0,
-  tempLevel: '',
-  time: { hours: 0, minutes: 0, seconds: 0 },
-  location: '',
   customInfo: '',
 })
 
@@ -59,19 +66,20 @@ const NewRecipe = () => ({
   title: '',
   description: '',
   servings: '',
+  time: { hours: 0, minutes: 0 },
   steps: [NewStep()],
 })
 
 const NewError = (
+  step: number,
   key: string,
   error: string,
-  message: string,
-  step: number
+  message: string
 ) => ({
+  step: step,
   key: key,
   error: error,
   message: message,
-  step: step,
 })
 //end HELPER FUNCTIONS
 
@@ -85,13 +93,14 @@ const ErrorField = ({
 }) => {
   const error = errors.filter((err) => err.key === name)[0]
   return error ? (
-    <React.Fragment>
-      <span className="text-sm text-red-600">{error.message}</span>
-    </React.Fragment>
+    <div className="border-red-600 border">
+      <span className="text-left text-sm text-red-600">{error.message}</span>
+    </div>
   ) : (
     <React.Fragment />
   )
 }
+
 const DeleteX = ({
   onClick,
   title,
@@ -117,6 +126,7 @@ const DeleteX = ({
     </svg>
   )
 }
+
 const StepMiniView = ({
   recipe,
   stepIndex,
@@ -127,21 +137,390 @@ const StepMiniView = ({
   onClick: (event: React.MouseEvent<HTMLDivElement>) => void
 }) => {
   return (
-    <div className=" w-10/12 my-2 cursor-pointer" onClick={onClick}>
-      <div className="grid grid-cols-3 bg-gray-200 text-xl p-4 bg-white rounded-lg shadow-s">
-        <span className="rounded-full h-8 w-8 text-center bg-white">
+    <div
+      className="hover:scale-95 transform ease-in duration-200 w-10/12 my-2 cursor-pointer "
+      onClick={onClick}
+    >
+      <div className="grid grid-cols-5 border-black border border-b-2 text-xl p-4 rounded-lg ">
+        <span className=" text-2xl rounded-full text-center m-auto">
           {stepIndex + 1}
         </span>
+        <span className="col-span-2 bg-white text-center rounded m-1">
+          {recipe.steps[stepIndex].stepTitle}{' '}
+        </span>
 
-        <div>{recipe.steps[stepIndex].action}</div>
-        <div>
-          {recipe.steps[stepIndex].ingredients.map((ing) => ing.name + ' ')}
-          {recipe.steps[stepIndex].useResultsFromStep.map((step) => (
-            <span className="bg-white p-1">{step.value + ' '}</span>
-          ))}
-        </div>
+        <span className="col-span-2 bg-white text-center rounded  m-1">
+          {recipe.steps[stepIndex].ingredients.map(
+            (ing) =>
+              (recipe.steps[stepIndex].ingredients.indexOf(ing) > 0
+                ? ', '
+                : '') + ing.name
+          )}
+        </span>
       </div>
     </div>
+  )
+}
+interface RecipeStepProps {
+  recipe: RecipeInputType
+  step: number
+  updateRecipe: (updatedRecipe: RecipeInputType) => void
+  getError: (key: string) => Array<Error>
+  updateError: (key: string, value?: string | number) => void
+  deleteError: (key: string) => void
+}
+
+const RecipeStepMode: React.FC<RecipeStepProps> = ({
+  recipe,
+  updateRecipe,
+  step,
+  getError,
+  updateError,
+  deleteError,
+}) => {
+  const currentStep = step
+
+  const updateValue = (name: string, value: string, id?: string) => {
+    let recipeCopy = JSON.parse(JSON.stringify(recipe))
+    let index = -1
+    switch (name) {
+      //modified field is part of ingredient
+      case 'name':
+      case 'unit':
+      case 'quantity':
+        index = recipeCopy.steps[currentStep].ingredients.indexOf(
+          recipeCopy.steps[currentStep].ingredients.filter(
+            (ing: { id: string }) =>
+              id && ing.id === id.substring(0, id.indexOf('-'))
+          )[0]
+        )
+        if (name === 'quantity') value = value.replace(/([^0-9 \/])/g, '')
+        if (index > -1)
+          recipeCopy.steps[currentStep].ingredients[index][name] = value
+        break
+      default:
+        recipeCopy.steps[currentStep][name] = value
+        break
+    }
+    updateRecipe(recipeCopy)
+    updateError(id || name, value)
+  }
+
+  const createIngredient = () => {
+    let recipeCopy = JSON.parse(JSON.stringify(recipe))
+    recipeCopy.steps[currentStep].ingredients.push(NewIngredient())
+    updateRecipe(recipeCopy)
+  }
+
+  const deleteIngredient = (ingredientId: string) => {
+    let recipeCopy = JSON.parse(JSON.stringify(recipe))
+    let toDelete = recipeCopy.steps[currentStep].ingredients.filter(
+      (ing: { id: string }) => ing.id == ingredientId
+    )[0]
+    let index = recipeCopy.steps[currentStep].ingredients.indexOf(toDelete)
+    if (index > -1) {
+      recipeCopy.steps[currentStep].ingredients.splice(index, 1)
+      updateRecipe(recipeCopy)
+    }
+    deleteError(ingredientId)
+  }
+
+  const handleChange = (data: {
+    target: { name: any; value: any; id?: any }
+  }) => {
+    const {
+      name,
+      value,
+      id,
+    }: { name: string; value: string; id?: string } = data.target
+    updateValue(name, value, id)
+  }
+
+  return (
+    <React.Fragment>
+      <div className="grid grid-cols-3">
+        <div className="grid grid-rows-2 col-span-2">
+          <span className="text-4xl">Step {currentStep + 1}:</span>
+          <input
+            className="bg-transparent w-full text-4xl text-gray-700 leading-tight focus:outline-none"
+            type="text"
+            placeholder="Title"
+            name="stepTitle"
+            value={recipe.steps[currentStep].stepTitle || ''}
+            onChange={handleChange}
+          ></input>
+        </div>
+        <div className="text-center rounded">
+          <div className=" grid items-center  p-4 w-28 h-28 lg:w-32 lg:h-32 m-auto">
+            <img className="m-auto" src={IMAGE} />
+          </div>
+        </div>
+      </div>
+
+      <div className="text-center mt-4">
+        <div className="text-center p-2 rounded">
+          {recipe.steps[currentStep].ingredients.map((ing) => (
+            <div className="grid grid-cols-2 mt-2 p-2  rounded bg-white h-full">
+              <div className="rounded text-center grid ">
+                <Autocomplete
+                  id={ing.id + '-name'}
+                  className="bg-white md:text-4xl  text-2xl md:w-1/2 m-auto text-center focus:outline-none p-2 rounded "
+                  style={{ width: '100%' }}
+                  options={ingredients}
+                  getOptionLabel={(option) => option.name}
+                  freeSolo
+                  autoHighlight={true}
+                  value={
+                    ingredients.filter((e) => e.name === ing.name)[0] || {}
+                  }
+                  renderInput={(params) => (
+                    <TextField
+                      {...params}
+                      label="INGREDIENT"
+                      margin="normal"
+                      error={!!getError(ing.id + '-name').length ? true : false}
+                      helperText={
+                        !!getError(ing.id + '-name').length
+                          ? getError(ing.id + '-name')[0].message
+                          : false
+                      }
+                    />
+                  )}
+                  onChange={(
+                    event: object,
+                    value: any | any[],
+                    reason: string
+                  ) => {
+                    updateValue(
+                      'name',
+                      value ? value.name : '',
+                      ing.id + '-name'
+                    )
+                  }}
+                />
+                <DeleteX
+                  className="absolute"
+                  onClick={() => deleteIngredient(ing.id.toString())}
+                />
+              </div>
+              <div className="grid grid-cols-4 rounded justify-center m-auto ">
+                <input
+                  id={ing.id + '-quantity'}
+                  className={
+                    (getError(ing.id + '-quantity').length
+                      ? 'border border-red-600'
+                      : '') +
+                    ' w-full text-xl border border-black p-3 focus:outline-none rounded text-center m-auto col-span-2'
+                  }
+                  value={ing.quantity || ''}
+                  name="quantity"
+                  placeholder="#"
+                  type="text"
+                  onChange={handleChange}
+                ></input>
+                <Autocomplete
+                  id={ing.id + '-unit'}
+                  className=" w-full  focus:outline-none p-2 rounded text-center m-auto col-span-2"
+                  style={{ width: '100%' }}
+                  options={units}
+                  getOptionLabel={(option) => option.name}
+                  autoHighlight={true}
+                  value={units.filter((e) => e.name === ing.unit)[0] || {}}
+                  closeIcon=""
+                  renderInput={(params) => (
+                    <TextField
+                      {...params}
+                      label="Unit"
+                      margin="normal"
+                      error={!!getError(ing.id + '-unit').length ? true : false}
+                      helperText={
+                        !!getError(ing.id + '-unit').length
+                          ? getError(ing.id + '-unit')[0].message
+                          : false
+                      }
+                    />
+                  )}
+                  onChange={(
+                    event: object,
+                    value: any | any[],
+                    reason: string
+                  ) => {
+                    updateValue(
+                      'unit',
+                      value ? value.name : '',
+                      ing.id + '-unit'
+                    )
+                  }}
+                />
+              </div>
+            </div>
+          ))}
+          <div className="flex justify-center">
+            <button
+              className="hover:scale-105 transform ease-in duration-200 border-b-2 w-full focus:outline-none text-xl text-gray-800 font-bold p-4 my-4 border border-black rounded"
+              onClick={createIngredient}
+            >
+              Add Ingredient
+            </button>
+          </div>
+        </div>
+      </div>
+      <div className="text-center mt-4">
+        <div
+          className={
+            (getError('customInfo').length ? 'border border-red-600' : '') +
+            ' w-full border-black border p-2 h-56 rounded '
+          }
+        >
+          <textarea
+            className="resize-none  w-full h-full text-xl bg-white text-gray-800 p-2 outline-none rounded"
+            placeholder="Describe the step in concise detail!"
+            name="customInfo"
+            value={recipe.steps[currentStep].customInfo || ''}
+            onChange={handleChange}
+          ></textarea>
+        </div>
+      </div>
+    </React.Fragment>
+  )
+}
+
+interface RecipeReviewProps {
+  recipe: RecipeInputType
+  goToStep: (step: number) => void
+  updateRecipe: (updatedRecipe: RecipeInputType) => void
+  getError: (key: string) => Array<Error>
+  updateError: (key: string, value?: string | number) => void
+  deleteError: (key: string) => void
+}
+const RecipeReviewMode: React.FC<RecipeReviewProps> = ({
+  recipe,
+  goToStep,
+  updateRecipe,
+  getError,
+  updateError,
+  deleteError,
+}) => {
+  const updateValue = (name: string, value: string | number) => {
+    let recipeCopy = JSON.parse(JSON.stringify(recipe))
+    let index = -1
+    switch (name) {
+      case 'hours':
+      case 'minutes':
+      case 'seconds':
+        recipeCopy.time[name] = value
+        break
+      default:
+        recipeCopy[name] = value
+        break
+    }
+    updateRecipe(recipeCopy)
+    updateError(name, value)
+  }
+
+  const handleChange = (data: { target: { name: any; value: any } }) => {
+    const { name, value }: { name: string; value: string } = data.target
+    updateValue(name, value)
+  }
+  return (
+    <React.Fragment>
+      <div className="m-2 mb-8">
+        <input
+          className={
+            (getError('title').length ? 'border-b-2 border-red-600' : '') +
+            ' bg-transparent w-full text-5xl text-gray-700  py-1 leading-tight focus:outline-none  border-b-2 border-black '
+          }
+          type="text"
+          placeholder="Recipe Title"
+          name="title"
+          value={recipe.title || ''}
+          onChange={handleChange}
+        ></input>
+      </div>
+      {recipe.steps.map((step) => {
+        let index = recipe.steps.indexOf(step)
+        return (
+          <StepMiniView
+            recipe={recipe}
+            stepIndex={index}
+            onClick={() => {
+              goToStep(index)
+            }}
+          />
+        )
+      })}
+      <div className="grid grid-cols-3  my-8">
+        <div className=" grid items-center  p-2 w-32 h-32 m-auto">
+          <img className="p-4  m-auto" src={IMAGE} />
+        </div>{' '}
+        <div className=" grid items-center p-2 w-32 h-32 m-auto">
+          <img className="p-4  m-auto" src={IMAGE} />
+        </div>{' '}
+        <div className=" grid items-center  p-2 w-32 h-32 m-auto">
+          <img className="p-4  m-auto" src={IMAGE} />
+        </div>
+      </div>
+      <div className="grid  grid-cols-2 border border-black p-2 gap-4  rounded ">
+        <div className="grid  grid-rows-2 p-2 rounded ">
+          <img src={TIME} className="h-8 m-auto cursor-pointer rounded" />
+          <div className=" grid grid-cols-2 text-center gap-4 text-xs">
+            <div className="w-full rounded">
+              <input
+                className="text-xl w-full pl-3 m-auto border border-black text-center focus:outline-none rounded appearance-none"
+                type="number"
+                min="00"
+                max="48"
+                step="1"
+                placeholder="H"
+                name="hours"
+                value={recipe.time.hours || ''}
+                onChange={handleChange}
+              ></input>
+              Hours
+            </div>
+            <div className="w-full rounded">
+              <input
+                className="text-xl w-full pl-3 m-auto border border-black text-center focus:outline-none rounded appearance-none"
+                type="number"
+                min="00"
+                max="60"
+                step="1"
+                placeholder="M"
+                name="minutes"
+                value={recipe.time.minutes || ''}
+                onChange={handleChange}
+              ></input>
+              Minutes
+            </div>
+          </div>
+        </div>
+        <div className="grid  grid-rows-2 p-2 rounded text-center text-xs ">
+          <img src={CUTLERY} className="h-8 m-auto cursor-pointer rounded" />
+          <div className="w-full grid grid-rows-2 text-center justify-center rounded">
+            <input
+              className="text-xl w-8/12 pl-3 m-auto border border-black text-center focus:outline-none rounded appearance-none"
+              type="number"
+              min="1"
+              step="1"
+              placeholder="Servings"
+              name="servings"
+              value={recipe.servings || ''}
+              onChange={handleChange}
+            ></input>
+            Servings
+          </div>
+        </div>
+      </div>
+      <div className=" w-full   my-4 h-40 rounded ">
+        <textarea
+          placeholder="Description and tags"
+          className="resize-none h-full w-full text-xl mt-4 text-gray-700 border-black border rounded p-4 outline-none"
+          name="description"
+          value={recipe.description || ''}
+          onChange={handleChange}
+        ></textarea>
+      </div>
+    </React.Fragment>
   )
 }
 //end HELPER COMPONENTS
@@ -165,13 +544,15 @@ const RecipeForm: React.FC<RecipeFormProps> = ({
 
   const createError = (key: string, error: string, message: string) => {
     if (!getError(key).length) {
-      let err: Error = NewError(key, error, message, currentStep)
+      let err: Error = NewError(currentStep, key, error, message)
       setErrors((errors) => [...errors, err])
     }
   }
 
   const deleteError = (key: string) => {
-    let updatedErrors = errors.filter((err) => err.key != key)
+    let updatedErrors = errors.filter(
+      (err) => err.step !== currentStep && err.key !== key
+    )
     setErrors(updatedErrors)
   }
 
@@ -180,12 +561,12 @@ const RecipeForm: React.FC<RecipeFormProps> = ({
   }
 
   const getError = (key: string) => {
-    return errors.filter((err) => err.key == key)
+    return errors.filter((err) => err.step === currentStep && err.key === key)
   }
 
   const createStep = () => {
     let recipeCopy = JSON.parse(JSON.stringify(recipe))
-    let newStep: RecipeInputStepType = NewStep()
+    let newStep: RecipeStepType = NewStep()
     recipeCopy.steps.push(newStep)
     setRecipe(recipeCopy)
   }
@@ -200,11 +581,6 @@ const RecipeForm: React.FC<RecipeFormProps> = ({
     }
   }
 
-  const goToStep = (stepNum: number) => {
-    if (stepNum < 0) stepNum = 0
-    setCurrentStep(stepNum)
-  }
-
   const submitStep = (index: number) => {
     if (validateStep(currentStep)) {
       if (currentStep === recipe.steps.length - 1) createStep()
@@ -212,31 +588,26 @@ const RecipeForm: React.FC<RecipeFormProps> = ({
     }
   }
 
-  const submitRecipe = () => {
-    if (validateValue('title', recipe.title, 'required')) {
-      console.log(recipe)
-      submit({ attributes: recipe })
-    }
+  const goToStep = (stepNum: number) => {
+    if (stepNum < 0) stepNum = 0
+    setCurrentStep(stepNum)
+
+    setReviewMode(false)
   }
 
   const validateStep = (stepNum: number) => {
-    const { ingredients, action, useResultsFromStep } = recipe.steps[stepNum]
+    const { ingredients, customInfo } = recipe.steps[stepNum]
     return (
-      validateValue('action', action, 'required') &&
-      ingredients
-        .map((ing) => {
-          return (
-            validateValue(ing.id + '-name', ing.name, 'required') &&
-            validateValue(ing.id + '-quantity', ing.quantity, 'required')
-          )
-        })
-        .indexOf(false) < 0 &&
-      useResultsFromStep
-        .map((step) => {
-          return validateValue(step.id, step.value, 'required')
-        })
-        .indexOf(false) < 0 &&
-      (ingredients.length || useResultsFromStep.length)
+      (!ingredients.length ||
+        ingredients
+          .map((ing) => {
+            return (
+              validateValue(ing.id + '-name', ing.name, 'required') &&
+              validateValue(ing.id + '-quantity', ing.quantity, 'required')
+            )
+          })
+          .indexOf(false) < 0) &&
+      validateValue('customInfo', customInfo, 'required')
     )
   }
 
@@ -257,48 +628,6 @@ const RecipeForm: React.FC<RecipeFormProps> = ({
     return ret
   }
 
-  const createIngredient = () => {
-    let recipeCopy = JSON.parse(JSON.stringify(recipe))
-    recipeCopy.steps[currentStep].ingredients.push(NewIngredient())
-    setRecipe(recipeCopy)
-  }
-
-  const deleteIngredient = (ingredientId: string) => {
-    let recipeCopy = JSON.parse(JSON.stringify(recipe))
-    let toDelete = recipeCopy.steps[currentStep].ingredients.filter(
-      (ing: { id: string }) => ing.id == ingredientId
-    )[0]
-    let index = recipeCopy.steps[currentStep].ingredients.indexOf(toDelete)
-    if (index > -1) {
-      recipeCopy.steps[currentStep].ingredients.splice(index, 1)
-      setRecipe(recipeCopy)
-    }
-    deleteError(ingredientId)
-  }
-
-  const createUseResultsFromStep = () => {
-    let recipeCopy = JSON.parse(JSON.stringify(recipe))
-    recipeCopy.steps[currentStep].useResultsFromStep.push(
-      NewUseResultFromStep()
-    )
-    setRecipe(recipeCopy)
-  }
-
-  const deleteUseResultsFromStep = (id: string) => {
-    let recipeCopy = JSON.parse(JSON.stringify(recipe))
-    let toDelete = recipeCopy.steps[currentStep].useResultsFromStep.filter(
-      (step: { id: string }) => step.id === id
-    )[0]
-    let index = recipeCopy.steps[currentStep].useResultsFromStep.indexOf(
-      toDelete
-    )
-    if (index > -1) {
-      recipeCopy.steps[currentStep].useResultsFromStep.splice(index, 1)
-      setRecipe(recipeCopy)
-    }
-    deleteError(id)
-  }
-
   const goToReview = () => {
     let totalSteps = recipe.steps.length
     let badSteps = []
@@ -309,434 +638,90 @@ const RecipeForm: React.FC<RecipeFormProps> = ({
     else setReviewMode(true)
   }
 
-  const updateValue = (name: string, value: string | number, id?: string) => {
-    console.log(name, value)
-    let recipeCopy = JSON.parse(JSON.stringify(recipe))
-    let index = -1
-    switch (name) {
-      case 'useResultsFromStep':
-        index = recipeCopy.steps[currentStep].useResultsFromStep.indexOf(
-          recipeCopy.steps[currentStep].useResultsFromStep.filter(
-            (step: { id: string }) => step.id === id
-          )[0]
-        )
-        if (
-          (index > -1 && Number(value) <= currentStep && Number(value) > 0) ||
-          value === ''
-        )
-          recipeCopy.steps[currentStep].useResultsFromStep[index].value = value
-        break
-      //modified field is part of ingredient
-      case 'name':
-      case 'unit':
-      case 'quantity':
-        index = recipeCopy.steps[currentStep].ingredients.indexOf(
-          recipeCopy.steps[currentStep].ingredients.filter(
-            (ing: { id: string }) =>
-              id && ing.id === id.substring(0, id.indexOf('-'))
-          )[0]
-        )
-        if (index > -1)
-          recipeCopy.steps[currentStep].ingredients[index][name] = value
-        break
-      case 'hours':
-      case 'minutes':
-      case 'seconds':
-        recipeCopy.steps[currentStep].time[name] = value
-        break
-      case 'title':
-      case 'description':
-        recipeCopy[name] = value
-        break
-      default:
-        recipeCopy.steps[currentStep][name] = value
-        break
-    }
-    setRecipe(recipeCopy)
-    updateError(id || name, value)
+  const updateRecipe = (updatedRecipe: RecipeInputType) => {
+    setRecipe(updatedRecipe)
   }
 
-  const handleChange = (data: {
-    target: { name: any; value: any; id?: any }
-  }) => {
-    const {
-      name,
-      value,
-      id,
-    }: { name: string; value: string; id?: string } = data.target
-    updateValue(name, value, id)
+  const submitRecipe = () => {
+    if (validateValue('title', recipe.title, 'required')) {
+      console.log('submitting recipe: ', recipe)
+      submit({ attributes: recipe })
+    }
   }
 
   React.useEffect(() => setLoaded(true), [])
 
-  return loaded && !reviewMode ? (
-    <React.Fragment>
-      <div className="max-w-2xl mx-auto">
-        {!!currentStep &&
-          recipe.steps.map((step) => {
-            let index = recipe.steps.indexOf(step)
-            if (index < currentStep) {
-              return (
-                <StepMiniView
-                  recipe={recipe}
-                  stepIndex={index}
-                  onClick={() => goToStep(index)}
-                />
-              )
-            }
-          })}
-        <span className="mt-8 text-6xl">Step {currentStep + 1}</span>
-        <DeleteX
-          className="mt-8 float-right"
-          onClick={() => deleteStep(currentStep)}
-        />
-        <div className=" mt-1 mx-auto mt-1 p-6 bg-white rounded-lg shadow-xl border-purple-100 border-2">
-          <div className="grid grid-cols-2  col-gap-4">
-            <div className="p-2 rounded col-span-2">
-              <input
-                className="bg-transparent w-full text-3xl text-gray-700  py-1 leading-tight focus:outline-none  border-b-4 border-black "
-                type="text"
-                placeholder="ACTION"
-                name="action"
-                value={recipe.steps[currentStep].action || ''}
-                onChange={handleChange}
-              ></input>
-              <ErrorField name="action" errors={errors} />
-            </div>
-            <div className="grid grid-cols-3 col-gap-1 content-end mb-2 col-span-2">
-              <div className="bg-gray-200 p-2 rounded">
-                <div>
-                  {!recipe.steps[currentStep].tempLevel &&
-                  !recipe.steps[currentStep].tempNum ? (
-                    <div className="grid grid-cols-2 gap-2">
-                      <img
-                        src={THERMOMETER}
-                        className="h-12 w-12 m-auto cursor-pointer rounded"
-                        onClick={() => updateValue('tempNum', 350)}
-                      />
-                      <img
-                        src={COOK}
-                        className="h-12 w-12 m-auto cursor-pointer rounded"
-                        onClick={() => updateValue('tempLevel', 'medium')}
-                      />
-                    </div>
-                  ) : !recipe.steps[currentStep].tempLevel ? (
-                    <div className="grid grid-cols-2 gap-2">
-                      <img
-                        src={THERMOMETER}
-                        className="h-12 w-12 m-auto bg-white cursor-pointer rounded"
-                      />
-                      <input
-                        className="bg-white h-12 focus:outline-none p-2 rounded  "
-                        type="number"
-                        min="100"
-                        max="1000"
-                        step="5"
-                        placeholder="Temp"
-                        name="tempNum"
-                        value={recipe.steps[currentStep].tempNum || ''}
-                        onChange={handleChange}
-                      ></input>
-                    </div>
-                  ) : (
-                    <div className="grid grid-cols-2 gap-2">
-                      <select
-                        className="bg-white h-12 focus:outline-none p-2 rounded  "
-                        placeholder="Temp"
-                        name="tempLevel"
-                        value={recipe.steps[currentStep].tempLevel || ''}
-                        onChange={handleChange}
-                      >
-                        <option disabled selected hidden value="">
-                          - Level -
-                        </option>
-                        <option value="high">High</option>
-                        <option value="medium">Medium</option>
-                        <option value="low">Low</option>
-                        <option value="">Cancel</option>
-                      </select>
-                      <img
-                        src={COOK}
-                        className="h-12 w-12 m-auto cursor-pointer rounded"
-                      />
-                    </div>
-                  )}
-                </div>
-              </div>
-              <div className="bg-gray-200 p-2 rounded">
-                <div>
-                  {recipe.steps[currentStep].time.hours ||
-                  recipe.steps[currentStep].time.minutes ||
-                  recipe.steps[currentStep].time.seconds ? (
-                    <div className="grid grid-cols-3 gap-2">
-                      <input
-                        className="bg-white h-12  focus:outline-none p-2 rounded"
-                        type="number"
-                        min="00"
-                        max="48"
-                        step="1"
-                        placeholder="Hours"
-                        name="hours"
-                        value={recipe.steps[currentStep].time.hours || ''}
-                        onChange={handleChange}
-                      ></input>
-                      <input
-                        className="bg-white h-12 focus:outline-none p-2 rounded "
-                        type="number"
-                        min="00"
-                        max="60"
-                        step="1"
-                        placeholder="Minutes"
-                        name="minutes"
-                        value={recipe.steps[currentStep].time.minutes || ''}
-                        onChange={handleChange}
-                      ></input>
-                      <input
-                        className="bg-white h-12  focus:outline-none p-2 rounded "
-                        type="number"
-                        min="00"
-                        max="60"
-                        step="1"
-                        placeholder="Seconds"
-                        name="seconds"
-                        value={recipe.steps[currentStep].time.seconds || ''}
-                        onChange={handleChange}
-                      ></input>
-                    </div>
-                  ) : (
-                    <img
-                      src={TIME}
-                      className="h-12 w-12 m-auto cursor-pointer rounded"
-                      onClick={() => updateValue('minutes', 30)}
-                    />
-                  )}
-                </div>
-              </div>
-              <div className="bg-gray-200 p-2 rounded">
-                {recipe.steps[currentStep].location ? (
-                  <select
-                    className="bg-white h-12 w-full focus:outline-none p-2 rounded "
-                    name="location"
-                    value={recipe.steps[currentStep].location}
-                    onChange={handleChange}
-                  >
-                    {' '}
-                    <option disabled selected hidden value="">
-                      - Level -
-                    </option>
-                    <option value="oven">Oven</option>
-                    <option value="stove">Stove</option>
-                    <option value="blender">Blender</option>
-                    <option value="">Cancel</option>
-                  </select>
-                ) : (
-                  <img
-                    src={CUTLERY}
-                    className="h-12 w-12 m-auto cursor-pointer rounded"
-                    onClick={() => updateValue('location', 'oven')}
+  return (
+    <div className="max-w-xl lg:my-8 mx-auto font-mono">
+      <div className=" mx-auto mt-1 p-6 bg-white rounded-lg shadow-xl border-black border">
+        {loaded && !reviewMode ? (
+          <React.Fragment>
+            {recipe.steps.map((step) => {
+              let index = recipe.steps.indexOf(step)
+              if (currentStep !== index) {
+                return (
+                  <StepMiniView
+                    recipe={recipe}
+                    stepIndex={index}
+                    onClick={() => goToStep(index)}
                   />
-                )}
-              </div>
-            </div>
-          </div>
-
-          {recipe.steps[currentStep].ingredients.map((ing) => (
-            <div className="mt-4 p-2 rounded">
-              <div className="grid grid-cols-2 col-gap-4">
-                <div className="grid grid-cols-3 p-2 col-gap-1 content-end">
-                  <DeleteX
-                    className="self-center"
-                    onClick={() => deleteIngredient(ing.id.toString())}
-                  />
-                  <div className="p-2  bg-gray-200">
-                    <input
-                      className="bg-white h-12 w-full focus:outline-none p-2 rounded"
-                      type="number"
-                      step="0.25"
-                      placeholder="Quantity"
-                      id={ing.id + '-quantity'}
-                      name="quantity"
-                      onChange={handleChange}
-                      value={ing.quantity || ''}
-                    ></input>
-                    <ErrorField name={ing.id + '-quantity'} errors={errors} />
-                  </div>
-                  <div className="col-auto p-2 bg-gray-200">
-                    <select
-                      className="bg-white h-12 w-full focus:outline-none p-2 rounded "
-                      id={ing.id + '-unit'}
-                      name="unit"
-                      onChange={handleChange}
-                      value={ing.unit || ''}
-                    >
-                      {' '}
-                      <option disabled selected hidden value="">
-                        - Level -
-                      </option>
-                      <option value="oven">Pound</option>
-                      <option value="stove">Tbsp</option>
-                      <option value="blender">Cup</option>
-                      <option value="">Cancel</option>
-                    </select>
-
-                    <ErrorField name={ing.id + '-unit'} errors={errors} />
-                  </div>
-                </div>
-                <div className="pb-2 self-end">
-                  <input
-                    className="bg-transparent w-full text-3xl text-gray-700 py-1 leading-tight focus:outline-none  border-b-4 border-black "
-                    type="text"
-                    placeholder="INGREDIENT"
-                    id={ing.id + '-name'}
-                    name="name"
-                    onChange={handleChange}
-                    value={ing.name || ''}
-                  ></input>
-                  <ErrorField name={ing.id + '-name'} errors={errors} />
-                </div>
-              </div>
-            </div>
-          ))}
-          {currentStep > 0 &&
-            recipe.steps[currentStep].useResultsFromStep.map((step) => (
-              <div className="mt-4 p-2 rounded">
-                <div className="grid grid-cols-2 col-gap-4">
-                  <div className="grid grid-cols-3 p-2 col-gap-1 content-start">
+                )
+              } else {
+                return (
+                  <React.Fragment>
                     <DeleteX
-                      className="self-center"
-                      onClick={() => deleteUseResultsFromStep(step.id)}
+                      className="-mx-6 -my-2 float-left"
+                      onClick={() => deleteStep(currentStep)}
                     />
-                    <span className="text-xl col-span-2 p-2 bg-gray-200 rounded text-center text-gray-700">
-                      Use Result From:
-                    </span>
-                  </div>
-                  <div className="pb-2 ">
-                    <input
-                      className="bg-transparent  w-full text-3xl text-gray-700  py-1 leading-tight focus:outline-none  border-b-4 border-black "
-                      type="number"
-                      min="1"
-                      max={currentStep}
-                      placeholder="STEP"
-                      id={step.id}
-                      name="useResultsFromStep"
-                      onChange={handleChange}
-                      value={step.value || ''}
-                    ></input>
-                    <ErrorField name={step.id} errors={errors} />
-                  </div>
-                </div>
-              </div>
-            ))}
-          <div className="flex justify-end">
-            <div className="w-6/12 flex justify-between">
-              <button
-                className="bg-blue-100 hover:bg-blue-200 focus:outline-none text-gray-800 p-2 rounded m-4 w-6/12"
-                onClick={createIngredient}
-              >
-                + Ingredient
-              </button>
-              {currentStep > 0 && (
-                <button
-                  className="bg-blue-100 hover:bg-blue-200 focus:outline-none text-gray-800 p-2 rounded m-4 w-6/12"
-                  onClick={createUseResultsFromStep}
-                >
-                  + Result
-                </button>
-              )}
-            </div>
-          </div>
-          <div className="grid grid-cols-2 p-2 w-full h-40 rounded gap-4">
-            <div className=" grid items-center bg-gray-200">
-              <img className="w-12 h-12 m-auto" src={IMAGE} />
-            </div>
-            <textarea
-              placeholder="More Details"
-              name="customInfo"
-              className="resize-none h-full w-full text-xl bg-gray-200 rounded p-4 outline-none"
-            ></textarea>
-          </div>
-        </div>
-        <div className="w-full mt-8 mb-8">
-          <div className="grid col-gap-4 grid-cols-2">
-            <button
-              className="bg-blue-100 hover:bg-blue-200 focus:outline-none text-xl text-gray-800 font-bold py-2 px-4 rounded"
-              onClick={() => submitStep(currentStep + 1)}
-            >
-              Next Step
-            </button>
-            <button
-              className="bg-orange-100 hover:bg-orange-200 focus:outline-none text-xl text-gray-800 font-bold py-2 px-4 rounded"
-              onClick={goToReview}
-            >
-              Finish
-            </button>
-          </div>
-        </div>
-        {recipe.steps.map((step) => {
-          let index = recipe.steps.indexOf(step)
-          if (index > currentStep)
-            return (
-              <StepMiniView
-                recipe={recipe}
-                stepIndex={index}
-                onClick={() => goToStep(index)}
-              />
-            )
-        })}
-        <ErrorField name="step" errors={errors} />
-      </div>
-    </React.Fragment>
-  ) : (
-    //review mode
-    <React.Fragment>
-      <div className="max-w-xl mt-8 mx-auto">
-        <div className=" mt-1 mx-auto mt-1 p-6 bg-white rounded-lg shadow-xl border-purple-100 border-2">
-          <div className="m-2 mb-8">
-            <input
-              className="bg-transparent w-full text-5xl text-gray-700  py-1 leading-tight focus:outline-none  border-b-4 border-black "
-              type="text"
-              placeholder="Title"
-              name="title"
-              value={recipe.title || ''}
-              onChange={handleChange}
-            ></input>
-            <ErrorField name="title" errors={errors} />
-          </div>
-          {recipe.steps.map((step) => {
-            let index = recipe.steps.indexOf(step)
-            return (
-              <StepMiniView
-                recipe={recipe}
-                stepIndex={index}
-                onClick={() => {
-                  setReviewMode(false)
-                  goToStep(index)
-                }}
-              />
-            )
-          })}
-          <div className="grid grid-cols-3 grid-rows-3 my-8">
-            {Array.from(Array(9)).map(() => {
-              return (
-                <div className="grid items-center bg-gray-200 m-2 rounded">
-                  <img className="w-1/2 m-auto" src={IMAGE} />
-                </div>
-              )
+                    <RecipeStepMode
+                      recipe={recipe}
+                      updateRecipe={updateRecipe}
+                      step={currentStep}
+                      getError={getError}
+                      updateError={updateError}
+                      deleteError={deleteError}
+                    />
+                    <div className="w-full mt-8">
+                      <div className="grid col-gap-4 grid-cols-2">
+                        <button
+                          className="hover:scale-105 transform ease-in duration-200 border-b-2 w-full focus:outline-none text-xl text-gray-800 font-bold p-4 my-4 border border-black rounded"
+                          onClick={goToReview}
+                        >
+                          Finish
+                        </button>
+                        <button
+                          className="hover:scale-105 transform ease-in duration-200 border-b-2 w-full focus:outline-none text-xl text-gray-800 font-bold p-4 my-4 border border-black rounded"
+                          onClick={() => submitStep(currentStep + 1)}
+                        >
+                          Next Step
+                        </button>
+                      </div>
+                    </div>
+                  </React.Fragment>
+                )
+              }
             })}
-          </div>
-          <textarea
-            placeholder="Description and tags"
-            className="resize-none h-full w-full text-xl text-gray-700 bg-gray-200 rounded p-4 outline-none"
-          ></textarea>
-        </div>
-        <button
-          className="bg-orange-100 w-full focus:outline-none text-xl text-gray-800 font-bold p-4 my-4 rounded"
-          onClick={submitRecipe}
-        >
-          Post Recipe
-        </button>
+          </React.Fragment>
+        ) : (
+          <React.Fragment>
+            <RecipeReviewMode
+              recipe={recipe}
+              updateRecipe={updateRecipe}
+              goToStep={goToStep}
+              getError={getError}
+              updateError={updateError}
+              deleteError={deleteError}
+            />
+            <button
+              className="hover:scale-105 transform ease-in duration-200 border-b-2 w-full focus:outline-none text-xl text-gray-800 font-bold p-4 my-4 border border-black rounded"
+              onClick={submitRecipe}
+            >
+              Post Recipe
+            </button>
+          </React.Fragment>
+        )}
       </div>
-    </React.Fragment>
+    </div>
   )
 }
 

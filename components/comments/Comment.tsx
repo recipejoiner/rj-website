@@ -12,17 +12,17 @@ const Comment: React.FC<CommentProps> = ({ commentNode }) => {
   const [isOpen, setIsOpen] = React.useState(true)
   return (
     <li
-      className={`p-1 pl-3 w-full border-l ${
+      className={`w-full border-l ${
         commentNode.depth == 0 ? 'pb-3 border-b' : ''
       }`}
     >
       <button
-        className="text-sm"
+        className="p-1 pl-3 text-sm w-full h-full flex items-start"
         onClick={() => {
           setIsOpen(!isOpen)
         }}
       >
-        <span className="font-bold">{commentNode.by.username}</span>
+        <span className="font-bold text-left">{commentNode.by.username}</span>
         <span className="text-gray-600">
           {' '}
           • {Moment(commentNode.createdAt).fromNow()}
@@ -32,8 +32,8 @@ const Comment: React.FC<CommentProps> = ({ commentNode }) => {
         isOpen={isOpen}
         transition={`height 280ms cubic-bezier(.4, 0, .2, 1)`}
       >
-        <p className="text-sm">{commentNode.content}</p>
-        <div className="ml-1">
+        <p className="text-sm pl-3">{commentNode.content}</p>
+        <div className="ml-1 pl-3">
           <Subcomments parentId={commentNode.id} />
         </div>
       </Collapse>

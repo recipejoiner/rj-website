@@ -224,6 +224,9 @@ const RecipePage: NextPage<RecipeProps> = (props) => {
           ))}
         </div>
       </div>
+      {username && handle && (
+        <RecipeComments username={username} handle={handle} />
+      )}
     </React.Fragment>
   )
 }

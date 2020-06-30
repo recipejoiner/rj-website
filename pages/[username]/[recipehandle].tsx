@@ -25,15 +25,12 @@ interface StepProps {
   step?: RecipeStepType
 }
 const Step: React.FC<StepProps> = ({ step }) => {
-  const { stepNum, stepTime, additionalInfo, ingredients } = step || {}
+  const { stepNum, additionalInfo, ingredients } = step || {}
   return (
     <li className="my-5">
       <h3 className="header-2-text">
         Step {stepNum || <Skeleton width={40} />}
       </h3>
-      <span className="block text-sm">
-        About {stepTime || <Skeleton width={40} />} minutes
-      </span>
       <div>
         <h3 className="header-3-text">Ingredients</h3>
         <ul className="p-1 pl-2">

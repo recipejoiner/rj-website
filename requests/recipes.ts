@@ -121,6 +121,7 @@ export interface RecipeStepType {
   [id: string]: string | Array<IngredientInputType> | any
   stepNum: number
   stepTitle: string
+  additionalInfo: string
   ingredients: Array<IngredientType>
   additionalInfo: string
 }
@@ -136,6 +137,7 @@ export interface RecipeType {
     description: string
     servings: number
     recipeTime: number
+    ingredients: Array<IngredientType>
     reactionCount: number
     commentCount: number
     steps: Array<RecipeStepType>
@@ -157,6 +159,15 @@ export const RECIPE_BY_USERNAME_AND_HANDLE = gql`
       recipeTime
       handle
       servings
+      ingredients {
+        ingredientInfo {
+          name
+        }
+        quantity
+        unit {
+          name
+        }
+      }
       title
       reactionCount
       commentCount

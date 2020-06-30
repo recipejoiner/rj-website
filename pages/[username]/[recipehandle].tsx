@@ -44,7 +44,7 @@ const Ingredient: React.FC<{ ingredient: IngredientType }> = ({
         {ingredient.ingredientInfo.name}
       </span>
       <span className="">{ingredient.quantity}</span>
-      <span className="col-span-2">{ingredient.unit}</span>
+      <span className="col-span-2">{ingredient.unit.name}</span>
     </div>
   )
 }
@@ -92,14 +92,22 @@ const Step: React.FC<StepProps> = ({ step, activeStep, updateActiveStep }) => {
 
 const RecipePage: NextPage<RecipeProps> = (props) => {
   const { recipe } = props
-  const { by, description, handle, id, steps, servings, title, recipeTime } =
-    recipe?.result || {}
+  const {
+    by,
+    description,
+    handle,
+    id,
+    steps,
+    servings,
+    title,
+    recipeTime,
+    ingredients,
+  } = recipe?.result || {}
   const { username } = by || {}
 
   const [onOwnRecipe, setOnOwnRecipe] = React.useState(false)
   const [activeStep, setActiveStep] = React.useState(-1)
   const { currentUserInfo } = React.useContext(UserContext)
-  const ingredients = steps.filter((step) => step.ingredients).flat()
   if (
     currentUserInfo &&
     !onOwnRecipe &&
@@ -209,7 +217,7 @@ const RecipePage: NextPage<RecipeProps> = (props) => {
                 </div>
               </div>
               <div className="border-black border p-2 my-2">
-                {ingredients.map((ing) => (
+                {ingredients.map((ing: IngredientType) => (
                   <Ingredient ingredient={ing} />
                 ))}
               </div>

@@ -5,14 +5,14 @@ import Autocomplete from '@material-ui/lab/Autocomplete'
 
 import {
   RecipeInputType,
-  RecipeStepType,
+  RecipeStepInputType,
   CreateRecipeVars,
 } from '../../requests/recipes'
 
 //start GLOBAL VARIABLES
 const IMAGE = require('../../images/icons/add.svg')
-const TIME = require('../../images/icons/time.svg')
-const CUTLERY = require('../../images/icons/cutlery.svg')
+const TIME = require('../../images/icons/alarm-clock.svg')
+const SERVINGS = require('../../images/icons/hot-food.svg')
 
 const ingredients = [
   { name: 'Apple' },
@@ -49,25 +49,37 @@ interface RecipeFormProps {
 
 //start HELPER FUNCTIONS
 
+const minutesToTime = (totalMinutes: number) => {
+  return { hours: Math.floor(totalMinutes / 60), minutes: totalMinutes % 60 }
+}
+function diff(num1: number, num2: number) {
+  if (num1 > num2) {
+    return num1 - num2
+  } else {
+    return num2 - num1
+  }
+}
+
 const NewIngredient = () => ({
   id: Date.now().toString(),
   name: '',
-  quantity: '',
+  quantity: 0,
   unit: '',
 })
 
-const NewStep = () => ({
+const NewStep = (index: number) => ({
   stepTitle: '',
+  stepNum: index,
   ingredients: [],
-  customInfo: '',
+  additionalInfo: '',
 })
 
 const NewRecipe = () => ({
   title: '',
   description: '',
-  servings: '',
-  time: { hours: 0, minutes: 0 },
-  steps: [NewStep()],
+  servings: 0,
+  recipeTime: 0,
+  steps: [NewStep(0)],
 })
 
 const NewError = (
@@ -368,15 +380,15 @@ const RecipeStepMode: React.FC<RecipeStepProps> = ({
       <div className="text-center mt-4">
         <div
           className={
-            (getError('customInfo').length ? 'border border-red-600' : '') +
+            (getError('additionalInfo').length ? 'border border-red-600' : '') +
             ' w-full border-black border p-2 h-56 rounded '
           }
         >
           <textarea
             className="resize-none  w-full h-full text-xl bg-white text-gray-800 p-2 outline-none rounded"
             placeholder="Describe the step in concise detail!"
-            name="customInfo"
-            value={recipe.steps[currentStep].customInfo || ''}
+            name="additionalInfo"
+            value={recipe.steps[currentStep].additionalInfo || ''}
             onChange={handleChange}
           ></textarea>
         </div>
@@ -407,8 +419,11 @@ const RecipeReviewMode: React.FC<RecipeReviewProps> = ({
     switch (name) {
       case 'hours':
       case 'minutes':
-      case 'seconds':
-        recipeCopy.time[name] = value
+        let recipeTimeExpanded = minutesToTime(recipeCopy.recipeTime)
+        recipeCopy.recipeTime +=
+          name === 'hours'
+            ? diff(recipeTimeExpanded.hours, Number(value)) * 60
+            : diff(recipeTimeExpanded.hours, Number(value))
         break
       default:
         recipeCopy[name] = value
@@ -438,13 +453,12 @@ const RecipeReviewMode: React.FC<RecipeReviewProps> = ({
         ></input>
       </div>
       {recipe.steps.map((step) => {
-        let index = recipe.steps.indexOf(step)
         return (
           <StepMiniView
             recipe={recipe}
-            stepIndex={index}
+            stepIndex={step.stepNum}
             onClick={() => {
-              goToStep(index)
+              goToStep(step.stepNum)
             }}
           />
         )
@@ -473,7 +487,7 @@ const RecipeReviewMode: React.FC<RecipeReviewProps> = ({
                 step="1"
                 placeholder="H"
                 name="hours"
-                value={recipe.time.hours || ''}
+                value={minutesToTime(recipe.recipeTime).hours || ''}
                 onChange={handleChange}
               ></input>
               Hours
@@ -487,7 +501,7 @@ const RecipeReviewMode: React.FC<RecipeReviewProps> = ({
                 step="1"
                 placeholder="M"
                 name="minutes"
-                value={recipe.time.minutes || ''}
+                value={minutesToTime(recipe.recipeTime).minutes || ''}
                 onChange={handleChange}
               ></input>
               Minutes
@@ -495,7 +509,7 @@ const RecipeReviewMode: React.FC<RecipeReviewProps> = ({
           </div>
         </div>
         <div className="grid  grid-rows-2 p-2 rounded text-center text-xs ">
-          <img src={CUTLERY} className="h-8 m-auto cursor-pointer rounded" />
+          <img src={SERVINGS} className="h-8 m-auto cursor-pointer rounded" />
           <div className="w-full grid grid-rows-2 text-center justify-center rounded">
             <input
               className="text-xl w-8/12 pl-3 m-auto border border-black text-center focus:outline-none rounded appearance-none"
@@ -566,7 +580,7 @@ const RecipeForm: React.FC<RecipeFormProps> = ({
 
   const createStep = () => {
     let recipeCopy = JSON.parse(JSON.stringify(recipe))
-    let newStep: RecipeStepType = NewStep()
+    let newStep: RecipeStepInputType = NewStep(currentStep + 1)
     recipeCopy.steps.push(newStep)
     setRecipe(recipeCopy)
   }
@@ -574,8 +588,10 @@ const RecipeForm: React.FC<RecipeFormProps> = ({
   const deleteStep = (stepNum: number) => {
     if (stepNum > -1) {
       let recipeCopy = JSON.parse(JSON.stringify(recipe))
-      if (recipeCopy.steps.length == 1) recipeCopy.steps[0] = NewStep()
+      if (recipeCopy.steps.length == 1) recipeCopy.steps[0] = NewStep(0)
       else recipeCopy.steps.splice(stepNum, 1)
+      for (let stepIndex = 0; stepIndex < recipeCopy.steps.length; stepIndex++)
+        recipeCopy.steps[stepIndex].stepNum = stepIndex
       setRecipe(recipeCopy)
       goToStep(currentStep - 1)
     }
@@ -596,7 +612,7 @@ const RecipeForm: React.FC<RecipeFormProps> = ({
   }
 
   const validateStep = (stepNum: number) => {
-    const { ingredients, customInfo } = recipe.steps[stepNum]
+    const { ingredients, additionalInfo } = recipe.steps[stepNum]
     return (
       (!ingredients.length ||
         ingredients
@@ -607,7 +623,7 @@ const RecipeForm: React.FC<RecipeFormProps> = ({
             )
           })
           .indexOf(false) < 0) &&
-      validateValue('customInfo', customInfo, 'required')
+      validateValue('additionalInfo', additionalInfo, 'required')
     )
   }
 
@@ -657,13 +673,12 @@ const RecipeForm: React.FC<RecipeFormProps> = ({
         {loaded && !reviewMode ? (
           <React.Fragment>
             {recipe.steps.map((step) => {
-              let index = recipe.steps.indexOf(step)
-              if (currentStep !== index) {
+              if (currentStep !== step.stepNum) {
                 return (
                   <StepMiniView
                     recipe={recipe}
-                    stepIndex={index}
-                    onClick={() => goToStep(index)}
+                    stepIndex={step.stepNum}
+                    onClick={() => goToStep(step.stepNum)}
                   />
                 )
               } else {

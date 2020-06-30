@@ -122,6 +122,7 @@ export interface RecipeStepType {
   stepNum: number
   stepTitle: string
   ingredients: Array<IngredientType>
+  additionalInfo: string
 }
 
 export interface RecipeType {
@@ -226,7 +227,6 @@ export interface RecipeStepInputType {
   stepTitle: string
   additionalInfo: string
   ingredients: Array<IngredientInputType>
-  customInfo: string
 }
 
 export interface RecipeInputType {

@@ -11,71 +11,105 @@ import {
   RecipeType,
   RecipeStepType,
   RECIPE_BY_USERNAME_AND_HANDLE,
+  IngredientType,
 } from 'requests/recipes'
 import { toMixedNumber } from 'helpers/methods'
 import client from 'requests/client'
+
+const IMAGE = require('../../images/icons/add.svg')
+const TIME = require('../../images/icons/alarm-clock.svg')
+const SERVINGS = require('../../images/icons/hot-food.svg')
+const PROFILE = require('../../images/chef-rj.svg')
+
+const minutesToTime = (totalMinutes: number) => {
+  return { hours: Math.floor(totalMinutes / 60), minutes: totalMinutes % 60 }
+}
 
 interface RecipeProps {
   recipe: RecipeType
 }
 
 interface StepProps {
-  step?: RecipeStepType
+  step: RecipeStepType
+  activeStep: number
+  updateActiveStep: (stepNum?: number) => void
 }
-const Step: React.FC<StepProps> = ({ step }) => {
-  const { stepNum, stepTime, additionalInfo, ingredients } = step || {}
+
+const Ingredient: React.FC<{ ingredient: IngredientType }> = ({
+  ingredient,
+}) => {
   return (
-    <li className="my-5">
-      <h3 className="header-2-text">
-        Step {stepNum || <Skeleton width={40} />}
-      </h3>
-      <span className="block text-sm">
-        About {stepTime || <Skeleton width={40} />} minutes
+    <div className="grid grid-cols-6">
+      <span className="col-span-3 border-black border-b-2">
+        {ingredient.ingredientInfo.name}
       </span>
-      <div>
-        <h3 className="header-3-text">Ingredients</h3>
-        <ul className="p-1 pl-2">
-          {ingredients ? (
-            ingredients.length > 0 ? (
-              ingredients.map((ingredient) => {
-                return (
-                  <li key={ingredient.ingredientInfo.name} className="pb-2">
-                    <span className="block">
-                      <span>{toMixedNumber(ingredient.quantity)} </span>
-                      <span>{ingredient.unit.name} </span>
-                      <span>{ingredient.ingredientInfo.name}</span>
-                    </span>
-                  </li>
-                )
-              })
-            ) : (
-              <span className="text-sm">No ingredients!</span>
-            )
-          ) : (
-            <Skeleton />
-          )}
-        </ul>
-      </div>
-      <h3 className="header-3-text">Instructions</h3>
-      <p>{additionalInfo || <Skeleton count={5} />}</p>
-    </li>
+      <span className="">{ingredient.quantity}</span>
+      <span className="col-span-2">{ingredient.unit}</span>
+    </div>
+  )
+}
+
+const Step: React.FC<StepProps> = ({ step, activeStep, updateActiveStep }) => {
+  const { stepTitle, ingredients, additionalInfo, stepNum } = step || {}
+
+  return (
+    <React.Fragment>
+      {stepNum !== activeStep ? (
+        <div
+          className="hover:scale-95 transform ease-in duration-200 w-full my-2 cursor-pointer "
+          onClick={() => updateActiveStep(stepNum)}
+        >
+          <div className="grid grid-cols-5 border-black border border-b-2 text-xl p-4 rounded-lg ">
+            <span className=" text-2xl  text-center m-auto border-black border-b-2">
+              {stepNum + 1}
+            </span>
+            <span className="col-span-4 bg-white  rounded m-1">
+              {stepTitle}
+            </span>
+          </div>
+        </div>
+      ) : (
+        <div className="w-full my-2">
+          <div className="grid grid-rows-2 col-span-2">
+            <span className="text-4xl" onClick={() => updateActiveStep()}>
+              Step {stepNum + 1}:
+            </span>
+            <div>{stepTitle}</div>
+          </div>
+          <div>
+            {ingredients.map((ing) => (
+              <Ingredient ingredient={ing} />
+            ))}
+          </div>
+          <div className="w-full h-full border-black border rounded p-2">
+            {additionalInfo}
+          </div>
+        </div>
+      )}
+    </React.Fragment>
   )
 }
 
 const RecipePage: NextPage<RecipeProps> = (props) => {
   const { recipe } = props
-  const { by, description, handle, id, steps, servings, title, ingredients } =
+  const { by, description, handle, id, steps, servings, title, recipeTime } =
     recipe?.result || {}
   const { username } = by || {}
 
   const [onOwnRecipe, setOnOwnRecipe] = React.useState(false)
+  const [activeStep, setActiveStep] = React.useState(-1)
   const { currentUserInfo } = React.useContext(UserContext)
+  const ingredients = steps.filter((step) => step.ingredients).flat()
   if (
     currentUserInfo &&
     !onOwnRecipe &&
     currentUserInfo.me.username == username
   ) {
     setOnOwnRecipe(true)
+  }
+
+  const updateActiveStep = (stepNum?: number) => {
+    setActiveStep(stepNum || -1)
   }
 
   const pageTitle = `${title || 'a recipe'}, by ${
@@ -105,62 +139,89 @@ const RecipePage: NextPage<RecipeProps> = (props) => {
           {/* OpenGraph tags end */}
         </Head>
       )}
-      <div className="p-2 max-w-3xl m-auto">
-        <h1 className="header-text text-center mt-5">
-          {title || <Skeleton />}
-        </h1>
-        {onOwnRecipe ? (
-          <div className="m-2">
-            <Link
-              href="/[username]/[recipehandle]/edit"
-              as={`/${username}/${handle}/edit`}
+      <div className="max-w-xl lg:my-8 mx-auto font-mono">
+        <div className=" mx-auto mt-1 p-6 bg-white rounded-lg shadow-xl border-black border">
+          <div className="m-2 mb-8 ">
+            <div
+              className=" bg-transparent w-full text-5xl text-gray-700  py-1 leading-tight focus:outline-none  border-b-2 border-black"
+              onClick={() => updateActiveStep()}
             >
-              <a className="w-28 m-auto btn">Edit Recipe</a>
-            </Link>
+              {title}
+            </div>
+            <div className="inline-flex items-center mt-3">
+              <Link href="/[username]" as={`/${username}`}>
+                <img
+                  src={PROFILE}
+                  className="h-8 m-auto cursor-pointer rounded-full"
+                />
+                <span className="mx-2">
+                  {by.username || <Skeleton width={40} />}
+                </span>
+              </Link>
+              {onOwnRecipe ? (
+                <div className="m-2">
+                  <Link
+                    href="/[username]/[recipehandle]/edit"
+                    as={`/${username}/${handle}/edit`}
+                  >
+                    <a className="w-28 m-auto btn">Edit</a>
+                  </Link>
+                </div>
+              ) : null}
+            </div>
           </div>
-        ) : null}
-        <Link href="/[username]" as={`/${username || 'ari'}`}>
-          <a className="block text-center text-sm px-2 pb-2">
-            by chef {username ? username : <Skeleton width={20} />}
-          </a>
-        </Link>
-        <span className="block m-auto text-justify leading-snug text-sm">
-          {description || <Skeleton />}
-        </span>
-        <div className="text-sm py-2 text-center">
-          <span className="font-bold">Serving Size </span>
-          <span>{servings}</span>
-        </div>
-        <div>
-          <h3 className="header-2-text">All Ingredients</h3>
-          <ul className="p-1 pl-2">
-            {ingredients ? (
-              ingredients.length > 0 ? (
-                ingredients.map((ingredient) => {
-                  return (
-                    <li key={ingredient.ingredientInfo.name} className="pb-2">
-                      <span className="block">
-                        <span>{toMixedNumber(ingredient.quantity)} </span>
-                        <span>{ingredient.unit.name} </span>
-                        <span>{ingredient.ingredientInfo.name}</span>
-                      </span>
-                    </li>
-                  )
-                })
-              ) : (
-                <span className="text-sm">No ingredients!</span>
-              )
-            ) : (
-              <Skeleton />
-            )}
-          </ul>
-        </div>
-        <div>
-          <ul>
-            {steps
-              ? steps.map((step) => <Step step={step} key={step.stepNum} />)
-              : [1, 2].map((num) => <Step key={num} />)}
-          </ul>
+          {activeStep < 0 ? (
+            <React.Fragment>
+              <div className=" grid items-center  p-2 w-full h-full m-auto">
+                <img className="p-4  m-auto" src={IMAGE} />
+              </div>
+              <div className=" w-full my-4 h-full rounded ">
+                <div className="h-full w-full text-2xl text-gray-700   p-4 ">
+                  {description}
+                </div>
+              </div>
+              <div className="grid grid-cols-2">
+                <div className="grid grid-rows-2 p-2 rounded text-center text-xs ">
+                  <img
+                    src={TIME}
+                    className="h-8 m-auto cursor-pointer rounded"
+                  />
+                  <div className="w-full text-center grid grid-cols-2 justify-center rounded">
+                    <div className="text-xl w-full m-auto border border-black text-center col-span-2  grid grid-cols-2 rounded">
+                      <span>{minutesToTime(recipeTime).hours || '0'}</span>
+                      <span>{minutesToTime(recipeTime).minutes || '0'}</span>
+                    </div>
+                    <span className="text-xs">Hour</span>
+                    <span className="text-xs">Minutes</span>
+                  </div>
+                </div>
+                <div className="grid  grid-rows-2 p-2 rounded text-center text-xs ">
+                  <img
+                    src={SERVINGS}
+                    className="h-8 m-auto cursor-pointer rounded"
+                  />
+                  <div className="w-full text-center justify-center rounded">
+                    <div className="text-xl w-full m-auto border border-black text-center  rounded">
+                      {servings || <Skeleton width={40} />}
+                    </div>
+                    Servings
+                  </div>
+                </div>
+              </div>
+              <div className="border-black border p-2 my-2">
+                {ingredients.map((ing) => (
+                  <Ingredient ingredient={ing} />
+                ))}
+              </div>
+            </React.Fragment>
+          ) : null}
+          {steps.map((step) => (
+            <Step
+              step={step}
+              activeStep={activeStep}
+              updateActiveStep={updateActiveStep}
+            />
+          ))}
         </div>
       </div>
     </React.Fragment>
@@ -197,7 +258,7 @@ export const getServerSideProps: GetServerSideProps = async (ctx) => {
     return { props: { recipe: data } }
   } catch (err) {
     // handle error - probably put honeybadger here or something
-    return { props: {} }
+    return { props: { recipe: null } }
   }
 }
 

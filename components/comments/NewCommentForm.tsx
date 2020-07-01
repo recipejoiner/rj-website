@@ -3,6 +3,7 @@ import { useForm } from 'react-hook-form'
 import { GraphQLError } from 'graphql'
 
 import {
+  CreateCommentReturnType,
   CommentNodeType,
   CreateCommentVarsType,
   CREATE_COMMENT,
@@ -14,11 +15,13 @@ import { TextAreaFormItem } from 'components/forms/Fields'
 interface NewCommentFormProps {
   commentableType: string
   commentableId: string
+  addNewComment: (newComment: CommentNodeType) => void
 }
 
 const NewCommentForm: React.FC<NewCommentFormProps> = ({
   commentableType,
   commentableId,
+  addNewComment,
 }) => {
   const [newCommentErrors, setNewCommentErrors] = React.useState<
     readonly GraphQLError[]
@@ -46,12 +49,11 @@ const NewCommentForm: React.FC<NewCommentFormProps> = ({
         },
       })
       .then((res) => {
-        const { data }: { data?: CommentNodeType } = res || {}
+        const { data }: { data?: CreateCommentReturnType } = res || {}
         if (res.errors) {
           setNewCommentErrors(res.errors)
         } else if (!!data) {
-          console.log('new comment data', data)
-          // todo: render the new comment somehow
+          addNewComment(data.result.comment)
         } else {
           throw 'Data is missing!'
         }

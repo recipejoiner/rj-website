@@ -81,12 +81,16 @@ export const SUBCOMMENTS = gql`
   }
 `
 
+export interface CreateCommentReturnType {
+  result: {
+    comment: CommentNodeType
+  }
+}
 export interface CreateCommentVarsType {
   commentableType: string
   commentableId: string
   content: string
 }
-// return type is CommentNodeType
 export const CREATE_COMMENT = gql`
   mutation createComment(
     $commentableType: String!

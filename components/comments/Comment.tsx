@@ -9,11 +9,21 @@ import { getToken } from 'helpers/auth'
 
 interface CommentProps {
   commentNode: CommentNodeType
+  isNewComment?: boolean
 }
-const Comment: React.FC<CommentProps> = ({ commentNode }) => {
-  console.log('commentNode', commentNode)
+const Comment: React.FC<CommentProps> = ({ commentNode, isNewComment }) => {
   const [commentIsOpen, setCommentIsOpen] = React.useState(true)
   const [newCommentFormIsOpen, setNewCommentFormIsOpen] = React.useState(false)
+
+  // for visually reflecting newly added comments
+  const [newComments, setNewComments] = React.useState<Array<CommentNodeType>>(
+    []
+  )
+  const addNewComment = (newComment: CommentNodeType) => {
+    setNewCommentFormIsOpen(false)
+    setNewComments([newComment, ...newComments])
+  }
+
   return (
     <li
       className={`w-full border-l ${
@@ -51,10 +61,18 @@ const Comment: React.FC<CommentProps> = ({ commentNode }) => {
           <NewCommentForm
             commentableType="Comment"
             commentableId={commentNode.id}
+            addNewComment={addNewComment}
           />
         </Collapse>
         <div className="ml-1 pl-3">
-          <Subcomments parentId={commentNode.id} />
+          <ul>
+            {newComments.map((comment) => {
+              return <Comment key={comment.id} commentNode={comment} />
+            })}
+          </ul>
+          {!isNewComment && commentNode.id !== '' ? (
+            <Subcomments parentId={commentNode.id} />
+          ) : null}
         </div>
       </Collapse>
     </li>

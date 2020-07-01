@@ -148,7 +148,11 @@ const RecipePage: NextPage<RecipeProps> = (props) => {
           {/* OpenGraph tags end */}
         </Head>
       )}
-      <div>Recipe goes here</div>
+      <div className="w-screen h-120 text-center table">
+        <span className="table-cell align-middle bg-gray-100">
+          Recipe goes here
+        </span>
+      </div>
       {username && handle && (
         <RecipeComments username={username} handle={handle} />
       )}

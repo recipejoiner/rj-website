@@ -80,3 +80,33 @@ export const SUBCOMMENTS = gql`
     }
   }
 `
+
+export interface CreateCommentInputType {
+  commentableType: string
+  commentableId: number
+  content: string
+}
+// return type is CommentNodeType
+export const CREATE_COMMENT = gql`
+  mutation createComment(
+    $commentableType: String!
+    $commentableId: Int!
+    $content: String!
+  ) {
+    result: createComment(
+      commentableType: $commentableType
+      commentableId: $commentableId
+      content: $content
+    ) {
+      comment {
+        id
+        depth
+        createdAt
+        by {
+          username
+        }
+        content
+      }
+    }
+  }
+`

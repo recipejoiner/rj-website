@@ -5,11 +5,13 @@ import Collapse from '@kunukn/react-collapse'
 import { CommentNodeType } from 'requests/comments'
 import Subcomments from 'components/comments/Subcomments'
 import NewCommentForm from 'components/comments/NewCommentForm'
+import { getToken } from 'helpers/auth'
 
 interface CommentProps {
   commentNode: CommentNodeType
 }
 const Comment: React.FC<CommentProps> = ({ commentNode }) => {
+  console.log('commentNode', commentNode)
   const [commentIsOpen, setCommentIsOpen] = React.useState(true)
   const [newCommentFormIsOpen, setNewCommentFormIsOpen] = React.useState(false)
   return (
@@ -46,7 +48,10 @@ const Comment: React.FC<CommentProps> = ({ commentNode }) => {
           isOpen={newCommentFormIsOpen}
           transition={`height 280ms cubic-bezier(.4, 0, .2, 1)`}
         >
-          <NewCommentForm />
+          <NewCommentForm
+            commentableType="Comment"
+            commentableId={commentNode.id}
+          />
         </Collapse>
         <div className="ml-1 pl-3">
           <Subcomments parentId={commentNode.id} />

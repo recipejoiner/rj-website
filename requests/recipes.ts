@@ -130,7 +130,7 @@ export interface RecipeType {
     by: {
       username: string
     }
-    id: number
+    id: string
     title: string
     handle: string
     description: string

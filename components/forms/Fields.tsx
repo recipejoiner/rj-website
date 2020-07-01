@@ -26,9 +26,7 @@ export const TextFormItem: React.FC<TextFormItemProps> = ({
         {label}
       </label>
       <input
-        className={`shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline ${
-          !!errorMessage ? 'border-red-700' : ''
-        }`}
+        className={`form-field ${!!errorMessage ? 'border-red-700' : ''}`}
         id={returnVar}
         name={returnVar}
         type="text"
@@ -114,9 +112,7 @@ export const NumFormItem: React.FC<NumFormItemProps> = ({
       </label>
       <Controller
         as={<input />}
-        className={`shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline ${
-          !!errorMessage ? 'border-red-700' : ''
-        }`}
+        className={`form-field ${!!errorMessage ? 'border-red-700' : ''}`}
         id={returnVar}
         name={returnVar}
         type={type}
@@ -147,7 +143,10 @@ export const NumFormItem: React.FC<NumFormItemProps> = ({
 }
 
 interface TextAreaFormItemProps {
-  label: string
+  label?: string
+  uid?: string
+  additionalFieldStyleClasses?: string
+  customDivStyleClasses?: string
   returnVar: string
   placeholder: string
   register: any
@@ -156,24 +155,32 @@ interface TextAreaFormItemProps {
 
 export const TextAreaFormItem: React.FC<TextAreaFormItemProps> = ({
   label,
+  uid,
+  additionalFieldStyleClasses,
+  customDivStyleClasses,
   returnVar,
   placeholder,
   register,
   errorMessage,
 }) => {
   return (
-    <div className="mb-4">
-      <label
-        className="block text-gray-700 text-sm font-bold mb-2"
-        htmlFor={returnVar}
-      >
-        {label}
-      </label>
+    <div
+      className={`${customDivStyleClasses ? customDivStyleClasses : 'mb-4'}`}
+    >
+      {label ? (
+        <label
+          className="block text-gray-700 text-sm font-bold mb-2"
+          htmlFor={returnVar}
+        >
+          {label}
+        </label>
+      ) : null}
+
       <TextareaAutosize
-        className={`resize-none shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline ${
+        className={`resize-none form-field ${
           !!errorMessage ? 'border-red-700' : ''
-        }`}
-        id={returnVar}
+        } ${additionalFieldStyleClasses ? additionalFieldStyleClasses : ''}`}
+        id={uid ? uid : returnVar}
         name={returnVar}
         placeholder={placeholder}
         ref={register}
@@ -217,9 +224,7 @@ export const PasswordFormItem: React.FC<PasswordFormItemProps> = ({
       </label>
       <div className="flex flex-row">
         <input
-          className={`shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline ${
-            !!errorMessage ? 'border-red-700' : ''
-          }`}
+          className={`form-field ${!!errorMessage ? 'border-red-700' : ''}`}
           id={returnVar}
           name={returnVar}
           type={type}

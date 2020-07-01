@@ -16,6 +16,7 @@ import {
 import { toMixedNumber } from 'helpers/methods'
 import client from 'requests/client'
 import RecipeComments from 'components/comments/RecipeComments'
+import { getToken } from 'helpers/auth'
 
 const IMAGE = require('../../images/icons/add.svg')
 const TIME = require('../../images/icons/alarm-clock.svg')
@@ -91,8 +92,7 @@ const Step: React.FC<StepProps> = ({ step, activeStep, updateActiveStep }) => {
   )
 }
 
-const RecipePage: NextPage<RecipeProps> = (props) => {
-  const { recipe } = props
+const RecipePage: NextPage<RecipeProps> = ({ recipe }) => {
   const {
     by,
     description,
@@ -103,7 +103,7 @@ const RecipePage: NextPage<RecipeProps> = (props) => {
     title,
     recipeTime,
     ingredients,
-  } = recipe?.result || {}
+  } = recipe.result || {}
   const { username } = by || {}
 
   const [onOwnRecipe, setOnOwnRecipe] = React.useState(false)
@@ -167,8 +167,6 @@ export const getServerSideProps: GetServerSideProps = async (ctx) => {
     const username = params?.username
     const recipehandle = params?.recipehandle
 
-    const token = process.env.NEXT_PUBLIC_RJ_API_TOKEN || ''
-
     const data: RecipeType = await client
       .query({
         query: RECIPE_BY_USERNAME_AND_HANDLE,
@@ -179,7 +177,7 @@ export const getServerSideProps: GetServerSideProps = async (ctx) => {
         context: {
           // example of setting the headers with context per operation
           headers: {
-            authorization: `Bearer ${token}`,
+            authorization: `Bearer ${getToken(ctx)}`,
           },
         },
       })

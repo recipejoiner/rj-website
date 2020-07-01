@@ -3,17 +3,17 @@ import { GraphQLError } from 'graphql'
 import TextField from '@material-ui/core/TextField'
 import Autocomplete from '@material-ui/lab/Autocomplete'
 
-import { convertFractionToDecimal } from 'helpers/methods'
+import { convertFractionToDecimal, removeFieldsByKey } from 'helpers/methods'
 import {
   RecipeInputType,
   RecipeStepInputType,
   CreateRecipeVars,
-} from '../../requests/recipes'
+} from 'requests/recipes'
 
 //start GLOBAL VARIABLES
-const IMAGE = require('../../images/icons/add.svg')
-const TIME = require('../../images/icons/alarm-clock.svg')
-const SERVINGS = require('../../images/icons/hot-food.svg')
+const IMAGE = require('images/icons/add.svg')
+const TIME = require('images/icons/alarm-clock.svg')
+const SERVINGS = require('images/icons/hot-food.svg')
 const ingredients = [
   { name: 'Apple' },
   { name: 'Banana' },
@@ -44,6 +44,7 @@ interface RecipeFormProps {
   stepInit?: number
   reviewModeInit?: boolean
   errorsInit?: Array<any>
+  serverErrors?: readonly GraphQLError[]
   submit: (attributes: CreateRecipeVars) => void
 }
 //end INTERFACES
@@ -78,7 +79,7 @@ const NewStep = (index: number) => ({
 const NewRecipe = () => ({
   title: '',
   description: '',
-  servings: 0,
+  servings: 1,
   recipeTime: 0,
   steps: [NewStep(0)],
 })
@@ -194,7 +195,9 @@ const RecipeStepMode: React.FC<RecipeStepProps> = ({
   const currentStep = step
 
   const validateQuantity = (value: string) => {
-    const match = value.match(/[0-9]+[ ]?([1-9]{1}([\/]?)[1-9]{0,2})?/)
+    const match = value
+      ? value.match(/[0-9]+[ ]?([1-9]{1}([\/]?)[0-9]{0,2})?/)
+      : ''
     return match?.length ? match[0] : ''
   }
   const updateValue = (name: string, value: string, id?: string) => {
@@ -243,7 +246,7 @@ const RecipeStepMode: React.FC<RecipeStepProps> = ({
   }
 
   const handleChange = (data: {
-    target: { name: any; value: any; id?: any }
+    target: { name: any; value: any; id?: string }
   }) => {
     const {
       name,
@@ -317,7 +320,7 @@ const RecipeStepMode: React.FC<RecipeStepProps> = ({
                 />
                 <DeleteX
                   className="absolute"
-                  onClick={() => deleteIngredient(ing.id.toString())}
+                  onClick={() => ing.id && deleteIngredient(ing.id)}
                 />
               </div>
               <div className="grid grid-cols-4 rounded justify-center m-auto ">
@@ -429,6 +432,9 @@ const RecipeReviewMode: React.FC<RecipeReviewProps> = ({
           name === 'hours'
             ? diff(recipeTimeExpanded.hours, Number(value)) * 60
             : diff(recipeTimeExpanded.hours, Number(value))
+        break
+      case 'servings':
+        recipeCopy[name] = Number(value)
         break
       default:
         recipeCopy[name] = value
@@ -550,6 +556,7 @@ const RecipeForm: React.FC<RecipeFormProps> = ({
   stepInit = 0,
   reviewModeInit = false,
   errorsInit = [],
+  serverErrors,
   submit,
 }) => {
   const [newRecipeErrs, setNewRecipeErrs] = React.useState<
@@ -643,7 +650,10 @@ const RecipeForm: React.FC<RecipeFormProps> = ({
         }
         break
       case 'isRealNumber':
-        let match = value.match(/[0-9]+([ ]{1}[1-9]{1}([\/]{1})[1-9]{1,2})?/)
+        console.log(value)
+        let match = value
+          ? value.match(/[0-9]+([ ]{1}[1-9]{1}([\/]{1})[0-9]{1,2})?/)
+          : ''
         if (!value || (match && match[0] !== value)) {
           createError(
             errorKey,
@@ -681,6 +691,7 @@ const RecipeForm: React.FC<RecipeFormProps> = ({
     recipeCopy.steps.map((step: { ingredients: { quantity: string }[] }) => {
       step.ingredients.map((ing: { quantity: string }) => {
         ing.quantity = convertFractionToDecimal(ing.quantity)
+        removeFieldsByKey(ing, ['id'])
       })
     })
     return recipeCopy
@@ -763,6 +774,13 @@ const RecipeForm: React.FC<RecipeFormProps> = ({
               Post Recipe
             </button>
           </React.Fragment>
+        )}
+        {!!serverErrors && !!serverErrors?.length ? (
+          <div className="text-center m-auto text-white bg-red-400 p-4 w-full">
+            {serverErrors[0].message}
+          </div>
+        ) : (
+          ''
         )}
       </div>
     </div>

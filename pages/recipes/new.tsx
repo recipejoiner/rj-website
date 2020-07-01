@@ -37,7 +37,6 @@ const NewRecipePage: NextPage<NewRecipePageProps> = ({}) => {
         },
       })
       .then((res) => {
-        console.log(res)
         const { data }: { data?: RecipeFormReturnType } = res || {}
         if (res.errors) {
           setNewRecipeErrs(res.errors)
@@ -81,7 +80,7 @@ const NewRecipePage: NextPage<NewRecipePageProps> = ({}) => {
         />
         {/* OpenGraph tags end */}
       </Head>
-      <RecipeForm submit={onSubmit} />
+      <RecipeForm submit={onSubmit} serverErrors={newRecipeErrs} />
     </React.Fragment>
   )
 }

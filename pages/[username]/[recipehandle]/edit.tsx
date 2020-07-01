@@ -43,7 +43,6 @@ const EditRecipePage: NextPage<EditRecipePageProps> = ({
   const [newRecipeErrs, setNewRecipeErrs] = React.useState<
     readonly GraphQLError[]
   >([])
-
   // console.log('attributes', watch('attributes'))
   const onSubmit = (variables: CreateRecipeVars) => {
     client
@@ -51,7 +50,7 @@ const EditRecipePage: NextPage<EditRecipePageProps> = ({
         mutation: EDIT_RECIPE,
         variables: {
           existingRecipeId: existingRecipeId,
-          attributes: variables,
+          attributes: variables.attributes,
         },
         context: {
           // example of setting the headers with context per operation
@@ -62,14 +61,16 @@ const EditRecipePage: NextPage<EditRecipePageProps> = ({
       })
       .then((res) => {
         const { data }: { data?: RecipeFormReturnType } = res || {}
-        if (data) {
+        if (res.errors) {
+          setNewRecipeErrs(res.errors)
+        } else if (!!data && !!data.mutation) {
           const { result } = data.mutation || {}
           const { by, handle } = result || {}
           const { username } = by || {}
           const path = '/' + username + '/' + handle
           redirectTo(path)
         } else {
-          throw 'Data is missing!'
+          throw 'Data is Missing'
         }
       })
       .catch((err) => {
@@ -77,8 +78,6 @@ const EditRecipePage: NextPage<EditRecipePageProps> = ({
         setNewRecipeErrs(err.graphQLErrors)
       })
   }
-
-  console.log('oldddd', oldAttributes)
 
   const title = 'Edit Recipe - RecipeJoiner'
   const description = 'Edit your recipe!'
@@ -107,6 +106,7 @@ const EditRecipePage: NextPage<EditRecipePageProps> = ({
         submit={onSubmit}
         recipeInit={oldAttributes}
         reviewModeInit={true}
+        serverErrors={newRecipeErrs}
       />
     </React.Fragment>
   )

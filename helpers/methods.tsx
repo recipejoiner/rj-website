@@ -125,7 +125,7 @@ export function toMixedNumber(num: number) {
 
 export const convertFractionToDecimal = (fraction: string) => {
   let evalFraction = fraction.replace(' ', '+')
-  let decimal = eval(fraction)
+  let decimal = eval(evalFraction)
   return decimal
 }
 
@@ -137,6 +137,13 @@ export function removeEmptyFields(data: any, skipKeys?: Array<any>) {
       if (data[key] === '' || data[key] == null) {
         delete data[key]
       }
+    }
+  })
+}
+export function removeFieldsByKey(data: any, deleteKeys: Array<any>) {
+  Object.keys(data).forEach((key) => {
+    if (deleteKeys.includes(key)) {
+      delete data[key]
     }
   })
 }

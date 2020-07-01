@@ -74,7 +74,10 @@ const Step: React.FC<StepProps> = ({ step, activeStep, updateActiveStep }) => {
             <img className="p-4  m-auto" src={IMAGE} />
           </div>
           <div className="grid grid-rows-2 col-span-2">
-            <span className="text-4xl" onClick={() => updateActiveStep()}>
+            <span
+              className="text-4xl cursor-pointer"
+              onClick={() => updateActiveStep()}
+            >
               Step {stepNum + 1}:
             </span>
             <div>{stepTitle}</div>
@@ -120,7 +123,8 @@ const RecipePage: NextPage<RecipeProps> = (props) => {
   }
 
   const updateActiveStep = (stepNum?: number) => {
-    setActiveStep(stepNum || -1)
+    stepNum = stepNum !== undefined && stepNum >= 0 ? stepNum : -1
+    setActiveStep(stepNum)
   }
 
   const pageTitle = `${title || 'a recipe'}, by ${
@@ -154,7 +158,7 @@ const RecipePage: NextPage<RecipeProps> = (props) => {
         <div className=" mx-auto mt-1 p-6 bg-white rounded-lg shadow-xl border-black border">
           <div className="m-2 mb-8 ">
             <div
-              className=" bg-transparent w-full text-5xl text-gray-700  py-1 leading-tight focus:outline-none  border-b-2 border-black"
+              className=" bg-transparent cursor-pointer w-full text-5xl text-gray-700  py-1 leading-tight focus:outline-none  border-b-2 border-black"
               onClick={() => updateActiveStep()}
             >
               {title}
@@ -189,16 +193,13 @@ const RecipePage: NextPage<RecipeProps> = (props) => {
                 <img className="p-4  m-auto" src={IMAGE} />
               </div>
               <div className=" w-full my-4 h-full rounded ">
-                <div className="h-full w-full text-2xl text-gray-700   p-4 ">
+                <div className="h-full w-full text-2xl text-gray-700 p-4 ">
                   {description}
                 </div>
               </div>
               <div className="grid grid-cols-2">
                 <div className="grid grid-rows-2 p-2 rounded text-center text-xs ">
-                  <img
-                    src={TIME}
-                    className="h-8 m-auto cursor-pointer rounded"
-                  />
+                  <img src={TIME} className="h-8 m-auto rounded" />
                   <div className="w-full text-center grid grid-cols-2 justify-center rounded">
                     <div className="text-xl w-full m-auto border border-black text-center col-span-2  grid grid-cols-2 rounded">
                       <span>{minutesToTime(recipeTime).hours || '0'}</span>
@@ -209,19 +210,16 @@ const RecipePage: NextPage<RecipeProps> = (props) => {
                   </div>
                 </div>
                 <div className="grid  grid-rows-2 p-2 rounded text-center text-xs ">
-                  <img
-                    src={SERVINGS}
-                    className="h-8 m-auto cursor-pointer rounded"
-                  />
+                  <img src={SERVINGS} className="h-8 m-auto rounded" />
                   <div className="w-full text-center justify-center rounded">
                     <div className="text-xl w-full m-auto border border-black text-center  rounded">
-                      {servings || <Skeleton width={40} />}
+                      {servings}
                     </div>
                     Servings
                   </div>
                 </div>
               </div>
-              <div className="border-black border p-2 my-2">
+              <div className="border-black border rounded p-2 my-2">
                 {ingredients.map((ing: IngredientType) => (
                   <Ingredient ingredient={ing} />
                 ))}

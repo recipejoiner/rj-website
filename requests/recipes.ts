@@ -224,10 +224,10 @@ export const RECIPE_BY_ID = gql`
 `
 
 //NEW RECIPE
-interface IngredientInputType {
+export interface IngredientInputType {
   id: string
   name: string
-  quantity: number
+  quantity: string | number
   unit: string
 }
 

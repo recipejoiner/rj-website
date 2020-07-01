@@ -39,11 +39,11 @@ const Ingredient: React.FC<{ ingredient: IngredientType }> = ({
   ingredient,
 }) => {
   return (
-    <div className="grid grid-cols-6">
+    <div className="grid grid-cols-6 gap-4">
       <span className="col-span-3 border-black border-b-2">
         {ingredient.ingredientInfo.name}
       </span>
-      <span className="">{ingredient.quantity}</span>
+      <span className="">{toMixedNumber(ingredient.quantity)}</span>
       <span className="col-span-2">{ingredient.unit.name}</span>
     </div>
   )
@@ -59,17 +59,20 @@ const Step: React.FC<StepProps> = ({ step, activeStep, updateActiveStep }) => {
           className="hover:scale-95 transform ease-in duration-200 w-full my-2 cursor-pointer "
           onClick={() => updateActiveStep(stepNum)}
         >
-          <div className="grid grid-cols-5 border-black border border-b-2 text-xl p-4 rounded-lg ">
-            <span className=" text-2xl  text-center m-auto border-black border-b-2">
+          <div className="grid grid-cols-12 border-black border border-b-2 text-xl p-4 rounded-lg ">
+            <span className=" text-2xl m-auto border-black border-b-2 text-center">
               {stepNum + 1}
             </span>
-            <span className="col-span-4 bg-white  rounded m-1">
+            <span className="col-span-11 bg-white my-auto rounded m-1">
               {stepTitle}
             </span>
           </div>
         </div>
       ) : (
         <div className="w-full my-2">
+          <div className=" grid items-center p-2 w-full h-full m-auto">
+            <img className="p-4  m-auto" src={IMAGE} />
+          </div>
           <div className="grid grid-rows-2 col-span-2">
             <span className="text-4xl" onClick={() => updateActiveStep()}>
               Step {stepNum + 1}:
@@ -81,7 +84,7 @@ const Step: React.FC<StepProps> = ({ step, activeStep, updateActiveStep }) => {
               <Ingredient ingredient={ing} />
             ))}
           </div>
-          <div className="w-full h-full border-black border rounded p-2">
+          <div className="w-full h-full border-black border rounded p-2 my-4">
             {additionalInfo}
           </div>
         </div>
@@ -158,13 +161,15 @@ const RecipePage: NextPage<RecipeProps> = (props) => {
             </div>
             <div className="inline-flex items-center mt-3">
               <Link href="/[username]" as={`/${username}`}>
-                <img
-                  src={PROFILE}
-                  className="h-8 m-auto cursor-pointer rounded-full"
-                />
-                <span className="mx-2">
-                  {by.username || <Skeleton width={40} />}
-                </span>
+                <a>
+                  <img
+                    src={PROFILE}
+                    className="h-8 m-auto cursor-pointer rounded-full"
+                  />
+                  <span className="mx-2">
+                    {by.username || <Skeleton width={40} />}
+                  </span>
+                </a>
               </Link>
               {onOwnRecipe ? (
                 <div className="m-2">
@@ -180,7 +185,7 @@ const RecipePage: NextPage<RecipeProps> = (props) => {
           </div>
           {activeStep < 0 ? (
             <React.Fragment>
-              <div className=" grid items-center  p-2 w-full h-full m-auto">
+              <div className=" grid items-center p-2 w-full h-full m-auto">
                 <img className="p-4  m-auto" src={IMAGE} />
               </div>
               <div className=" w-full my-4 h-full rounded ">
@@ -222,7 +227,9 @@ const RecipePage: NextPage<RecipeProps> = (props) => {
                 ))}
               </div>
             </React.Fragment>
-          ) : null}
+          ) : (
+            ''
+          )}
           {steps.map((step) => (
             <Step
               step={step}

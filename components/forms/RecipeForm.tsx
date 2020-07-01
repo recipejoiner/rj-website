@@ -3,6 +3,7 @@ import { GraphQLError } from 'graphql'
 import TextField from '@material-ui/core/TextField'
 import Autocomplete from '@material-ui/lab/Autocomplete'
 
+import { convertFractionToDecimal } from 'helpers/methods'
 import {
   RecipeInputType,
   RecipeStepInputType,
@@ -13,7 +14,6 @@ import {
 const IMAGE = require('../../images/icons/add.svg')
 const TIME = require('../../images/icons/alarm-clock.svg')
 const SERVINGS = require('../../images/icons/hot-food.svg')
-
 const ingredients = [
   { name: 'Apple' },
   { name: 'Banana' },
@@ -28,6 +28,7 @@ const units = [
   { name: 'Tablespoon' },
   { name: 'Whole' },
 ]
+
 //end GLOBAL VARIABLES
 
 //start INTERFACES
@@ -61,7 +62,7 @@ function diff(num1: number, num2: number) {
 }
 
 const NewIngredient = () => ({
-  id: Date.now().toString(),
+  id: (Date.now() * Math.random()).toFixed(0).toString(),
   name: '',
   quantity: 0,
   unit: '',
@@ -192,6 +193,10 @@ const RecipeStepMode: React.FC<RecipeStepProps> = ({
 }) => {
   const currentStep = step
 
+  const validateQuantity = (value: string) => {
+    const match = value.match(/[0-9]+[ ]?([1-9]{1}([\/]?)[1-9]{0,2})?/)
+    return match?.length ? match[0] : ''
+  }
   const updateValue = (name: string, value: string, id?: string) => {
     let recipeCopy = JSON.parse(JSON.stringify(recipe))
     let index = -1
@@ -206,7 +211,7 @@ const RecipeStepMode: React.FC<RecipeStepProps> = ({
               id && ing.id === id.substring(0, id.indexOf('-'))
           )[0]
         )
-        if (name === 'quantity') value = value.replace(/([^0-9 \/])/g, '')
+        if (name === 'quantity') value = validateQuantity(value)
         if (index > -1)
           recipeCopy.steps[currentStep].ingredients[index][name] = value
         break
@@ -619,7 +624,8 @@ const RecipeForm: React.FC<RecipeFormProps> = ({
           .map((ing) => {
             return (
               validateValue(ing.id + '-name', ing.name, 'required') &&
-              validateValue(ing.id + '-quantity', ing.quantity, 'required')
+              validateValue(ing.id + '-quantity', ing.quantity, 'required') &&
+              validateValue(ing.id + '-quantity', ing.quantity, 'isRealNumber')
             )
           })
           .indexOf(false) < 0) &&
@@ -633,6 +639,17 @@ const RecipeForm: React.FC<RecipeFormProps> = ({
       case 'required':
         if (!value) {
           createError(errorKey, 'required', 'This field is required.')
+          ret = false
+        }
+        break
+      case 'isRealNumber':
+        let match = value.match(/[0-9]+([ ]{1}[1-9]{1}([\/]{1})[1-9]{1,2})?/)
+        if (!value || (match && match[0] !== value)) {
+          createError(
+            errorKey,
+            'required',
+            'This field must be a proper number.'
+          )
           ret = false
         }
         break
@@ -658,10 +675,22 @@ const RecipeForm: React.FC<RecipeFormProps> = ({
     setRecipe(updatedRecipe)
   }
 
+  const convertValuesForDB = () => {
+    let recipeCopy = JSON.parse(JSON.stringify(recipe))
+
+    recipeCopy.steps.map((step: { ingredients: { quantity: string }[] }) => {
+      step.ingredients.map((ing: { quantity: string }) => {
+        ing.quantity = convertFractionToDecimal(ing.quantity)
+      })
+    })
+    return recipeCopy
+  }
+
   const submitRecipe = () => {
     if (validateValue('title', recipe.title, 'required')) {
-      console.log('submitting recipe: ', recipe)
-      submit({ attributes: recipe })
+      let recipeFinal = convertValuesForDB()
+      console.log('submitting recipe: ', recipeFinal)
+      submit({ attributes: recipeFinal })
     }
   }
 

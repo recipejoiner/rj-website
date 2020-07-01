@@ -23,7 +23,6 @@ const NewRecipePage: NextPage<NewRecipePageProps> = ({}) => {
   const [newRecipeErrs, setNewRecipeErrs] = React.useState<
     readonly GraphQLError[]
   >([])
-
   // console.log('attributes', watch('attributes'))
   const onSubmit = (variables: CreateRecipeVars) => {
     client
@@ -38,6 +37,7 @@ const NewRecipePage: NextPage<NewRecipePageProps> = ({}) => {
         },
       })
       .then((res) => {
+        console.log(res)
         const { data }: { data?: RecipeFormReturnType } = res || {}
         if (res.errors) {
           setNewRecipeErrs(res.errors)

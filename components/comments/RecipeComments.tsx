@@ -14,11 +14,13 @@ import Comment from 'components/comments/Comment'
 type RecipeCommentsProps = {
   username: string
   handle: string
+  className?: string
 }
 
 const RecipeComments: React.FC<RecipeCommentsProps> = ({
   username,
   handle,
+  className,
 }) => {
   const rootCommentVars: RecipeCommentsByUsernameAndHandleVarsType = {
     username: username,
@@ -35,7 +37,7 @@ const RecipeComments: React.FC<RecipeCommentsProps> = ({
       >
         {(edges: Array<EdgeType<CommentNodeType>>) => {
           return (
-            <ul className="border-b-8">
+            <ul className={className || ''}>
               {edges.map((edge) => {
                 if (edge.node.id !== 0) {
                   return <Comment key={edge.cursor} commentNode={edge.node} />

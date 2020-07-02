@@ -15,11 +15,16 @@ import {
 } from 'requests/recipes'
 import { toMixedNumber } from 'helpers/methods'
 import client from 'requests/client'
+import RecipeComments from 'components/comments/RecipeComments'
 
-const IMAGE = require('../../images/icons/add.svg')
-const TIME = require('../../images/icons/alarm-clock.svg')
-const SERVINGS = require('../../images/icons/hot-food.svg')
-const PROFILE = require('../../images/chef-rj.svg')
+const IMAGE = require('images/icons/add.svg')
+const TIME = require('images/icons/alarm-clock.svg')
+const SERVINGS = require('images/icons/hot-food.svg')
+const PROFILE = require('images/chef-rj.svg')
+const LIKE_BW = require('images/icons/yummy_bw.svg')
+const SAVE_BW = require('images/icons/cookbook_bw.svg')
+const LIKE_COLOR = require('images/icons/yummy_color.svg')
+const SAVE_COLOR = require('images/icons/cookbook_color.svg')
 
 const minutesToTime = (totalMinutes: number) => {
   return { hours: Math.floor(totalMinutes / 60), minutes: totalMinutes % 60 }
@@ -114,6 +119,9 @@ const RecipePage: NextPage<RecipeProps> = (props) => {
   const [onOwnRecipe, setOnOwnRecipe] = React.useState(false)
   const [activeStep, setActiveStep] = React.useState(-1)
   const { currentUserInfo } = React.useContext(UserContext)
+  const [commentsOpen, setCommentsOpen] = React.useState(false)
+  const [liked, setLiked] = React.useState(false)
+  const [saved, setSaved] = React.useState(false)
   if (
     currentUserInfo &&
     !onOwnRecipe &&
@@ -237,9 +245,43 @@ const RecipePage: NextPage<RecipeProps> = (props) => {
           ))}
         </div>
       </div>
-      {/* {username && handle && (
-        <RecipeComments username={username} handle={handle} />
-      )} */}
+      <div className="grid grid-cols-2 items-center">
+        <div
+          className={
+            (!!commentsOpen ? 'opacity-100' : '') +
+            ' cursor-pointer text-2xl ml-4 opacity-25'
+          }
+          onClick={() => setCommentsOpen(!commentsOpen)}
+        >
+          Comments
+        </div>
+        <div className="flex justify-end  ">
+          <img
+            className="h-8 mx-4 my-2 cursor-pointer"
+            src={!!saved ? SAVE_COLOR : SAVE_BW}
+            onClick={() => setSaved(!saved)}
+          />
+          <img
+            className="h-8 mx-4 my-2 cursor-pointer"
+            src={!!liked ? LIKE_COLOR : LIKE_BW}
+            onClick={() => setLiked(!liked)}
+          />
+        </div>
+      </div>
+
+      {!!commentsOpen ? (
+        <div className="max-h-full">
+          {username && handle && (
+            <RecipeComments
+              username={username}
+              handle={handle}
+              className="rounded p-2"
+            />
+          )}
+        </div>
+      ) : (
+        ''
+      )}
     </React.Fragment>
   )
 }

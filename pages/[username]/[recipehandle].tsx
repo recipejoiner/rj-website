@@ -6,6 +6,7 @@ import { GetServerSideProps } from 'next'
 import { ParsedUrlQuery } from 'querystring'
 import Skeleton from 'react-loading-skeleton'
 import UserContext from 'helpers/UserContext'
+import Collapse from '@kunukn/react-collapse'
 
 import {
   RecipeType,
@@ -273,20 +274,19 @@ const RecipePage: NextPage<RecipeProps> = ({ recipe }) => {
         </div>
       </div>
 
-      {!!commentsOpen ? (
-        <div className="max-h-full">
-          {username && handle && (
-            <RecipeComments
-              id={id}
-              username={username}
-              handle={handle}
-              className="rounded p-2"
-            />
-          )}
-        </div>
-      ) : (
-        ''
-      )}
+      <Collapse
+        isOpen={commentsOpen}
+        transition={`height 500ms cubic-bezier(.4, 0, .2, 1)`}
+      >
+        {username && handle && (
+          <RecipeComments
+            id={id}
+            username={username}
+            handle={handle}
+            className="rounded p-2"
+          />
+        )}
+      </Collapse>
     </React.Fragment>
   )
 }

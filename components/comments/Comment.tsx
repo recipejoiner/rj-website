@@ -65,7 +65,7 @@ const Comment: React.FC<CommentProps> = ({ commentNode, isNewComment }) => {
           />
         </Collapse>
         <div className="ml-1 pl-3">
-          <ul>
+          <ul className="bg-yellow-200">
             {newComments.map((comment) => {
               return <Comment key={comment.id} commentNode={comment} />
             })}

@@ -27,7 +27,7 @@ const NewCommentForm: React.FC<NewCommentFormProps> = ({
     readonly GraphQLError[]
   >([])
 
-  const { register, handleSubmit, watch, errors } = useForm<
+  const { register, handleSubmit, watch, errors, reset } = useForm<
     CreateCommentVarsType
   >()
 
@@ -53,6 +53,7 @@ const NewCommentForm: React.FC<NewCommentFormProps> = ({
         if (res.errors) {
           setNewCommentErrors(res.errors)
         } else if (!!data) {
+          reset()
           addNewComment(data.result.comment)
         } else {
           throw 'Data is missing!'
@@ -77,6 +78,18 @@ const NewCommentForm: React.FC<NewCommentFormProps> = ({
         })}
         errorMessage={errors.content && errors.content.message}
       />
+      <ul className="pt-2">
+        {newCommentErrors.map((err) => {
+          return (
+            <li
+              key={err.message}
+              className="text-red-500 font-bold text-sm italic"
+            >
+              {err.message}
+            </li>
+          )
+        })}
+      </ul>
       <button className="btn text-sm mb-2 bg-gray-200" type="submit">
         Add Comment
       </button>

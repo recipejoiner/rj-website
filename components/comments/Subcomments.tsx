@@ -11,7 +11,7 @@ import InfiniteScroll, { EdgeType } from 'components/InfiniteScroll'
 import Comment from 'components/comments/Comment'
 
 type SubcommentsProps = {
-  parentId: number
+  parentId: string
 }
 
 const Subcomments: React.FC<SubcommentsProps> = ({ parentId }) => {
@@ -31,7 +31,7 @@ const Subcomments: React.FC<SubcommentsProps> = ({ parentId }) => {
           return (
             <ul>
               {edges.map((edge) => {
-                if (edge.node.id !== 0) {
+                if (edge.node.id !== '') {
                   return <Comment key={edge.cursor} commentNode={edge.node} />
                 }
               })}

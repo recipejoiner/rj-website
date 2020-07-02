@@ -1,7 +1,7 @@
 import gql from 'graphql-tag'
 
 export interface CommentNodeType {
-  id: number
+  id: string
   depth: number
   createdAt: string
   by: {
@@ -11,7 +11,7 @@ export interface CommentNodeType {
 }
 
 export const CommentNodeInit: CommentNodeType = {
-  id: 0,
+  id: '',
   depth: 0,
   createdAt: '',
   by: {
@@ -55,7 +55,7 @@ export const RECIPE_ROOT_COMMENTS_BY_USERNAME_AND_HANDLE = gql`
 `
 
 export interface SubcommentsVarsType {
-  parentId: number
+  parentId: string
   cursor: string | null
 }
 
@@ -76,6 +76,40 @@ export const SUBCOMMENTS = gql`
           }
           content
         }
+      }
+    }
+  }
+`
+
+export interface CreateCommentReturnType {
+  result: {
+    comment: CommentNodeType
+  }
+}
+export interface CreateCommentVarsType {
+  commentableType: string
+  commentableId: string
+  content: string
+}
+export const CREATE_COMMENT = gql`
+  mutation createComment(
+    $commentableType: String!
+    $commentableId: ID!
+    $content: String!
+  ) {
+    result: createComment(
+      commentableType: $commentableType
+      commentableId: $commentableId
+      content: $content
+    ) {
+      comment {
+        id
+        depth
+        createdAt
+        by {
+          username
+        }
+        content
       }
     }
   }

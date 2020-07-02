@@ -6,6 +6,7 @@ import { GetServerSideProps } from 'next'
 import { ParsedUrlQuery } from 'querystring'
 import Skeleton from 'react-loading-skeleton'
 import UserContext from 'helpers/UserContext'
+import Collapse from '@kunukn/react-collapse'
 
 import {
   RecipeType,
@@ -229,7 +230,10 @@ const RecipePage: NextPage<RecipeProps> = ({ recipe }) => {
               </div>
               <div className="border-black border rounded p-2 my-2">
                 {ingredients.map((ing: IngredientType) => (
-                  <Ingredient ingredient={ing} />
+                  <Ingredient
+                    key={`${ing.ingredientInfo.name}${ing.quantity}`}
+                    ingredient={ing}
+                  />
                 ))}
               </div>
             </React.Fragment>
@@ -238,6 +242,7 @@ const RecipePage: NextPage<RecipeProps> = ({ recipe }) => {
           )}
           {steps.map((step) => (
             <Step
+              key={step.stepNum}
               step={step}
               activeStep={activeStep}
               updateActiveStep={updateActiveStep}
@@ -267,22 +272,20 @@ const RecipePage: NextPage<RecipeProps> = ({ recipe }) => {
             </div>
           </div>
 
-          {!!commentsOpen ? (
-            <div className="max-h-full">
-              {username && handle && (
-                <RecipeComments
-                  id={id}
-                  username={username}
-                  handle={handle}
-                  className="rounded p-2"
-                />
-              )}
-            </div>
-          ) : (
-            ''
-          )}
-        </div>
-      </div>
+      <Collapse
+        isOpen={commentsOpen}
+        transition={`height 500ms cubic-bezier(.4, 0, .2, 1)`}
+      >
+        {username && handle && (
+          <RecipeComments
+            id={id}
+            username={username}
+            handle={handle}
+            className="rounded p-2"
+          />
+        )}
+      </Collapse>
+
     </React.Fragment>
   )
 }

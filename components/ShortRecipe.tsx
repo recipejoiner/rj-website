@@ -1,6 +1,7 @@
 import * as React from 'react'
 import Link from 'next/link'
 import Skeleton from 'react-loading-skeleton'
+import Collapse from '@kunukn/react-collapse'
 
 import { EdgeType } from 'components/InfiniteScroll'
 import { ShortRecipeNodeType } from 'requests/recipes'
@@ -45,7 +46,6 @@ const ShortRecipe: React.FC<ShortRecipeProps> = ({ edge }) => {
             </Link>
           </div>
         </div>
-
         <div className=" grid items-center p-2 w-full h-full opacity-25 m-auto">
           <img className="m-auto" src={IMAGE} />
         </div>
@@ -75,21 +75,19 @@ const ShortRecipe: React.FC<ShortRecipeProps> = ({ edge }) => {
             />
           </div>
         </div>
-
-        {!!commentsOpen ? (
-          <div className="max-h-full">
-            {username && handle && (
-              <RecipeComments
-                id={id}
-                username={username}
-                handle={handle}
-                className="rounded p-2"
-              />
-            )}
-          </div>
-        ) : (
-          ''
-        )}
+        <Collapse
+          isOpen={commentsOpen}
+          transition={`height 500ms cubic-bezier(.4, 0, .2, 1)`}
+        >
+          {username && handle && (
+            <RecipeComments
+              id={id}
+              username={username}
+              handle={handle}
+              className="rounded p-2"
+            />
+          )}
+        </Collapse>
       </div>
     </div>
   )

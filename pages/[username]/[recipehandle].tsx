@@ -272,20 +272,21 @@ const RecipePage: NextPage<RecipeProps> = ({ recipe }) => {
             </div>
           </div>
 
-      <Collapse
-        isOpen={commentsOpen}
-        transition={`height 500ms cubic-bezier(.4, 0, .2, 1)`}
-      >
-        {username && handle && (
-          <RecipeComments
-            id={id}
-            username={username}
-            handle={handle}
-            className="rounded p-2"
-          />
-        )}
-      </Collapse>
-
+          <Collapse
+            isOpen={commentsOpen}
+            transition={`height 500ms cubic-bezier(.4, 0, .2, 1)`}
+          >
+            {username && handle && (
+              <RecipeComments
+                id={id}
+                username={username}
+                handle={handle}
+                className="rounded p-2"
+              />
+            )}
+          </Collapse>
+        </div>
+      </div>
     </React.Fragment>
   )
 }

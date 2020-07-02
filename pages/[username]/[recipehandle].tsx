@@ -154,7 +154,7 @@ const RecipePage: NextPage<RecipeProps> = ({ recipe }) => {
         </span>
       </div>
       {username && handle && (
-        <RecipeComments username={username} handle={handle} />
+        <RecipeComments id={id} username={username} handle={handle} />
       )}
     </React.Fragment>
   )

@@ -16,12 +16,14 @@ import NewCommentForm from 'components/comments/NewCommentForm'
 type RecipeCommentsProps = {
   username: string
   handle: string
+  className?: string
   id: string
 }
 
 const RecipeComments: React.FC<RecipeCommentsProps> = ({
   username,
   handle,
+  className,
   id,
 }) => {
   const [newCommentFormIsOpen, setNewCommentFormIsOpen] = React.useState(false)
@@ -71,7 +73,7 @@ const RecipeComments: React.FC<RecipeCommentsProps> = ({
       >
         {(edges: Array<EdgeType<CommentNodeType>>) => {
           return (
-            <ul className="border-b-8">
+            <ul className={className || ''}>
               {edges.map((edge) => {
                 if (edge.node.id !== '') {
                   return <Comment key={edge.cursor} commentNode={edge.node} />

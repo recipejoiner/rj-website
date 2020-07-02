@@ -3,17 +3,17 @@ import { GraphQLError } from 'graphql'
 import TextField from '@material-ui/core/TextField'
 import Autocomplete from '@material-ui/lab/Autocomplete'
 
+import { convertFractionToDecimal, removeFieldsByKey } from 'helpers/methods'
 import {
   RecipeInputType,
   RecipeStepInputType,
   CreateRecipeVars,
-} from '../../requests/recipes'
+} from 'requests/recipes'
 
 //start GLOBAL VARIABLES
-const IMAGE = require('../../images/icons/add.svg')
-const TIME = require('../../images/icons/alarm-clock.svg')
-const SERVINGS = require('../../images/icons/hot-food.svg')
-
+const IMAGE = require('images/icons/add.svg')
+const TIME = require('images/icons/alarm-clock.svg')
+const SERVINGS = require('images/icons/hot-food.svg')
 const ingredients = [
   { name: 'Apple' },
   { name: 'Banana' },
@@ -28,6 +28,7 @@ const units = [
   { name: 'Tablespoon' },
   { name: 'Whole' },
 ]
+
 //end GLOBAL VARIABLES
 
 //start INTERFACES
@@ -43,6 +44,7 @@ interface RecipeFormProps {
   stepInit?: number
   reviewModeInit?: boolean
   errorsInit?: Array<any>
+  serverErrors?: readonly GraphQLError[]
   submit: (attributes: CreateRecipeVars) => void
 }
 //end INTERFACES
@@ -61,7 +63,7 @@ function diff(num1: number, num2: number) {
 }
 
 const NewIngredient = () => ({
-  id: Date.now().toString(),
+  id: (Date.now() * Math.random()).toFixed(0).toString(),
   name: '',
   quantity: 0,
   unit: '',
@@ -77,7 +79,7 @@ const NewStep = (index: number) => ({
 const NewRecipe = () => ({
   title: '',
   description: '',
-  servings: 0,
+  servings: 1,
   recipeTime: 0,
   steps: [NewStep(0)],
 })
@@ -192,6 +194,12 @@ const RecipeStepMode: React.FC<RecipeStepProps> = ({
 }) => {
   const currentStep = step
 
+  const validateQuantity = (value: string) => {
+    const match = value
+      ? value.match(/[0-9]+[ ]?([1-9]{1}([\/]?)[0-9]{0,2})?/)
+      : ''
+    return match?.length ? match[0] : ''
+  }
   const updateValue = (name: string, value: string, id?: string) => {
     let recipeCopy = JSON.parse(JSON.stringify(recipe))
     let index = -1
@@ -206,7 +214,7 @@ const RecipeStepMode: React.FC<RecipeStepProps> = ({
               id && ing.id === id.substring(0, id.indexOf('-'))
           )[0]
         )
-        if (name === 'quantity') value = value.replace(/([^0-9 \/])/g, '')
+        if (name === 'quantity') value = validateQuantity(value)
         if (index > -1)
           recipeCopy.steps[currentStep].ingredients[index][name] = value
         break
@@ -238,7 +246,7 @@ const RecipeStepMode: React.FC<RecipeStepProps> = ({
   }
 
   const handleChange = (data: {
-    target: { name: any; value: any; id?: any }
+    target: { name: any; value: any; id?: string }
   }) => {
     const {
       name,
@@ -312,7 +320,7 @@ const RecipeStepMode: React.FC<RecipeStepProps> = ({
                 />
                 <DeleteX
                   className="absolute"
-                  onClick={() => deleteIngredient(ing.id.toString())}
+                  onClick={() => ing.id && deleteIngredient(ing.id)}
                 />
               </div>
               <div className="grid grid-cols-4 rounded justify-center m-auto ">
@@ -424,6 +432,9 @@ const RecipeReviewMode: React.FC<RecipeReviewProps> = ({
           name === 'hours'
             ? diff(recipeTimeExpanded.hours, Number(value)) * 60
             : diff(recipeTimeExpanded.hours, Number(value))
+        break
+      case 'servings':
+        recipeCopy[name] = Number(value)
         break
       default:
         recipeCopy[name] = value
@@ -545,6 +556,7 @@ const RecipeForm: React.FC<RecipeFormProps> = ({
   stepInit = 0,
   reviewModeInit = false,
   errorsInit = [],
+  serverErrors,
   submit,
 }) => {
   const [newRecipeErrs, setNewRecipeErrs] = React.useState<
@@ -619,7 +631,8 @@ const RecipeForm: React.FC<RecipeFormProps> = ({
           .map((ing) => {
             return (
               validateValue(ing.id + '-name', ing.name, 'required') &&
-              validateValue(ing.id + '-quantity', ing.quantity, 'required')
+              validateValue(ing.id + '-quantity', ing.quantity, 'required') &&
+              validateValue(ing.id + '-quantity', ing.quantity, 'isRealNumber')
             )
           })
           .indexOf(false) < 0) &&
@@ -633,6 +646,20 @@ const RecipeForm: React.FC<RecipeFormProps> = ({
       case 'required':
         if (!value) {
           createError(errorKey, 'required', 'This field is required.')
+          ret = false
+        }
+        break
+      case 'isRealNumber':
+        console.log(value)
+        let match = value
+          ? value.match(/[0-9]+([ ]{1}[1-9]{1}([\/]{1})[0-9]{1,2})?/)
+          : ''
+        if (!value || (match && match[0] !== value)) {
+          createError(
+            errorKey,
+            'required',
+            'This field must be a proper number.'
+          )
           ret = false
         }
         break
@@ -658,10 +685,23 @@ const RecipeForm: React.FC<RecipeFormProps> = ({
     setRecipe(updatedRecipe)
   }
 
+  const convertValuesForDB = () => {
+    let recipeCopy = JSON.parse(JSON.stringify(recipe))
+
+    recipeCopy.steps.map((step: { ingredients: { quantity: string }[] }) => {
+      step.ingredients.map((ing: { quantity: string }) => {
+        ing.quantity = convertFractionToDecimal(ing.quantity)
+        removeFieldsByKey(ing, ['id'])
+      })
+    })
+    return recipeCopy
+  }
+
   const submitRecipe = () => {
     if (validateValue('title', recipe.title, 'required')) {
-      console.log('submitting recipe: ', recipe)
-      submit({ attributes: recipe })
+      let recipeFinal = convertValuesForDB()
+      console.log('submitting recipe: ', recipeFinal)
+      submit({ attributes: recipeFinal })
     }
   }
 
@@ -734,6 +774,13 @@ const RecipeForm: React.FC<RecipeFormProps> = ({
               Post Recipe
             </button>
           </React.Fragment>
+        )}
+        {!!serverErrors && !!serverErrors?.length ? (
+          <div className="text-center m-auto text-white bg-red-400 p-4 w-full">
+            {serverErrors[0].message}
+          </div>
+        ) : (
+          ''
         )}
       </div>
     </div>

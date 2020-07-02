@@ -9,7 +9,7 @@ export interface ShortRecipeNodeType {
   title: string
   handle: string
   description: string
-  servings: string
+  servings: number
 }
 
 export const recipeConnectionNodeInit: ShortRecipeNodeType = {
@@ -20,7 +20,7 @@ export const recipeConnectionNodeInit: ShortRecipeNodeType = {
   title: '',
   handle: '',
   description: '',
-  servings: '',
+  servings: 0,
 }
 
 export interface AllRecipesVarsType {
@@ -224,15 +224,15 @@ export const RECIPE_BY_ID = gql`
 `
 
 //NEW RECIPE
-interface IngredientInputType {
-  id: string
+export interface IngredientInputType {
+  id?: string
   name: string
-  quantity: number
+  quantity: string | number
   unit: string
 }
 
 export interface RecipeStepInputType {
-  [id: string]: string | Array<IngredientInputType> | any
+  // [id: string]: string | Array<IngredientInputType> | any
   stepNum: number
   stepTitle: string
   additionalInfo: string

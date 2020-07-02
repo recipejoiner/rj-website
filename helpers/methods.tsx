@@ -109,21 +109,24 @@ export function toMixedNumber(num: number) {
   }
 
   if (numerator === 0) {
-    return <span>{wholeNum}</span>
+    return wholeNum
   } else if (wholeNum === 0) {
-    return (
-      <span>
-        <sup>{numerator.toFixed(0)}</sup>⁄<sub>{denominator.toFixed(0)}</sub>
-      </span>
-    )
+    return numerator.toFixed(0) + '/' + denominator.toFixed(0)
   } else {
     return (
-      <span>
-        {wholeNum.toFixed(0)}
-        <sup>{numerator.toFixed(0)}</sup>⁄<sub>{denominator.toFixed(0)}</sub>
-      </span>
+      wholeNum.toFixed(0) +
+      ' ' +
+      numerator.toFixed(0) +
+      '/' +
+      denominator.toFixed(0)
     )
   }
+}
+
+export const convertFractionToDecimal = (fraction: string) => {
+  let evalFraction = fraction.replace(' ', '+')
+  let decimal = eval(evalFraction)
+  return decimal
 }
 
 // For sanitizing form inputs.
@@ -134,6 +137,13 @@ export function removeEmptyFields(data: any, skipKeys?: Array<any>) {
       if (data[key] === '' || data[key] == null) {
         delete data[key]
       }
+    }
+  })
+}
+export function removeFieldsByKey(data: any, deleteKeys: Array<any>) {
+  Object.keys(data).forEach((key) => {
+    if (deleteKeys.includes(key)) {
+      delete data[key]
     }
   })
 }

@@ -23,7 +23,6 @@ const NewRecipePage: NextPage<NewRecipePageProps> = ({}) => {
   const [newRecipeErrs, setNewRecipeErrs] = React.useState<
     readonly GraphQLError[]
   >([])
-
   // console.log('attributes', watch('attributes'))
   const onSubmit = (variables: CreateRecipeVars) => {
     client
@@ -81,7 +80,7 @@ const NewRecipePage: NextPage<NewRecipePageProps> = ({}) => {
         />
         {/* OpenGraph tags end */}
       </Head>
-      <RecipeForm submit={onSubmit} />
+      <RecipeForm submit={onSubmit} serverErrors={newRecipeErrs} />
     </React.Fragment>
   )
 }

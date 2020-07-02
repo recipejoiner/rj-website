@@ -229,7 +229,10 @@ const RecipePage: NextPage<RecipeProps> = ({ recipe }) => {
               </div>
               <div className="border-black border rounded p-2 my-2">
                 {ingredients.map((ing: IngredientType) => (
-                  <Ingredient ingredient={ing} />
+                  <Ingredient
+                    key={`${ing.ingredientInfo.name}${ing.quantity}`}
+                    ingredient={ing}
+                  />
                 ))}
               </div>
             </React.Fragment>
@@ -238,6 +241,7 @@ const RecipePage: NextPage<RecipeProps> = ({ recipe }) => {
           )}
           {steps.map((step) => (
             <Step
+              key={step.stepNum}
               step={step}
               activeStep={activeStep}
               updateActiveStep={updateActiveStep}

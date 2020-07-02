@@ -80,6 +80,7 @@ const ShortRecipe: React.FC<ShortRecipeProps> = ({ edge }) => {
           <div className="max-h-full">
             {username && handle && (
               <RecipeComments
+                id={id}
                 username={username}
                 handle={handle}
                 className="rounded p-2"

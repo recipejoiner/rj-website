@@ -67,10 +67,10 @@ const Step: React.FC<StepProps> = ({ step, activeStep, updateActiveStep }) => {
           onClick={() => updateActiveStep(stepNum)}
         >
           <div className="grid grid-cols-12 border-black border border-b-2 text-xl p-4 rounded-lg ">
-            <span className=" text-2xl m-auto border-black border-b-2 text-center">
+            <span className="col-span-2 text-2xl m-auto border-black border-b-2 text-center">
               {stepNum + 1}
             </span>
-            <span className="col-span-11 bg-white my-auto rounded m-1">
+            <span className="col-span-10 bg-white my-auto rounded m-1">
               {stepTitle}
             </span>
           </div>
@@ -172,20 +172,20 @@ const RecipePage: NextPage<RecipeProps> = ({ recipe }) => {
             >
               {title}
             </div>
-            <div className="inline-flex items-center mt-3">
+            <div className="mt-3 w-full flex align-middle">
               <Link href="/[username]" as={`/${username}`}>
-                <a>
+                <a className="flex align-middle w-full">
                   <img
                     src={PROFILE}
-                    className="h-8 m-auto cursor-pointer rounded-full"
+                    className="h-8 cursor-pointer rounded-full"
                   />
-                  <span className="mx-2">
-                    {by.username || <Skeleton width={40} />}
+                  <span className="self-center ml-2">
+                    {username || <Skeleton width={40} />}
                   </span>
                 </a>
               </Link>
               {onOwnRecipe ? (
-                <div className="m-2">
+                <div className="">
                   <Link
                     href="/[username]/[recipehandle]/edit"
                     as={`/${username}/${handle}/edit`}
@@ -198,8 +198,8 @@ const RecipePage: NextPage<RecipeProps> = ({ recipe }) => {
           </div>
           {activeStep < 0 ? (
             <React.Fragment>
-              <div className=" grid items-center p-2 w-full h-full m-auto">
-                <img className="p-4  m-auto" src={IMAGE} />
+              <div className=" grid items-center p-2 w-full h-full opacity-25 m-auto">
+                <img className="m-auto" src={IMAGE} />
               </div>
               <div className=" w-full my-4 h-full rounded ">
                 <div className="h-full w-full text-2xl text-gray-700 p-4 ">
@@ -248,31 +248,29 @@ const RecipePage: NextPage<RecipeProps> = ({ recipe }) => {
               updateActiveStep={updateActiveStep}
             />
           ))}
-        </div>
-      </div>
-      <div className="grid grid-cols-2 items-center">
-        <div
-          className={
-            (!!commentsOpen ? 'opacity-100' : '') +
-            ' cursor-pointer text-2xl ml-4 opacity-25'
-          }
-          onClick={() => setCommentsOpen(!commentsOpen)}
-        >
-          Comments
-        </div>
-        <div className="flex justify-end  ">
-          <img
-            className="h-8 mx-4 my-2 cursor-pointer"
-            src={!!saved ? SAVE_COLOR : SAVE_BW}
-            onClick={() => setSaved(!saved)}
-          />
-          <img
-            className="h-8 mx-4 my-2 cursor-pointer"
-            src={!!liked ? LIKE_COLOR : LIKE_BW}
-            onClick={() => setLiked(!liked)}
-          />
-        </div>
-      </div>
+          <div className="grid grid-cols-2 items-center">
+            <div
+              className={
+                (!!commentsOpen ? 'opacity-100' : '') +
+                ' cursor-pointer text-2xl  opacity-25'
+              }
+              onClick={() => setCommentsOpen(!commentsOpen)}
+            >
+              Comments
+            </div>
+            <div className="flex justify-end  ">
+              <img
+                className="h-8 mr-4 my-2 cursor-pointer"
+                src={!!saved ? SAVE_COLOR : SAVE_BW}
+                onClick={() => setSaved(!saved)}
+              />
+              <img
+                className="h-8 ml-4 my-2 cursor-pointer"
+                src={!!liked ? LIKE_COLOR : LIKE_BW}
+                onClick={() => setLiked(!liked)}
+              />
+            </div>
+          </div>
 
       <Collapse
         isOpen={commentsOpen}
@@ -287,6 +285,7 @@ const RecipePage: NextPage<RecipeProps> = ({ recipe }) => {
           />
         )}
       </Collapse>
+
     </React.Fragment>
   )
 }

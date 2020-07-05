@@ -10,6 +10,10 @@ export interface ShortRecipeNodeType {
   handle: string
   description: string
   servings: number
+  reactionCount: number
+  commentCount: number
+  haveISaved: boolean | null
+  myReaction: 0 | 1 | null // update this as more reaction types are added
 }
 
 export const recipeConnectionNodeInit: ShortRecipeNodeType = {
@@ -21,6 +25,10 @@ export const recipeConnectionNodeInit: ShortRecipeNodeType = {
   handle: '',
   description: '',
   servings: 0,
+  reactionCount: 0,
+  commentCount: 0,
+  haveISaved: null,
+  myReaction: null,
 }
 
 export interface AllRecipesVarsType {
@@ -45,6 +53,10 @@ export const ALL_RECIPES = gql`
           handle
           description
           servings
+          reactionCount
+          commentCount
+          haveISaved
+          myReaction
         }
       }
     }

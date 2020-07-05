@@ -313,11 +313,14 @@ export const getServerSideProps: GetServerSideProps = async (ctx) => {
         },
       })
       .then((res) => {
+        if (res.errors) {
+          throw res.errors
+        }
         return res.data
       })
-
     return { props: { recipe: data } }
   } catch (err) {
+    console.log('err', err)
     // handle error - probably put honeybadger here or something
     return { props: { recipe: null } }
   }

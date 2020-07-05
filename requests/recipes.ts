@@ -31,6 +31,31 @@ export const recipeConnectionNodeInit: ShortRecipeNodeType = {
   myReaction: null,
 }
 
+export const RECIPE_SHORT_FRAGMENT = gql`
+  fragment recipeShortAttributes on Recipe {
+    pageInfo {
+      hasNextPage
+    }
+    edges {
+      cursor
+      node {
+        id
+        by {
+          username
+        }
+        title
+        handle
+        description
+        servings
+        reactionCount
+        commentCount
+        haveISaved
+        myReaction
+      }
+    }
+  }
+`
+
 export interface AllRecipesVarsType {
   cursor: string | null
 }
@@ -39,27 +64,8 @@ export interface AllRecipesVarsType {
 export const ALL_RECIPES = gql`
   query getAllRecipes($cursor: String) {
     connection: allRecipes(first: 10, after: $cursor) {
-      pageInfo {
-        hasNextPage
-      }
-      edges {
-        cursor
-        node {
-          id
-          by {
-            username
-          }
-          title
-          handle
-          description
-          servings
-          reactionCount
-          commentCount
-          haveISaved
-          myReaction
-        }
-      }
-    }
+      ...recipeShortAttributes
+    } ${RECIPE_SHORT_FRAGMENT}
   }
 `
 export interface UserRecipeFeedVarsType {
@@ -69,23 +75,8 @@ export const USER_RECIPES_FEED = gql`
   query recipeFeed($cursor: String) {
     result: me {
       connection: recipeFeed(first: 10, after: $cursor) {
-        pageInfo {
-          hasNextPage
-        }
-        edges {
-          cursor
-          node {
-            id
-            by {
-              username
-            }
-            title
-            handle
-            description
-            servings
-          }
-        }
-      }
+          ...recipeShortAttributes
+      } ${RECIPE_SHORT_FRAGMENT}
     }
   }
 `

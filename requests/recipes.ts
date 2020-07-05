@@ -65,8 +65,9 @@ export const ALL_RECIPES = gql`
   query getAllRecipes($cursor: String) {
     connection: allRecipes(first: 10, after: $cursor) {
       ...recipeShortAttributes
-    } ${RECIPE_SHORT_FRAGMENT}
+    }
   }
+  ${RECIPE_SHORT_FRAGMENT}
 `
 export interface UserRecipeFeedVarsType {
   cursor: string | null
@@ -75,10 +76,11 @@ export const USER_RECIPES_FEED = gql`
   query recipeFeed($cursor: String) {
     result: me {
       connection: recipeFeed(first: 10, after: $cursor) {
-          ...recipeShortAttributes
-      } ${RECIPE_SHORT_FRAGMENT}
+        ...recipeShortAttributes
+      }
     }
   }
+  ${RECIPE_SHORT_FRAGMENT}
 `
 
 // uses same return type as UserRecipeFeedData
@@ -198,8 +200,8 @@ export const RECIPE_BY_USERNAME_AND_HANDLE = gql`
     result: recipeBy(username: $username, handle: $handle) {
       ...recipeFullAttributes
     }
-    ${RECIPE_FULL_FRAGMENT}
   }
+  ${RECIPE_FULL_FRAGMENT}
 `
 
 export interface RecipeByIdVarsType {
@@ -210,8 +212,8 @@ export const RECIPE_BY_ID = gql`
     result: recipeBy(id: $id) {
       ...recipeFullAttributes
     }
-    ${RECIPE_FULL_FRAGMENT}
   }
+  ${RECIPE_FULL_FRAGMENT}
 `
 
 //NEW RECIPE

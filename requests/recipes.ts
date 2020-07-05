@@ -1,5 +1,7 @@
 import gql from 'graphql-tag'
 
+import { ReactionType } from 'requests/reactions'
+
 //GET RECIPE
 export interface ShortRecipeNodeType {
   id: string
@@ -13,7 +15,7 @@ export interface ShortRecipeNodeType {
   reactionCount: number
   commentCount: number
   haveISaved: boolean | null
-  myReaction: 0 | 1 | null // update this as more reaction types are added
+  myReaction: ReactionType
 }
 
 export const recipeConnectionNodeInit: ShortRecipeNodeType = {

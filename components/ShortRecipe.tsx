@@ -6,7 +6,7 @@ import Collapse from '@kunukn/react-collapse'
 import { EdgeType } from 'components/InfiniteScroll'
 import { ShortRecipeNodeType } from 'requests/recipes'
 import RecipeComments from 'components/comments/RecipeComments'
-import { setYumHandler } from 'helpers/user-interactions'
+import { setYumHandler, setRecipeSavedHandler } from 'helpers/user-interactions'
 import UserContext from 'helpers/UserContext'
 
 const IMAGE = require('images/food/fish-placeholder.jpg')
@@ -84,7 +84,7 @@ const ShortRecipe: React.FC<ShortRecipeProps> = ({ edge }) => {
             <img
               className="h-8 mx-4 my-2 cursor-pointer"
               src={!!saved ? SAVE_COLOR : SAVE_BW}
-              onClick={() => setSaved(!saved)}
+              onClick={() => setRecipeSavedHandler(id, saved, setSaved)}
             />
             <img
               className="h-8 mx-4 my-2 cursor-pointer"

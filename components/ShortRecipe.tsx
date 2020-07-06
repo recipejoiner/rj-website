@@ -8,7 +8,7 @@ import { ShortRecipeNodeType } from 'requests/recipes'
 import RecipeComments from 'components/comments/RecipeComments'
 import { setReaction } from 'requests/reactions'
 
-const IMAGE = require('images/icons/add.svg')
+const IMAGE = require('images/food/fish-placeholder.jpg')
 const LIKE_BW = require('images/icons/yummy_bw.svg')
 const SAVE_BW = require('images/icons/cookbook_bw.svg')
 const LIKE_COLOR = require('images/icons/yummy_color.svg')
@@ -57,7 +57,7 @@ const ShortRecipe: React.FC<ShortRecipeProps> = ({ edge }) => {
             </Link>
           </div>
         </div>
-        <div className=" grid items-center p-2 w-full h-full opacity-25 m-auto">
+        <div className=" grid items-center p-2 w-full h-full  m-auto">
           <img className="m-auto" src={IMAGE} />
         </div>
         <div className="h-full w-full text-2xl text-gray-700 p-4 ">

@@ -7,7 +7,7 @@ import { ParsedUrlQuery } from 'querystring'
 import Skeleton from 'react-loading-skeleton'
 import UserContext from 'helpers/UserContext'
 import Collapse from '@kunukn/react-collapse'
-
+import { CSSTransitionGroup } from 'react-transition-group'
 import {
   RecipeType,
   RecipeStepType,
@@ -18,15 +18,17 @@ import { toMixedNumber } from 'helpers/methods'
 import client from 'requests/client'
 import RecipeComments from 'components/comments/RecipeComments'
 import { getToken } from 'helpers/auth'
+import { UserReaction } from 'helpers/UserInteractions'
 
-const IMAGE = require('images/icons/add.svg')
+const IMAGE = require('images/food/fish-placeholder.jpg')
 const TIME = require('images/icons/alarm-clock.svg')
 const SERVINGS = require('images/icons/hot-food.svg')
 const PROFILE = require('images/chef-rj.svg')
-const LIKE_BW = require('images/icons/yummy_bw.svg')
+const YUM_BW = require('images/icons/yummy_bw.svg')
 const SAVE_BW = require('images/icons/cookbook_bw.svg')
-const LIKE_COLOR = require('images/icons/yummy_color.svg')
+const YUM_COLOR = require('images/icons/yummy_color.svg')
 const SAVE_COLOR = require('images/icons/cookbook_color.svg')
+const INGREDIENTS = require('images/icons/shopping-bag.svg')
 
 const minutesToTime = (totalMinutes: number) => {
   return { hours: Math.floor(totalMinutes / 60), minutes: totalMinutes % 60 }
@@ -46,12 +48,14 @@ const Ingredient: React.FC<{ ingredient: IngredientType }> = ({
   ingredient,
 }) => {
   return (
-    <div className="grid grid-cols-6 gap-4">
-      <span className="col-span-3 border-black border-b-2">
+    <div className="my-2 p-2  grid grid-cols-2 gap-4 items-center">
+      <span className="text-lg capitalize">
         {ingredient.ingredientInfo.name}
       </span>
-      <span className="">{toMixedNumber(ingredient.quantity)}</span>
-      <span className="col-span-2">{ingredient.unit.name}</span>
+      <div className="grid grid-rows-2 text-center">
+        <span className="text-lg">{toMixedNumber(ingredient.quantity)}</span>
+        <span className="text-sm">{ingredient.unit.name}</span>
+      </div>
     </div>
   )
 }
@@ -61,21 +65,30 @@ const Step: React.FC<StepProps> = ({ step, activeStep, updateActiveStep }) => {
 
   return (
     <React.Fragment>
-      {stepNum !== activeStep ? (
+      {/* {stepNum !== activeStep ? ( */}
+      <Collapse
+        isOpen={stepNum !== activeStep}
+        transition={`height 500ms cubic-bezier(.4, 0, .2, 1)`}
+      >
         <div
           className="hover:scale-95 transform ease-in duration-200 w-full my-2 cursor-pointer "
           onClick={() => updateActiveStep(stepNum)}
         >
-          <div className="grid grid-cols-12 border-black border border-b-2 text-xl p-4 rounded-lg ">
-            <span className="col-span-2 text-2xl m-auto border-black border-b-2 text-center">
-              {stepNum + 1}
+          <div className="grid grid-cols-12 border-black border border-b-2 text-xl p4 rounded-lg ">
+            <span className="bg-black  flex col-span-2 text-2xl h-full w-full text-white m-auto rounded rounded-r-none border-black border-b-2  ">
+              <span className="m-auto">{stepNum + 1}</span>
             </span>
-            <span className="col-span-10 bg-white my-auto rounded m-1">
+            <span className="col-span-10 bg-white my-auto p-4 rounded m-1">
               {stepTitle}
             </span>
           </div>
         </div>
-      ) : (
+      </Collapse>
+      {/* ) : ( */}
+      <Collapse
+        isOpen={stepNum === activeStep}
+        transition={`height 1000ms cubic-bezier(.4, 0, .2, 1)`}
+      >
         <div className="w-full my-2">
           <div className=" grid items-center p-2 w-full h-full m-auto">
             <img className="p-4  m-auto" src={IMAGE} />
@@ -89,16 +102,17 @@ const Step: React.FC<StepProps> = ({ step, activeStep, updateActiveStep }) => {
             </span>
             <div>{stepTitle}</div>
           </div>
-          <div>
+          <div className="border-gray-600 border rounded">
             {ingredients.map((ing) => (
               <Ingredient ingredient={ing} />
             ))}
           </div>
-          <div className="w-full h-full border-black border rounded p-2 my-4">
+          <div className="w-full h-full text-xl rounded p-2 my-4">
             {additionalInfo}
           </div>
         </div>
-      )}
+      </Collapse>
+      {/* )} */}
     </React.Fragment>
   )
 }
@@ -114,6 +128,10 @@ const RecipePage: NextPage<RecipeProps> = ({ recipe }) => {
     title,
     recipeTime,
     ingredients,
+    reactionCount,
+    commentCount,
+    haveISaved,
+    myReaction,
   } = recipe.result || {}
   const { username } = by || {}
 
@@ -121,8 +139,8 @@ const RecipePage: NextPage<RecipeProps> = ({ recipe }) => {
   const [activeStep, setActiveStep] = React.useState(-1)
   const { currentUserInfo } = React.useContext(UserContext)
   const [commentsOpen, setCommentsOpen] = React.useState(false)
-  const [liked, setLiked] = React.useState(false)
-  const [saved, setSaved] = React.useState(false)
+  const [reaction, setReaction] = React.useState(myReaction)
+  const [saved, setSaved] = React.useState(haveISaved)
   if (
     currentUserInfo &&
     !onOwnRecipe &&
@@ -131,11 +149,25 @@ const RecipePage: NextPage<RecipeProps> = ({ recipe }) => {
     setOnOwnRecipe(true)
   }
 
+  console.log(recipe)
   const updateActiveStep = (stepNum?: number) => {
     stepNum = stepNum !== undefined && stepNum >= 0 ? stepNum : -1
     setActiveStep(stepNum)
   }
 
+  const handleSave = () => {
+    setSaved(!saved)
+  }
+
+  const handleReaction = () => {
+    setReaction(reaction === 0 ? null : 0)
+
+    // UserReaction({
+    //   reactableType: 'Comment',
+    //   reactableId: id,
+    //   reactionType: reaction,
+    // })
+  }
   const pageTitle = `${title || 'a recipe'}, by ${
     by ? by.username : 'rj'
   } - RecipeJoiner`
@@ -167,7 +199,7 @@ const RecipePage: NextPage<RecipeProps> = ({ recipe }) => {
         <div className=" mx-auto mt-1 p-6 bg-white rounded-lg shadow-xl border-black border">
           <div className="m-2 mb-8 ">
             <div
-              className=" bg-transparent cursor-pointer w-full text-5xl text-gray-700  py-1 leading-tight focus:outline-none  border-b-2 border-black"
+              className=" bg-transparent cursor-pointer w-full text-3xl lg:text-5xl text-gray-700  py-1 leading-tight focus:outline-none  border-b-2 border-black"
               onClick={() => updateActiveStep()}
             >
               {title}
@@ -179,7 +211,7 @@ const RecipePage: NextPage<RecipeProps> = ({ recipe }) => {
                     src={PROFILE}
                     className="h-8 cursor-pointer rounded-full"
                   />
-                  <span className="self-center ml-2">
+                  <span className="self-center ml-2 text-sm">
                     {username || <Skeleton width={40} />}
                   </span>
                 </a>
@@ -190,45 +222,52 @@ const RecipePage: NextPage<RecipeProps> = ({ recipe }) => {
                     href="/[username]/[recipehandle]/edit"
                     as={`/${username}/${handle}/edit`}
                   >
-                    <a className="w-28 m-auto btn">Edit</a>
+                    <a className="w-28 m-auto btn text-sm font-normal">Edit</a>
                   </Link>
                 </div>
               ) : null}
             </div>
           </div>
-          {activeStep < 0 ? (
-            <React.Fragment>
-              <div className=" grid items-center p-2 w-full h-full opacity-25 m-auto">
+          <Collapse
+            isOpen={activeStep < 0}
+            transition={`height 500ms cubic-bezier(.4, 0, .2, 1)`}
+          >
+            <div key="overview">
+              <div className=" grid items-center p-2 w-full h-full  m-auto">
                 <img className="m-auto" src={IMAGE} />
               </div>
               <div className=" w-full my-4 h-full rounded ">
-                <div className="h-full w-full text-2xl text-gray-700 p-4 ">
+                <div className="h-full w-full text-xl text-gray-700 p-4 ">
                   {description}
                 </div>
               </div>
               <div className="grid grid-cols-2">
                 <div className="grid grid-rows-2 p-2 rounded text-center text-xs ">
                   <img src={TIME} className="h-8 m-auto rounded" />
-                  <div className="w-full text-center grid grid-cols-2 justify-center rounded">
-                    <div className="text-xl w-full m-auto border border-black text-center col-span-2  grid grid-cols-2 rounded">
-                      <span>{minutesToTime(recipeTime).hours || '0'}</span>
-                      <span>{minutesToTime(recipeTime).minutes || '0'}</span>
+                  <div className="w-full text-center grid grid-cols-2 justify-center p-1 rounded">
+                    <div className="text-xl w-full m-auto border border-black text-center col-span-2 grid grid-cols-2 rounded">
+                      <span className="text-right">
+                        {minutesToTime(recipeTime).hours || '0'}:
+                      </span>
+                      <span className="text-left">
+                        {minutesToTime(recipeTime).minutes || '0'}
+                      </span>
                     </div>
-                    <span className="text-xs">Hour</span>
-                    <span className="text-xs">Minutes</span>
+                    {/* <span className="text-xs">Hour</span>
+                    <span className="text-xs">Minutes</span> */}
                   </div>
                 </div>
                 <div className="grid  grid-rows-2 p-2 rounded text-center text-xs ">
                   <img src={SERVINGS} className="h-8 m-auto rounded" />
-                  <div className="w-full text-center justify-center rounded">
+                  <div className="w-full text-center justify-center rounded p-1">
                     <div className="text-xl w-full m-auto border border-black text-center  rounded">
                       {servings}
                     </div>
-                    Servings
+                    {/* Servings */}
                   </div>
                 </div>
               </div>
-              <div className="border-black border rounded p-2 my-2">
+              <div className="border-black border rounded  my-2">
                 {ingredients.map((ing: IngredientType) => (
                   <Ingredient
                     key={`${ing.ingredientInfo.name}${ing.quantity}`}
@@ -236,18 +275,18 @@ const RecipePage: NextPage<RecipeProps> = ({ recipe }) => {
                   />
                 ))}
               </div>
-            </React.Fragment>
-          ) : (
-            ''
-          )}
-          {steps.map((step) => (
-            <Step
-              key={step.stepNum}
-              step={step}
-              activeStep={activeStep}
-              updateActiveStep={updateActiveStep}
-            />
-          ))}
+            </div>
+          </Collapse>
+          <div className="my-4">
+            {steps.map((step) => (
+              <Step
+                key={step.stepNum}
+                step={step}
+                activeStep={activeStep}
+                updateActiveStep={updateActiveStep}
+              />
+            ))}
+          </div>
           <div className="grid grid-cols-2 items-center">
             <div
               className={
@@ -262,12 +301,12 @@ const RecipePage: NextPage<RecipeProps> = ({ recipe }) => {
               <img
                 className="h-8 mr-4 my-2 cursor-pointer"
                 src={!!saved ? SAVE_COLOR : SAVE_BW}
-                onClick={() => setSaved(!saved)}
+                onClick={handleSave}
               />
               <img
                 className="h-8 ml-4 my-2 cursor-pointer"
-                src={!!liked ? LIKE_COLOR : LIKE_BW}
-                onClick={() => setLiked(!liked)}
+                src={reaction != null ? YUM_COLOR : YUM_BW}
+                onClick={handleReaction}
               />
             </div>
           </div>

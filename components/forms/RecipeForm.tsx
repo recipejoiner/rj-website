@@ -195,9 +195,10 @@ const RecipeStepMode: React.FC<RecipeStepProps> = ({
   const currentStep = step
 
   const validateQuantity = (value: string) => {
-    const match = value
-      ? value.match(/[0-9]+[ ]?([1-9]{1}([\/]?)[0-9]{0,2})?/)
-      : ''
+    const match =
+      value && typeof value == 'string'
+        ? value.match(/[0-9]+[ ]?([1-9]{1}([\/]?)[0-9]{0,2})?/)
+        : ''
     return match?.length ? match[0] : ''
   }
   const updateValue = (name: string, value: string, id?: string) => {
@@ -651,9 +652,10 @@ const RecipeForm: React.FC<RecipeFormProps> = ({
         break
       case 'isRealNumber':
         console.log(value)
-        let match = value
-          ? value.match(/[0-9]+([ ]{1}[1-9]{1}([\/]{1})[0-9]{1,2})?/)
-          : ''
+        let match =
+          value && typeof value == 'string'
+            ? value.match(/[0-9]+([ ]{1}[1-9]{1}([\/]{1})[0-9]{1,2})?/)
+            : ''
         if (!value || (match && match[0] !== value)) {
           createError(
             errorKey,

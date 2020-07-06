@@ -55,6 +55,7 @@
     "react-modal": "^3.11.2",
     "react-select": "^3.1.0",
     "react-textarea-autosize": "^8.0.1",
+    "react-transition-group": "^1.2.1",
     "react-with-forwarded-ref": "^0.3.1",
     "responsive-loader": "^1.2.0",
     "sharp": "^0.25.3",

@@ -34,7 +34,7 @@ export const recipeConnectionNodeInit: ShortRecipeNodeType = {
 }
 
 export const RECIPE_SHORT_FRAGMENT = gql`
-  fragment recipeShortAttributes on Recipe {
+  fragment recipeShortAttributes on RecipeConnection {
     pageInfo {
       hasNextPage
     }
@@ -94,25 +94,11 @@ export const ALL_USER_RECIPES_BY_USERNAME = gql`
   query userRecipesByUsername($username: String!, $cursor: String) {
     result: userByUsername(username: $username) {
       connection: recipes(first: 10, after: $cursor) {
-        pageInfo {
-          hasNextPage
-        }
-        edges {
-          cursor
-          node {
-            id
-            by {
-              username
-            }
-            title
-            handle
-            description
-            servings
-          }
-        }
+        ...recipeShortAttributes
       }
     }
   }
+  ${RECIPE_SHORT_FRAGMENT}
 `
 
 export interface IngredientType {

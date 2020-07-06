@@ -7,7 +7,7 @@ import { ParsedUrlQuery } from 'querystring'
 import Skeleton from 'react-loading-skeleton'
 import UserContext from 'helpers/UserContext'
 import Collapse from '@kunukn/react-collapse'
-import { CSSTransitionGroup } from 'react-transition-group'
+
 import {
   RecipeType,
   RecipeStepType,

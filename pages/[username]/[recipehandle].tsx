@@ -5,7 +5,6 @@ import { NextPage } from 'next'
 import { GetServerSideProps } from 'next'
 import { ParsedUrlQuery } from 'querystring'
 import Skeleton from 'react-loading-skeleton'
-import UserContext from 'helpers/UserContext'
 import Collapse from '@kunukn/react-collapse'
 
 import {
@@ -18,7 +17,8 @@ import { toMixedNumber } from 'helpers/methods'
 import client from 'requests/client'
 import RecipeComments from 'components/comments/RecipeComments'
 import { getToken } from 'helpers/auth'
-import { setReaction } from 'helpers/user-interactions'
+import { setYumHandler } from 'helpers/user-interactions'
+import UserContext from 'helpers/UserContext'
 
 const IMAGE = require('images/food/fish-placeholder.jpg')
 const TIME = require('images/icons/alarm-clock.svg')
@@ -137,9 +137,11 @@ const RecipePage: NextPage<RecipeProps> = ({ recipe }) => {
 
   const [onOwnRecipe, setOnOwnRecipe] = React.useState(false)
   const [activeStep, setActiveStep] = React.useState(-1)
-  const { currentUserInfo } = React.useContext(UserContext)
+  const { currentUserInfo, modalOpen, setModalState } = React.useContext(
+    UserContext
+  )
   const [commentsOpen, setCommentsOpen] = React.useState(false)
-  const [reaction, setReaction] = React.useState(myReaction)
+  const [recipeReaction, setRecipeReaction] = React.useState(myReaction)
   const [saved, setSaved] = React.useState(haveISaved)
   if (
     currentUserInfo &&
@@ -159,15 +161,6 @@ const RecipePage: NextPage<RecipeProps> = ({ recipe }) => {
     setSaved(!saved)
   }
 
-  const handleReaction = () => {
-    setReaction(reaction === 0 ? null : 0)
-
-    // UserReaction({
-    //   reactableType: 'Comment',
-    //   reactableId: id,
-    //   reactionType: reaction,
-    // })
-  }
   const pageTitle = `${title || 'a recipe'}, by ${
     by ? by.username : 'rj'
   } - RecipeJoiner`
@@ -305,8 +298,15 @@ const RecipePage: NextPage<RecipeProps> = ({ recipe }) => {
               />
               <img
                 className="h-8 ml-4 my-2 cursor-pointer"
-                src={reaction != null ? YUM_COLOR : YUM_BW}
-                onClick={handleReaction}
+                src={recipeReaction != null ? YUM_COLOR : YUM_BW}
+                onClick={() =>
+                  setYumHandler(
+                    currentUserInfo,
+                    id,
+                    recipeReaction,
+                    setRecipeReaction
+                  )
+                }
               />
             </div>
           </div>

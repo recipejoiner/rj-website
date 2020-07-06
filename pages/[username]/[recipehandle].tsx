@@ -17,7 +17,7 @@ import { toMixedNumber } from 'helpers/methods'
 import client from 'requests/client'
 import RecipeComments from 'components/comments/RecipeComments'
 import { getToken } from 'helpers/auth'
-import { setYumHandler } from 'helpers/user-interactions'
+import { setYumHandler, setRecipeSavedHandler } from 'helpers/user-interactions'
 import UserContext from 'helpers/UserContext'
 
 const IMAGE = require('images/food/fish-placeholder.jpg')
@@ -158,7 +158,7 @@ const RecipePage: NextPage<RecipeProps> = ({ recipe }) => {
   }
 
   const handleSave = () => {
-    setSaved(!saved)
+    setRecipeSavedHandler(id, saved, setSaved)
   }
 
   const pageTitle = `${title || 'a recipe'}, by ${

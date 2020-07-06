@@ -5,6 +5,8 @@ import Skeleton from 'react-loading-skeleton'
 import { EdgeType } from 'components/InfiniteScroll'
 import { ShortRecipeNodeType } from 'requests/recipes'
 import RecipeComments from 'components/comments/RecipeComments'
+import { setReaction } from 'requests/reactions'
+
 const IMAGE = require('images/icons/add.svg')
 const LIKE_BW = require('images/icons/yummy_bw.svg')
 const SAVE_BW = require('images/icons/cookbook_bw.svg')
@@ -18,10 +20,19 @@ interface ShortRecipeProps {
 
 const ShortRecipe: React.FC<ShortRecipeProps> = ({ edge }) => {
   const [commentsOpen, setCommentsOpen] = React.useState(false)
-  const [liked, setLiked] = React.useState(false)
-  const [saved, setSaved] = React.useState(false)
   const { node } = edge
-  const { id, by, title, description, servings, handle } = node || {}
+  const {
+    id,
+    by,
+    title,
+    description,
+    servings,
+    handle,
+    haveISaved,
+    myReaction,
+  } = node || {}
+  const [recipeReaction, setRecipeReaction] = React.useState(myReaction)
+  const [saved, setSaved] = React.useState(haveISaved)
   let { username } = by || {}
   return (
     <div className="max-w-md mx-auto font-mono">
@@ -70,8 +81,23 @@ const ShortRecipe: React.FC<ShortRecipeProps> = ({ edge }) => {
             />
             <img
               className="h-8 mx-4 my-2 cursor-pointer"
-              src={!!liked ? LIKE_COLOR : LIKE_BW}
-              onClick={() => setLiked(!liked)}
+              src={recipeReaction === 0 ? LIKE_COLOR : LIKE_BW}
+              onClick={() =>
+                setReaction(
+                  {
+                    reactableId: id,
+                    reactableType: 'Recipe',
+                    reactionType: recipeReaction === 0 ? null : 0,
+                  },
+                  (result) => {
+                    if ('result' in result) {
+                      setRecipeReaction(result.result.reaction)
+                    } else {
+                      console.log('error', result)
+                    }
+                  }
+                )
+              }
             />
           </div>
         </div>

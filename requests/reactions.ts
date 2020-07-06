@@ -51,6 +51,7 @@ export const setReaction = (
       },
     })
     .then((res) => {
+      console.log('res', res)
       if (res.errors) {
         callback(res.errors)
       }

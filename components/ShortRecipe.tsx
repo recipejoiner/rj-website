@@ -33,6 +33,22 @@ const ShortRecipe: React.FC<ShortRecipeProps> = ({ edge }) => {
     myReaction,
   } = node || {}
   const [recipeReaction, setRecipeReaction] = React.useState(myReaction)
+  const reactionHandler = () =>
+    setReaction(
+      {
+        reactableId: id,
+        reactableType: 'Recipe',
+        reactionType: recipeReaction === 0 ? null : 0,
+      },
+      (result) => {
+        if ('result' in result) {
+          setRecipeReaction(result.result.reaction)
+        } else {
+          console.log('error', result)
+        }
+      }
+    )
+
   const [saved, setSaved] = React.useState(haveISaved)
   let { username } = by || {}
   return (
@@ -82,22 +98,7 @@ const ShortRecipe: React.FC<ShortRecipeProps> = ({ edge }) => {
             <img
               className="h-8 mx-4 my-2 cursor-pointer"
               src={recipeReaction === 0 ? LIKE_COLOR : LIKE_BW}
-              onClick={() =>
-                setReaction(
-                  {
-                    reactableId: id,
-                    reactableType: 'Recipe',
-                    reactionType: recipeReaction === 0 ? null : 0,
-                  },
-                  (result) => {
-                    if ('result' in result) {
-                      setRecipeReaction(result.result.reaction)
-                    } else {
-                      console.log('error', result)
-                    }
-                  }
-                )
-              }
+              onClick={reactionHandler}
             />
           </div>
         </div>

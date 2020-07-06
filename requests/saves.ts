@@ -12,7 +12,7 @@ export interface SetSavedVarsType {
 }
 export const SET_OBJECT_SAVED = gql`
   mutation setObjectSaved(
-    $savableType: String!
+    $saveableType: String!
     $saveableId: ID!
     $savedState: Boolean!
   ) {

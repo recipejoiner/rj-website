@@ -7,6 +7,7 @@ import { EdgeType } from 'components/InfiniteScroll'
 import { ShortRecipeNodeType } from 'requests/recipes'
 import RecipeComments from 'components/comments/RecipeComments'
 import { setReaction } from 'helpers/user-interactions'
+import UserContext from 'helpers/UserContext'
 
 const IMAGE = require('images/food/fish-placeholder.jpg')
 const LIKE_BW = require('images/icons/yummy_bw.svg')
@@ -32,22 +33,30 @@ const ShortRecipe: React.FC<ShortRecipeProps> = ({ edge }) => {
     haveISaved,
     myReaction,
   } = node || {}
+  const { currentUserInfo, modalOpen, setModalState } = React.useContext(
+    UserContext
+  )
   const [recipeReaction, setRecipeReaction] = React.useState(myReaction)
-  const reactionHandler = () =>
-    setReaction(
-      {
-        reactableId: id,
-        reactableType: 'Recipe',
-        reactionType: recipeReaction === 0 ? null : 0,
-      },
-      (result) => {
-        if ('result' in result) {
-          setRecipeReaction(result.result.reaction)
-        } else {
-          console.log('error', result)
+  const reactionHandler = () => {
+    if (currentUserInfo) {
+      setReaction(
+        {
+          reactableId: id,
+          reactableType: 'Recipe',
+          reactionType: recipeReaction === 0 ? null : 0,
+        },
+        (result) => {
+          if ('result' in result) {
+            setRecipeReaction(result.result.reaction)
+          } else {
+            console.log('error', result)
+          }
         }
-      }
-    )
+      )
+    } else {
+      console.log('You need to log in or sign up!')
+    }
+  }
 
   const [saved, setSaved] = React.useState(haveISaved)
   let { username } = by || {}

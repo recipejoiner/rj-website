@@ -6,7 +6,7 @@ import Collapse from '@kunukn/react-collapse'
 import { EdgeType } from 'components/InfiniteScroll'
 import { ShortRecipeNodeType } from 'requests/recipes'
 import RecipeComments from 'components/comments/RecipeComments'
-import { setReaction } from 'helpers/user-interactions'
+import { setYumHandler } from 'helpers/user-interactions'
 import UserContext from 'helpers/UserContext'
 
 const IMAGE = require('images/food/fish-placeholder.jpg')
@@ -33,30 +33,12 @@ const ShortRecipe: React.FC<ShortRecipeProps> = ({ edge }) => {
     haveISaved,
     myReaction,
   } = node || {}
+
   const { currentUserInfo, modalOpen, setModalState } = React.useContext(
     UserContext
   )
+
   const [recipeReaction, setRecipeReaction] = React.useState(myReaction)
-  const reactionHandler = () => {
-    if (currentUserInfo) {
-      setReaction(
-        {
-          reactableId: id,
-          reactableType: 'Recipe',
-          reactionType: recipeReaction === 0 ? null : 0,
-        },
-        (result) => {
-          if ('result' in result) {
-            setRecipeReaction(result.result.reaction)
-          } else {
-            console.log('error', result)
-          }
-        }
-      )
-    } else {
-      console.log('You need to log in or sign up!')
-    }
-  }
 
   const [saved, setSaved] = React.useState(haveISaved)
   let { username } = by || {}
@@ -107,7 +89,14 @@ const ShortRecipe: React.FC<ShortRecipeProps> = ({ edge }) => {
             <img
               className="h-8 mx-4 my-2 cursor-pointer"
               src={recipeReaction === 0 ? LIKE_COLOR : LIKE_BW}
-              onClick={reactionHandler}
+              onClick={() =>
+                setYumHandler(
+                  currentUserInfo,
+                  id,
+                  recipeReaction,
+                  setRecipeReaction
+                )
+              }
             />
           </div>
         </div>

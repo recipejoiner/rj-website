@@ -2,11 +2,11 @@ import client from 'requests/client'
 import { getToken } from 'helpers/auth'
 import {
   SET_OBJECT_REACTION,
-  SetReactionResultVarsType,
+  SetReactionVarsType,
   SetReactionResultType,
 } from 'requests/reactions'
 
-export const UserReaction = (variables: SetReactionResultVarsType) => {
+export const UserReaction = (variables: SetReactionVarsType) => {
   console.log('variables', variables)
   client
     .mutate({

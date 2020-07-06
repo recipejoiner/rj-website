@@ -6,7 +6,7 @@ import Collapse from '@kunukn/react-collapse'
 import { EdgeType } from 'components/InfiniteScroll'
 import { ShortRecipeNodeType } from 'requests/recipes'
 import RecipeComments from 'components/comments/RecipeComments'
-import { setReaction } from 'requests/reactions'
+import { setReaction } from 'helpers/user-interactions'
 
 const IMAGE = require('images/food/fish-placeholder.jpg')
 const LIKE_BW = require('images/icons/yummy_bw.svg')

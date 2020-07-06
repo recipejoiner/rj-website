@@ -18,7 +18,7 @@ import { toMixedNumber } from 'helpers/methods'
 import client from 'requests/client'
 import RecipeComments from 'components/comments/RecipeComments'
 import { getToken } from 'helpers/auth'
-import { UserReaction } from 'helpers/UserInteractions'
+import { setReaction } from 'helpers/user-interactions'
 
 const IMAGE = require('images/food/fish-placeholder.jpg')
 const TIME = require('images/icons/alarm-clock.svg')

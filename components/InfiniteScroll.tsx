@@ -100,6 +100,7 @@ const InfiniteScroll: React.FC<InfiniteScrollProps<any, any>> = ({
     typeof QueryVars
   >(QUERY, {
     client: client,
+    errorPolicy: 'all',
     variables: QueryVars,
     fetchPolicy: 'no-cache', // want the contents to be reloaded every time, and never cached
     context: {
@@ -181,7 +182,11 @@ const InfiniteScroll: React.FC<InfiniteScrollProps<any, any>> = ({
       window.innerHeight + window.scrollY >=
         document.body.offsetHeight - window.innerHeight
     ) {
-      onLoadMore()
+      const { result } = (infiniteScrollData as QueryResultRes<any>) || {}
+      const { connection } = result || infiniteScrollData
+      if (connection.pageInfo.hasNextPage) {
+        onLoadMore()
+      }
     }
   }
 
@@ -222,15 +227,19 @@ const InfiniteScroll: React.FC<InfiniteScrollProps<any, any>> = ({
   const { connection } = result || infiniteScrollData
   const { edges, pageInfo } = connection
   const { hasNextPage } = pageInfo
+
+  if (error) {
+    console.log(error)
+  }
   return (
     <React.Fragment>
       <div id="_infinitescroll">
         {children(edges)}
-        {!hasNextPage ? (
+        {/* {!hasNextPage ? (
           <span className="block text-center text-gray-400 py-5">
             loaded all data
           </span>
-        ) : null}
+        ) : null} */}
       </div>
     </React.Fragment>
   )

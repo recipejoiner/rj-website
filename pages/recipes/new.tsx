@@ -1,6 +1,5 @@
 import Head from 'next/head'
 import { NextPage } from 'next'
-import { useForm } from 'react-hook-form'
 import * as React from 'react'
 import { GraphQLError } from 'graphql'
 
@@ -16,13 +15,6 @@ import {
   CREATE_RECIPE,
 } from 'requests/recipes'
 
-import {
-  TextFormItem,
-  NumFormItem,
-  TextAreaFormItem,
-  HiddenFormItem,
-} from 'components/forms/Fields'
-
 import RecipeForm from 'components/forms/RecipeForm'
 
 interface NewRecipePageProps {}
@@ -31,12 +23,8 @@ const NewRecipePage: NextPage<NewRecipePageProps> = ({}) => {
   const [newRecipeErrs, setNewRecipeErrs] = React.useState<
     readonly GraphQLError[]
   >([])
-
-  const { register, handleSubmit, watch, errors, control } = useForm<
-    CreateRecipeVars
-  >()
   // console.log('attributes', watch('attributes'))
-  const onSubmit = handleSubmit((variables: CreateRecipeVars) => {
+  const onSubmit = (variables: CreateRecipeVars) => {
     client
       .mutate({
         mutation: CREATE_RECIPE,
@@ -52,7 +40,7 @@ const NewRecipePage: NextPage<NewRecipePageProps> = ({}) => {
         const { data }: { data?: RecipeFormReturnType } = res || {}
         if (res.errors) {
           setNewRecipeErrs(res.errors)
-        } else if (data) {
+        } else if (!!data && !!data.mutation) {
           const { result } = data.mutation || {}
           const { by, handle } = result || {}
           const { username } = by || {}
@@ -66,7 +54,7 @@ const NewRecipePage: NextPage<NewRecipePageProps> = ({}) => {
         console.log(err)
         setNewRecipeErrs(err.graphQLErrors)
       })
-  })
+  }
 
   const title = 'New Recipe - RecipeJoiner'
   const description =
@@ -92,14 +80,7 @@ const NewRecipePage: NextPage<NewRecipePageProps> = ({}) => {
         />
         {/* OpenGraph tags end */}
       </Head>
-      <RecipeForm
-        register={register}
-        onSubmit={onSubmit}
-        watch={watch}
-        errors={errors}
-        control={control}
-        formTitle="Create a new recipe!"
-      />
+      <RecipeForm submit={onSubmit} serverErrors={newRecipeErrs} />
     </React.Fragment>
   )
 }

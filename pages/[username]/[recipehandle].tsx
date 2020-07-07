@@ -5,77 +5,160 @@ import { NextPage } from 'next'
 import { GetServerSideProps } from 'next'
 import { ParsedUrlQuery } from 'querystring'
 import Skeleton from 'react-loading-skeleton'
-import UserContext from 'helpers/UserContext'
+import Collapse from '@kunukn/react-collapse'
 
 import {
   RecipeType,
   RecipeStepType,
   RECIPE_BY_USERNAME_AND_HANDLE,
+  IngredientType,
 } from 'requests/recipes'
 import { toMixedNumber } from 'helpers/methods'
 import client from 'requests/client'
+import RecipeComments from 'components/comments/RecipeComments'
+import { getToken } from 'helpers/auth'
+import { setYumHandler, setRecipeSavedHandler } from 'helpers/user-interactions'
+import UserContext from 'helpers/UserContext'
+
+const IMAGE = require('images/food/fish-placeholder.jpg')
+const TIME = require('images/icons/alarm-clock.svg')
+const SERVINGS = require('images/icons/hot-food.svg')
+const PROFILE = require('images/chef-rj.svg')
+const YUM_BW = require('images/icons/yummy_bw.svg')
+const SAVE_BW = require('images/icons/cookbook_bw.svg')
+const YUM_COLOR = require('images/icons/yummy_color.svg')
+const SAVE_COLOR = require('images/icons/cookbook_color.svg')
+const INGREDIENTS = require('images/icons/shopping-bag.svg')
+
+const minutesToTime = (totalMinutes: number) => {
+  return { hours: Math.floor(totalMinutes / 60), minutes: totalMinutes % 60 }
+}
 
 interface RecipeProps {
   recipe: RecipeType
 }
 
 interface StepProps {
-  step?: RecipeStepType
+  step: RecipeStepType
+  activeStep: number
+  updateActiveStep: (stepNum?: number) => void
 }
-const Step: React.FC<StepProps> = ({ step }) => {
-  const { stepNum, stepTime, description, ingredients } = step || {}
+
+const Ingredient: React.FC<{ ingredient: IngredientType }> = ({
+  ingredient,
+}) => {
   return (
-    <li className="my-5">
-      <h3 className="header-2-text">
-        Step {stepNum || <Skeleton width={40} />}
-      </h3>
-      <span className="block text-sm">
-        About {stepTime || <Skeleton width={40} />} minutes
+    <div className="my-2 p-2  grid grid-cols-2 gap-4 items-center">
+      <span className="text-lg capitalize">
+        {ingredient.ingredientInfo.name}
       </span>
-      <div>
-        <h3 className="header-3-text">Ingredients</h3>
-        <ul className="p-1 pl-2">
-          {ingredients ? (
-            ingredients.length > 0 ? (
-              ingredients.map((ingredient) => {
-                return (
-                  <li key={ingredient.ingredientInfo.name} className="pb-2">
-                    <span className="block">
-                      <span>{toMixedNumber(ingredient.quantity)} </span>
-                      <span>{ingredient.unit.name} </span>
-                      <span>{ingredient.ingredientInfo.name}</span>
-                    </span>
-                  </li>
-                )
-              })
-            ) : (
-              <span className="text-sm">No ingredients!</span>
-            )
-          ) : (
-            <Skeleton />
-          )}
-        </ul>
+      <div className="grid grid-rows-2 text-center">
+        <span className="text-lg">{toMixedNumber(ingredient.quantity)}</span>
+        <span className="text-sm">{ingredient.unit.name}</span>
       </div>
-      <h3 className="header-3-text">Instructions</h3>
-      <p>{description || <Skeleton count={5} />}</p>
-    </li>
+    </div>
   )
 }
 
-const RecipePage: NextPage<RecipeProps> = (props) => {
-  const { recipe } = props
-  const { by, description, handle, id, steps, servings, title, ingredients } =
-    recipe?.result || {}
+const Step: React.FC<StepProps> = ({ step, activeStep, updateActiveStep }) => {
+  const { stepTitle, ingredients, additionalInfo, stepNum } = step || {}
+
+  return (
+    <React.Fragment>
+      {/* {stepNum !== activeStep ? ( */}
+      <Collapse
+        isOpen={stepNum !== activeStep}
+        transition={`height 500ms cubic-bezier(.4, 0, .2, 1)`}
+      >
+        <div
+          className="hover:scale-95 transform ease-in duration-200 w-full my-2 cursor-pointer "
+          onClick={() => updateActiveStep(stepNum)}
+        >
+          <div className="grid grid-cols-12 border-black border border-b-2 text-xl p4 rounded-lg ">
+            <span className="bg-black  flex col-span-2 text-2xl h-full w-full text-white m-auto rounded rounded-r-none border-black border-b-2  ">
+              <span className="m-auto">{stepNum + 1}</span>
+            </span>
+            <span className="col-span-10 bg-white my-auto p-4 rounded m-1">
+              {stepTitle}
+            </span>
+          </div>
+        </div>
+      </Collapse>
+      {/* ) : ( */}
+      <Collapse
+        isOpen={stepNum === activeStep}
+        transition={`height 1000ms cubic-bezier(.4, 0, .2, 1)`}
+      >
+        <div className="w-full my-2">
+          <div className=" grid items-center p-2 w-full h-full m-auto">
+            <img className="p-4  m-auto" src={IMAGE} />
+          </div>
+          <div className="grid grid-rows-2 col-span-2">
+            <span
+              className="text-4xl cursor-pointer"
+              onClick={() => updateActiveStep()}
+            >
+              Step {stepNum + 1}:
+            </span>
+            <div>{stepTitle}</div>
+          </div>
+          <div className="border-gray-600 border rounded">
+            {ingredients.map((ing) => (
+              <Ingredient ingredient={ing} />
+            ))}
+          </div>
+          <div className="w-full h-full text-xl rounded p-2 my-4">
+            {additionalInfo}
+          </div>
+        </div>
+      </Collapse>
+      {/* )} */}
+    </React.Fragment>
+  )
+}
+
+const RecipePage: NextPage<RecipeProps> = ({ recipe }) => {
+  const {
+    by,
+    description,
+    handle,
+    id,
+    steps,
+    servings,
+    title,
+    recipeTime,
+    ingredients,
+    reactionCount,
+    commentCount,
+    haveISaved,
+    myReaction,
+  } = recipe.result || {}
   const { username } = by || {}
 
   const [onOwnRecipe, setOnOwnRecipe] = React.useState(false)
-  const { currentUserInfo } = React.useContext(UserContext)
+  const [activeStep, setActiveStep] = React.useState(-1)
+  const { currentUserInfo, modalOpen, setModalState } = React.useContext(
+    UserContext
+  )
+  const [commentsOpen, setCommentsOpen] = React.useState(false)
+  const [recipeReaction, setRecipeReaction] = React.useState(myReaction)
+  const [saved, setSaved] = React.useState(haveISaved)
   if (
     currentUserInfo &&
     !onOwnRecipe &&
     currentUserInfo.me.username == username
   ) {
     setOnOwnRecipe(true)
+  }
+
+  console.log(recipe)
+  const updateActiveStep = (stepNum?: number) => {
+    stepNum = stepNum !== undefined && stepNum >= 0 ? stepNum : -1
+    setActiveStep(stepNum)
+  }
+
+  const handleSave = () => {
+    setRecipeSavedHandler(id, saved, setSaved)
   }
 
   const pageTitle = `${title || 'a recipe'}, by ${
@@ -105,62 +188,141 @@ const RecipePage: NextPage<RecipeProps> = (props) => {
           {/* OpenGraph tags end */}
         </Head>
       )}
-      <div className="p-2 max-w-3xl m-auto">
-        <h1 className="header-text text-center mt-5">
-          {title || <Skeleton />}
-        </h1>
-        {onOwnRecipe ? (
-          <div className="m-2">
-            <Link
-              href="/[username]/[recipehandle]/edit"
-              as={`/${username}/${handle}/edit`}
+      <div className="max-w-xl lg:my-8 mx-auto font-mono">
+        <div className=" mx-auto mt-1 p-6 bg-white rounded-lg shadow-xl border-black border">
+          <div className="m-2 mb-8 ">
+            <div
+              className=" bg-transparent cursor-pointer w-full text-3xl lg:text-5xl text-gray-700  py-1 leading-tight focus:outline-none  border-b-2 border-black"
+              onClick={() => updateActiveStep()}
             >
-              <a className="w-28 m-auto btn">Edit Recipe</a>
-            </Link>
+              {title}
+            </div>
+            <div className="mt-3 w-full flex align-middle">
+              <Link href="/[username]" as={`/${username}`}>
+                <a className="flex align-middle w-full">
+                  <img
+                    src={PROFILE}
+                    className="h-8 cursor-pointer rounded-full"
+                  />
+                  <span className="self-center ml-2 text-sm">
+                    {username || <Skeleton width={40} />}
+                  </span>
+                </a>
+              </Link>
+              {onOwnRecipe ? (
+                <div className="">
+                  <Link
+                    href="/[username]/[recipehandle]/edit"
+                    as={`/${username}/${handle}/edit`}
+                  >
+                    <a className="w-28 m-auto btn text-sm font-normal">Edit</a>
+                  </Link>
+                </div>
+              ) : null}
+            </div>
           </div>
-        ) : null}
-        <Link href="/[username]" as={`/${username || 'ari'}`}>
-          <a className="block text-center text-sm px-2 pb-2">
-            by chef {username ? username : <Skeleton width={20} />}
-          </a>
-        </Link>
-        <span className="block m-auto text-justify leading-snug text-sm">
-          {description || <Skeleton />}
-        </span>
-        <div className="text-sm py-2 text-center">
-          <span className="font-bold">Serving Size </span>
-          <span>{servings}</span>
-        </div>
-        <div>
-          <h3 className="header-2-text">All Ingredients</h3>
-          <ul className="p-1 pl-2">
-            {ingredients ? (
-              ingredients.length > 0 ? (
-                ingredients.map((ingredient) => {
-                  return (
-                    <li key={ingredient.ingredientInfo.name} className="pb-2">
-                      <span className="block">
-                        <span>{toMixedNumber(ingredient.quantity)} </span>
-                        <span>{ingredient.unit.name} </span>
-                        <span>{ingredient.ingredientInfo.name}</span>
+          <Collapse
+            isOpen={activeStep < 0}
+            transition={`height 500ms cubic-bezier(.4, 0, .2, 1)`}
+          >
+            <div key="overview">
+              <div className=" grid items-center p-2 w-full h-full  m-auto">
+                <img className="m-auto" src={IMAGE} />
+              </div>
+              <div className=" w-full my-4 h-full rounded ">
+                <div className="h-full w-full text-xl text-gray-700 p-4 ">
+                  {description}
+                </div>
+              </div>
+              <div className="grid grid-cols-2">
+                <div className="grid grid-rows-2 p-2 rounded text-center text-xs ">
+                  <img src={TIME} className="h-8 m-auto rounded" />
+                  <div className="w-full text-center grid grid-cols-2 justify-center p-1 rounded">
+                    <div className="text-xl w-full m-auto border border-black text-center col-span-2 grid grid-cols-2 rounded">
+                      <span className="text-right">
+                        {minutesToTime(recipeTime).hours || '0'}:
                       </span>
-                    </li>
+                      <span className="text-left">
+                        {minutesToTime(recipeTime).minutes || '0'}
+                      </span>
+                    </div>
+                    {/* <span className="text-xs">Hour</span>
+                    <span className="text-xs">Minutes</span> */}
+                  </div>
+                </div>
+                <div className="grid  grid-rows-2 p-2 rounded text-center text-xs ">
+                  <img src={SERVINGS} className="h-8 m-auto rounded" />
+                  <div className="w-full text-center justify-center rounded p-1">
+                    <div className="text-xl w-full m-auto border border-black text-center  rounded">
+                      {servings}
+                    </div>
+                    {/* Servings */}
+                  </div>
+                </div>
+              </div>
+              <div className="border-black border rounded  my-2">
+                {ingredients.map((ing: IngredientType) => (
+                  <Ingredient
+                    key={`${ing.ingredientInfo.name}${ing.quantity}`}
+                    ingredient={ing}
+                  />
+                ))}
+              </div>
+            </div>
+          </Collapse>
+          <div className="my-4">
+            {steps.map((step) => (
+              <Step
+                key={step.stepNum}
+                step={step}
+                activeStep={activeStep}
+                updateActiveStep={updateActiveStep}
+              />
+            ))}
+          </div>
+          <div className="grid grid-cols-2 items-center">
+            <div
+              className={
+                (!!commentsOpen ? 'opacity-100' : '') +
+                ' cursor-pointer text-2xl  opacity-25'
+              }
+              onClick={() => setCommentsOpen(!commentsOpen)}
+            >
+              Comments
+            </div>
+            <div className="flex justify-end  ">
+              <img
+                className="h-8 mr-4 my-2 cursor-pointer"
+                src={!!saved ? SAVE_COLOR : SAVE_BW}
+                onClick={handleSave}
+              />
+              <img
+                className="h-8 ml-4 my-2 cursor-pointer"
+                src={recipeReaction != null ? YUM_COLOR : YUM_BW}
+                onClick={() =>
+                  setYumHandler(
+                    currentUserInfo,
+                    id,
+                    recipeReaction,
+                    setRecipeReaction
                   )
-                })
-              ) : (
-                <span className="text-sm">No ingredients!</span>
-              )
-            ) : (
-              <Skeleton />
+                }
+              />
+            </div>
+          </div>
+          <Collapse
+            isOpen={commentsOpen}
+            transition={`height 500ms cubic-bezier(.4, 0, .2, 1)`}
+          >
+            {username && handle && (
+              <RecipeComments
+                id={id}
+                username={username}
+                handle={handle}
+                className="rounded p-2"
+              />
             )}
-          </ul>
-        </div>
-        <div>
-          <ul>
-            {steps
-              ? steps.map((step) => <Step step={step} key={step.stepNum} />)
-              : [1, 2].map((num) => <Step key={num} />)}
-          </ul>
+          </Collapse>
         </div>
       </div>
     </React.Fragment>
@@ -174,8 +336,6 @@ export const getServerSideProps: GetServerSideProps = async (ctx) => {
     const username = params?.username
     const recipehandle = params?.recipehandle
 
-    const token = process.env.NEXT_PUBLIC_RJ_API_TOKEN || ''
-
     const data: RecipeType = await client
       .query({
         query: RECIPE_BY_USERNAME_AND_HANDLE,
@@ -186,18 +346,21 @@ export const getServerSideProps: GetServerSideProps = async (ctx) => {
         context: {
           // example of setting the headers with context per operation
           headers: {
-            authorization: `Bearer ${token}`,
+            authorization: `Bearer ${getToken(ctx)}`,
           },
         },
       })
       .then((res) => {
+        if (res.errors) {
+          throw res.errors
+        }
         return res.data
       })
-
     return { props: { recipe: data } }
   } catch (err) {
+    console.log('err', err)
     // handle error - probably put honeybadger here or something
-    return { props: {} }
+    return { props: { recipe: null } }
   }
 }
 

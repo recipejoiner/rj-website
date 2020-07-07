@@ -1,11 +1,12 @@
 import Head from 'next/head'
 import { NextPage } from 'next'
 import { GetServerSideProps } from 'next'
-import { useForm } from 'react-hook-form'
 import * as React from 'react'
 import Router from 'next/router'
 import { GraphQLError } from 'graphql'
+// import { v4 as uuid } from 'uuid'
 
+import { toMixedNumber } from 'helpers/methods'
 import { getToken } from 'helpers/auth'
 import { redirectTo } from 'helpers/methods'
 import {
@@ -17,77 +18,66 @@ import client from 'requests/client'
 
 import {
   RecipeType,
-  RecipeInputIngredient,
-  RecipeInput,
+  RecipeStepType,
+  RecipeInputType,
+  IngredientInputType,
   RecipeFormReturnType,
   EditRecipeVars,
   RECIPE_BY_USERNAME_AND_HANDLE,
   EDIT_RECIPE,
+  RecipeStepInputType,
+  CreateRecipeVars,
 } from 'requests/recipes'
 
 import RecipeForm from 'components/forms/RecipeForm'
 
 interface EditRecipePageProps {
   existingRecipeId: number
-  oldAttributes: RecipeInput
-  numOfStepsInit: number
-  numOfIngrsInit: Array<number>
+  oldAttributes: RecipeInputType
 }
 
 const EditRecipePage: NextPage<EditRecipePageProps> = ({
   existingRecipeId,
   oldAttributes,
-  numOfStepsInit,
-  numOfIngrsInit,
 }) => {
   const [newRecipeErrs, setNewRecipeErrs] = React.useState<
     readonly GraphQLError[]
   >([])
-
-  const { register, handleSubmit, watch, errors, control, reset } = useForm<
-    EditRecipeVars
-  >({
-    defaultValues: {
-      existingRecipeId: existingRecipeId, // this isn't actually used by the form
-      attributes: oldAttributes,
-    },
-  })
-
   // console.log('attributes', watch('attributes'))
-  const onSubmit = handleSubmit(
-    ({ attributes }: { attributes: RecipeInput }) => {
-      client
-        .mutate({
-          mutation: EDIT_RECIPE,
-          variables: {
-            existingRecipeId: existingRecipeId,
-            attributes: attributes,
+  const onSubmit = (variables: CreateRecipeVars) => {
+    client
+      .mutate({
+        mutation: EDIT_RECIPE,
+        variables: {
+          existingRecipeId: existingRecipeId,
+          attributes: variables.attributes,
+        },
+        context: {
+          // example of setting the headers with context per operation
+          headers: {
+            authorization: `Bearer ${getToken()}`,
           },
-          context: {
-            // example of setting the headers with context per operation
-            headers: {
-              authorization: `Bearer ${getToken()}`,
-            },
-          },
-        })
-        .then((res) => {
-          const { data }: { data?: RecipeFormReturnType } = res || {}
-          if (data) {
-            const { result } = data.mutation || {}
-            const { by, handle } = result || {}
-            const { username } = by || {}
-            const path = '/' + username + '/' + handle
-            redirectTo(path)
-          } else {
-            throw 'Data is missing!'
-          }
-        })
-        .catch((err) => {
-          console.log(err)
-          setNewRecipeErrs(err.graphQLErrors)
-        })
-    }
-  )
+        },
+      })
+      .then((res) => {
+        const { data }: { data?: RecipeFormReturnType } = res || {}
+        if (res.errors) {
+          setNewRecipeErrs(res.errors)
+        } else if (!!data && !!data.mutation) {
+          const { result } = data.mutation || {}
+          const { by, handle } = result || {}
+          const { username } = by || {}
+          const path = '/' + username + '/' + handle
+          redirectTo(path)
+        } else {
+          throw 'Data is Missing'
+        }
+      })
+      .catch((err) => {
+        console.log(err)
+        setNewRecipeErrs(err.graphQLErrors)
+      })
+  }
 
   const title = 'Edit Recipe - RecipeJoiner'
   const description = 'Edit your recipe!'
@@ -113,15 +103,10 @@ const EditRecipePage: NextPage<EditRecipePageProps> = ({
         {/* OpenGraph tags end */}
       </Head>
       <RecipeForm
-        register={register}
-        onSubmit={onSubmit}
-        watch={watch}
-        errors={errors}
-        control={control}
-        formTitle={`Edit ${oldAttributes.title}`}
-        submitBtnTxt="Save Recipe"
-        numOfStepsInit={numOfStepsInit}
-        numOfIngrsInit={numOfIngrsInit}
+        submit={onSubmit}
+        recipeInit={oldAttributes}
+        reviewModeInit={true}
+        serverErrors={newRecipeErrs}
       />
     </React.Fragment>
   )
@@ -183,46 +168,50 @@ export const getServerSideProps: GetServerSideProps = async (ctx) => {
       })
 
     const { result } = existingRecipeData
-    const { id, title, description, servings, steps } = result
+    const { id, title, description, servings, steps, recipeTime } = result
 
+    const formatSteps = (steps: RecipeStepType[]) => {
+      let formattedSteps: Array<RecipeStepInputType> = []
+      let stepIndexZero = steps[0].stepNum === 0 ? true : false
+      steps.map(
+        (step: {
+          stepNum: number
+          stepTitle: string
+          additionalInfo: string
+          ingredients: any[]
+        }) => {
+          let formattedIngredients: Array<IngredientInputType> = []
+          step.ingredients.map((ing) => {
+            formattedIngredients.push({
+              id: (Date.now() * Math.random()).toFixed(0).toString(),
+              name: ing.ingredientInfo.name,
+              quantity: toMixedNumber(ing.quantity),
+              unit: ing.unit.name,
+            })
+          })
+          formattedSteps.push({
+            stepNum: stepIndexZero ? step.stepNum : step.stepNum - 1,
+            stepTitle: step.stepTitle,
+            additionalInfo: step.additionalInfo,
+            ingredients: formattedIngredients,
+          })
+        }
+      )
+      return formattedSteps
+    }
     const existingRecipeId = id
     // convert the type
-    var oldAttributes: RecipeInput = {
+    var oldAttributes: RecipeInputType = {
       title: title,
       description: description,
       servings: servings,
-      steps: [],
+      recipeTime: recipeTime,
+      steps: formatSteps(steps),
     }
-
-    const numOfStepsInit = steps.length
-    var numOfIngrsInit = Array(numOfStepsInit)
-    steps.map((step) => {
-      const { stepNum, stepTime, description, ingredients } = step || {}
-      var oldIngredients: Array<RecipeInputIngredient> = []
-      // stepNum is 1 indexed, need to adjust for this
-      numOfIngrsInit[stepNum - 1] = ingredients.length
-      ingredients.map((ingredient) => {
-        const { ingredientInfo, quantity, unit } = ingredient
-        oldIngredients.push({
-          name: ingredientInfo.name,
-          amount: quantity,
-          unit: unit.name,
-        })
-      })
-      oldAttributes.steps.push({
-        stepNum: stepNum,
-        stepTime: stepTime,
-        description: description,
-        ingredients: oldIngredients,
-      })
-    })
-
     return {
       props: {
         existingRecipeId: existingRecipeId,
         oldAttributes: oldAttributes,
-        numOfStepsInit: numOfStepsInit,
-        numOfIngrsInit: numOfIngrsInit,
       },
     }
   } catch (err) {

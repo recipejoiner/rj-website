@@ -1,5 +1,8 @@
 import gql from 'graphql-tag'
 
+import { ReactionType } from 'requests/reactions'
+
+//GET RECIPE
 export interface ShortRecipeNodeType {
   id: string
   by: {
@@ -8,7 +11,11 @@ export interface ShortRecipeNodeType {
   title: string
   handle: string
   description: string
-  servings: string
+  servings: number
+  reactionCount: number
+  commentCount: number
+  haveISaved: boolean | null
+  myReaction: ReactionType
 }
 
 export const recipeConnectionNodeInit: ShortRecipeNodeType = {
@@ -19,33 +26,50 @@ export const recipeConnectionNodeInit: ShortRecipeNodeType = {
   title: '',
   handle: '',
   description: '',
-  servings: '',
+  servings: 0,
+  reactionCount: 0,
+  commentCount: 0,
+  haveISaved: null,
+  myReaction: null,
 }
+
+export const RECIPE_SHORT_FRAGMENT = gql`
+  fragment recipeShortAttributes on RecipeConnection {
+    pageInfo {
+      hasNextPage
+    }
+    edges {
+      cursor
+      node {
+        id
+        by {
+          username
+        }
+        title
+        handle
+        description
+        servings
+        reactionCount
+        commentCount
+        haveISaved
+        myReaction
+      }
+    }
+  }
+`
 
 export interface AllRecipesVarsType {
   cursor: string | null
 }
+
+// need to do shortform recipe types and update the below 2 queries
 export const ALL_RECIPES = gql`
   query getAllRecipes($cursor: String) {
     connection: allRecipes(first: 10, after: $cursor) {
-      pageInfo {
-        hasNextPage
-      }
-      edges {
-        cursor
-        node {
-          id
-          by {
-            username
-          }
-          title
-          handle
-          description
-          servings
-        }
-      }
+      ...recipeShortAttributes
     }
   }
+  ${RECIPE_SHORT_FRAGMENT}
 `
 export interface UserRecipeFeedVarsType {
   cursor: string | null
@@ -54,25 +78,11 @@ export const USER_RECIPES_FEED = gql`
   query recipeFeed($cursor: String) {
     result: me {
       connection: recipeFeed(first: 10, after: $cursor) {
-        pageInfo {
-          hasNextPage
-        }
-        edges {
-          cursor
-          node {
-            id
-            by {
-              username
-            }
-            title
-            handle
-            description
-            servings
-          }
-        }
+        ...recipeShortAttributes
       }
     }
   }
+  ${RECIPE_SHORT_FRAGMENT}
 `
 
 // uses same return type as UserRecipeFeedData
@@ -84,25 +94,11 @@ export const ALL_USER_RECIPES_BY_USERNAME = gql`
   query userRecipesByUsername($username: String!, $cursor: String) {
     result: userByUsername(username: $username) {
       connection: recipes(first: 10, after: $cursor) {
-        pageInfo {
-          hasNextPage
-        }
-        edges {
-          cursor
-          node {
-            id
-            by {
-              username
-            }
-            title
-            handle
-            description
-            servings
-          }
-        }
+        ...recipeShortAttributes
       }
     }
   }
+  ${RECIPE_SHORT_FRAGMENT}
 `
 
 export interface IngredientType {
@@ -114,11 +110,11 @@ export interface IngredientType {
     name: string
   }
 }
-
 export interface RecipeStepType {
+  [id: string]: string | Array<IngredientInputType> | any
   stepNum: number
-  stepTime: number
-  description: string
+  stepTitle: string
+  additionalInfo: string
   ingredients: Array<IngredientType>
 }
 
@@ -131,108 +127,111 @@ export interface RecipeType {
     title: string
     handle: string
     description: string
-    servings: string
+    servings: number
+    recipeTime: number
     ingredients: Array<IngredientType>
+    reactionCount: number
+    commentCount: number
+    haveISaved: boolean | null
+    myReaction: 0 | 1 | null // update this as more reaction types are added
     steps: Array<RecipeStepType>
   }
 }
 
+export const RECIPE_FULL_FRAGMENT = gql`
+  fragment recipeFullAttributes on Recipe {
+    id
+    by {
+      username
+    }
+    description
+    title
+    reactionCount
+    commentCount
+    haveISaved
+    myReaction
+    recipeTime
+    handle
+    servings
+    ingredients {
+      ingredientInfo {
+        name
+      }
+      quantity
+      unit {
+        name
+      }
+    }
+    steps {
+      stepNum
+      stepTitle
+      additionalInfo
+      ingredients {
+        ingredientInfo {
+          name
+        }
+        quantity
+        unit {
+          name
+        }
+      }
+    }
+  }
+`
+
+export interface RecipeByUsernameAndHandleVarsType {
+  username: string
+  handle: string
+}
 export const RECIPE_BY_USERNAME_AND_HANDLE = gql`
   query getRecipeByUsernameAndHandle($username: String, $handle: String) {
     result: recipeBy(username: $username, handle: $handle) {
-      by {
-        username
-      }
-      id
-      title
-      handle
-      description
-      servings
-      ingredients {
-        ingredientInfo {
-          name
-        }
-        quantity
-        unit {
-          name
-        }
-      }
-      steps {
-        stepNum
-        stepTime
-        description
-        ingredients {
-          ingredientInfo {
-            name
-          }
-          quantity
-          unit {
-            name
-          }
-        }
-      }
+      ...recipeFullAttributes
     }
   }
+  ${RECIPE_FULL_FRAGMENT}
 `
 
+export interface RecipeByIdVarsType {
+  id: number
+}
 export const RECIPE_BY_ID = gql`
   query getRecipeByID($id: ID) {
     result: recipeBy(id: $id) {
-      by {
-        username
-      }
-      id
-      title
-      handle
-      description
-      servings
-      ingredients {
-        ingredientInfo {
-          name
-        }
-        quantity
-        unit {
-          name
-        }
-      }
-      steps {
-        stepNum
-        stepTime
-        description
-        ingredients {
-          ingredientInfo {
-            name
-          }
-          quantity
-          unit {
-            name
-          }
-        }
-      }
+      ...recipeFullAttributes
     }
   }
+  ${RECIPE_FULL_FRAGMENT}
 `
 
-export interface RecipeInputIngredient {
+//NEW RECIPE
+export interface IngredientInputType {
+  id?: string
   name: string
-  amount: number
+  quantity: string | number
   unit: string
 }
-interface RecipeInputStep {
+
+export interface RecipeStepInputType {
+  // [id: string]: string | Array<IngredientInputType> | any
   stepNum: number
-  stepTime: number
-  description: string
-  ingredients: Array<RecipeInputIngredient> // not required
+  stepTitle: string
+  additionalInfo: string
+  ingredients: Array<IngredientInputType>
 }
-export interface RecipeInput {
+
+export interface RecipeInputType {
   title: string
   description: string
-  servings: string
-  steps: Array<RecipeInputStep>
+  servings: number
+  recipeTime: number
+  steps: Array<RecipeStepInputType>
 }
+
 export interface CreateRecipeVars {
-  attributes: RecipeInput
+  attributes: RecipeInputType
 }
+
 export interface RecipeFormReturnType {
   mutation: {
     result: {
@@ -243,6 +242,7 @@ export interface RecipeFormReturnType {
     }
   }
 }
+
 export const CREATE_RECIPE = gql`
   mutation createRecipe($attributes: RecipeInput!) {
     mutation: createOrEditRecipe(attributes: $attributes) {
@@ -256,9 +256,10 @@ export const CREATE_RECIPE = gql`
   }
 `
 
+//EDIT RECIPE
 export interface EditRecipeVars {
   existingRecipeId: number
-  attributes: RecipeInput
+  attributes: RecipeInputType
 }
 // uses same types as CREATE_RECIPE
 export const EDIT_RECIPE = gql`

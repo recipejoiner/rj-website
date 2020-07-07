@@ -1,3 +1,7 @@
+const {
+  colors
+} = require('tailwindcss/defaultTheme')
+
 module.exports = {
   purge: false, // purgecss is configured in postcss.purge.js
   theme: {

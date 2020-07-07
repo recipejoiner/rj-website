@@ -34,28 +34,35 @@ export const recipeConnectionNodeInit: ShortRecipeNodeType = {
 }
 
 export const RECIPE_SHORT_FRAGMENT = gql`
-  fragment recipeShortAttributes on RecipeConnection {
+  fragment recipeShortAttributes on Recipe {
+    id
+    by {
+      username
+    }
+    title
+    handle
+    description
+    servings
+    reactionCount
+    commentCount
+    haveISaved
+    myReaction
+  }
+`
+
+export const RECIPE_CONNECTION_SHORT_FRAGMENT = gql`
+  fragment recipeConnectionShortAttributes on RecipeConnection {
     pageInfo {
       hasNextPage
     }
     edges {
       cursor
       node {
-        id
-        by {
-          username
-        }
-        title
-        handle
-        description
-        servings
-        reactionCount
-        commentCount
-        haveISaved
-        myReaction
+        ...recipeShortAttributes
       }
     }
   }
+  ${RECIPE_SHORT_FRAGMENT}
 `
 
 export interface AllRecipesVarsType {
@@ -66,10 +73,10 @@ export interface AllRecipesVarsType {
 export const ALL_RECIPES = gql`
   query getAllRecipes($cursor: String) {
     connection: allRecipes(first: 10, after: $cursor) {
-      ...recipeShortAttributes
+      ...recipeConnectionShortAttributes
     }
   }
-  ${RECIPE_SHORT_FRAGMENT}
+  ${RECIPE_CONNECTION_SHORT_FRAGMENT}
 `
 export interface UserRecipeFeedVarsType {
   cursor: string | null
@@ -78,11 +85,11 @@ export const USER_RECIPES_FEED = gql`
   query recipeFeed($cursor: String) {
     result: me {
       connection: recipeFeed(first: 10, after: $cursor) {
-        ...recipeShortAttributes
+        ...recipeConnectionShortAttributes
       }
     }
   }
-  ${RECIPE_SHORT_FRAGMENT}
+  ${RECIPE_CONNECTION_SHORT_FRAGMENT}
 `
 
 // uses same return type as UserRecipeFeedData
@@ -98,7 +105,63 @@ export const ALL_USER_RECIPES_BY_USERNAME = gql`
       }
     }
   }
-  ${RECIPE_SHORT_FRAGMENT}
+  ${RECIPE_CONNECTION_SHORT_FRAGMENT}
+`
+
+// SAVED RECIPES
+export interface SavedRecipeNodeType {
+  savedRecipe: ShortRecipeNodeType
+}
+
+export interface CurrentUserSavedRecipesVarsType {
+  cursor: string | null
+}
+export const CURRENT_USER_SAVED_RECIPES = gql`
+  query currentUserSavedRecipes($cursor: String) {
+    result: me {
+      connection: saves(first: 10, after: $cursor) {
+        pageInfo {
+          hasNextPage
+        }
+        edges {
+          cursor
+          node {
+            savedRecipe: saveable {
+              ... on Recipe {
+                ...recipeShortAttributes
+              }
+            }
+          }
+        }
+      }
+    }
+  }
+`
+
+export interface UserSavedRecipesByUsernameVarsType {
+  username: string
+  cursor: string | null
+}
+export const USER_SAVED_RECIPES_BY_USERNAME = gql`
+  query userSavedRecipesByUsername($username: String!, $cursor: String) {
+    result: userByUsername(username: $username) {
+      connection: saves(first: 10, after: $cursor) {
+        pageInfo {
+          hasNextPage
+        }
+        edges {
+          cursor
+          node {
+            savedRecipe: saveable {
+              ... on Recipe {
+                ...recipeShortAttributes
+              }
+            }
+          }
+        }
+      }
+    }
+  }
 `
 
 export interface IngredientType {

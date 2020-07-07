@@ -63,7 +63,7 @@ export const UserSavedRecipes: React.FC<UserSavedRecipesProps> = ({
           </InfiniteScroll>
         ) : (
           <InfiniteScroll
-            QUERY={USER_SAVED_RECIPES_BY_USERNAME}
+            QUERY={CURRENT_USER_SAVED_RECIPES}
             hasJustConnection={false}
             nodeInit={savedRecipeConnectionNodeInit}
             QueryVars={(() => {

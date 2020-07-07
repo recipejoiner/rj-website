@@ -94,6 +94,32 @@ export const setYumHandler = (
   }
 }
 
+export const setCommentLikeHandler = (
+  currentUserInfo: CurrentUserLoginCheckType | undefined,
+  commentId: string,
+  currentCommentReaction: ReactionType,
+  setCommentReaction: (value: React.SetStateAction<ReactionType>) => void
+) => {
+  if (currentUserInfo) {
+    setReaction(
+      {
+        reactableId: commentId,
+        reactableType: 'Comment',
+        reactionType: currentCommentReaction === 1 ? null : 1,
+      },
+      (result) => {
+        if ('result' in result) {
+          setCommentReaction(result.result.reaction)
+        } else {
+          console.log('error', result)
+        }
+      }
+    )
+  } else {
+    console.log('You need to log in or sign up!')
+  }
+}
+
 export const setRecipeSavedHandler = (
   recipeId: string,
   currentSavedState: boolean | null,

@@ -1,8 +1,12 @@
 import gql from 'graphql-tag'
 
+import { ReactionType } from 'requests/reactions'
+
 export interface CommentNodeType {
   id: string
   depth: number
+  myReaction: ReactionType
+  childCount: number
   createdAt: string
   by: {
     username: string
@@ -13,6 +17,8 @@ export interface CommentNodeType {
 export const CommentNodeInit: CommentNodeType = {
   id: '',
   depth: 0,
+  myReaction: null,
+  childCount: 0,
   createdAt: '',
   by: {
     username: '',
@@ -26,6 +32,27 @@ export interface RecipeCommentsByUsernameAndHandleVarsType {
   cursor: string | null
 }
 
+const COMMENT_CONNECTION_ATTRIBUTES = gql`
+  fragment commentConnectionAttributes on CommentConnection {
+    pageInfo {
+      hasNextPage
+    }
+    edges {
+      cursor
+      node {
+        id
+        depth
+        myReaction
+        childCount
+        createdAt
+        by {
+          username
+        }
+        content
+      }
+    }
+  }
+`
 export const RECIPE_ROOT_COMMENTS_BY_USERNAME_AND_HANDLE = gql`
   query getRecipeRootCommentsByUsernameAndHandle(
     $username: String
@@ -34,24 +61,11 @@ export const RECIPE_ROOT_COMMENTS_BY_USERNAME_AND_HANDLE = gql`
   ) {
     result: recipeBy(username: $username, handle: $handle) {
       connection: rootComments(first: 10, after: $cursor) {
-        pageInfo {
-          hasNextPage
-        }
-        edges {
-          cursor
-          node {
-            id
-            depth
-            createdAt
-            by {
-              username
-            }
-            content
-          }
-        }
+        ...commentConnectionAttributes
       }
     }
   }
+  ${COMMENT_CONNECTION_ATTRIBUTES}
 `
 
 export interface SubcommentsVarsType {
@@ -62,23 +76,10 @@ export interface SubcommentsVarsType {
 export const SUBCOMMENTS = gql`
   query getSubcomments($parentId: ID!, $cursor: String) {
     connection: subcomments(parentId: $parentId, first: 10, after: $cursor) {
-      pageInfo {
-        hasNextPage
-      }
-      edges {
-        cursor
-        node {
-          id
-          depth
-          createdAt
-          by {
-            username
-          }
-          content
-        }
-      }
+      ...commentConnectionAttributes
     }
   }
+  ${COMMENT_CONNECTION_ATTRIBUTES}
 `
 
 export interface CreateCommentReturnType {

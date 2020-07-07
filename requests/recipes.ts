@@ -111,6 +111,9 @@ export const ALL_USER_RECIPES_BY_USERNAME = gql`
 export interface SavedRecipeNodeType {
   savedRecipe: ShortRecipeNodeType
 }
+export const savedRecipeConnectionNodeInit: SavedRecipeNodeType = {
+  savedRecipe: recipeConnectionNodeInit,
+}
 
 export interface CurrentUserSavedRecipesVarsType {
   cursor: string | null

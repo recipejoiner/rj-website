@@ -5,7 +5,6 @@ import Collapse from '@kunukn/react-collapse'
 import { CommentNodeType } from 'requests/comments'
 import Subcomments from 'components/comments/Subcomments'
 import NewCommentForm from 'components/comments/NewCommentForm'
-import { getToken } from 'helpers/auth'
 
 interface CommentProps {
   commentNode: CommentNodeType

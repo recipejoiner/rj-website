@@ -100,7 +100,7 @@ export const ALL_USER_RECIPES_BY_USERNAME = gql`
   query userRecipesByUsername($username: String!, $cursor: String) {
     result: userByUsername(username: $username) {
       connection: recipes(first: 10, after: $cursor) {
-        ...recipeShortAttributes
+        ...recipeConnectionShortAttributes
       }
     }
   }
@@ -138,6 +138,7 @@ export const CURRENT_USER_SAVED_RECIPES = gql`
       }
     }
   }
+  ${RECIPE_SHORT_FRAGMENT}
 `
 
 export interface UserSavedRecipesByUsernameVarsType {
@@ -164,6 +165,7 @@ export const USER_SAVED_RECIPES_BY_USERNAME = gql`
       }
     }
   }
+  ${RECIPE_SHORT_FRAGMENT}
 `
 
 export interface IngredientType {

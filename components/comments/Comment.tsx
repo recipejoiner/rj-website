@@ -11,6 +11,16 @@ interface CommentProps {
   isNewComment?: boolean
 }
 const Comment: React.FC<CommentProps> = ({ commentNode, isNewComment }) => {
+  const {
+    id,
+    depth,
+    myReaction,
+    childCount,
+    createdAt,
+    by,
+    content,
+  } = commentNode
+
   const [commentIsOpen, setCommentIsOpen] = React.useState(true)
   const [newCommentFormIsOpen, setNewCommentFormIsOpen] = React.useState(false)
 
@@ -24,28 +34,21 @@ const Comment: React.FC<CommentProps> = ({ commentNode, isNewComment }) => {
   }
 
   return (
-    <li
-      className={`w-full border-l ${
-        commentNode.depth == 0 ? 'pb-3 border-b' : ''
-      }`}
-    >
+    <li className={`w-full border-l ${depth == 0 ? 'pb-3 border-b' : ''}`}>
       <button
         className="p-1 pl-3 text-sm w-full h-full flex items-start"
         onClick={() => {
           setCommentIsOpen(!commentIsOpen)
         }}
       >
-        <span className="font-bold text-left">{commentNode.by.username}</span>
-        <span className="text-gray-600">
-          {' '}
-          • {Moment(commentNode.createdAt).fromNow()}
-        </span>
+        <span className="font-bold text-left">{by.username}</span>
+        <span className="text-gray-600"> • {Moment(createdAt).fromNow()}</span>
       </button>
       <Collapse
         isOpen={commentIsOpen}
         transition={`height 280ms cubic-bezier(.4, 0, .2, 1)`}
       >
-        <p className="text-sm pl-3">{commentNode.content}</p>
+        <p className="text-sm pl-3">{content}</p>
         <div className="text-xs p-1 ml-3 flex flex-row">
           <button className="flex flex-row mr-2">
             <svg
@@ -89,7 +92,7 @@ const Comment: React.FC<CommentProps> = ({ commentNode, isNewComment }) => {
         >
           <NewCommentForm
             commentableType="Comment"
-            commentableId={commentNode.id}
+            commentableId={id}
             addNewComment={addNewComment}
           />
         </Collapse>
@@ -99,9 +102,7 @@ const Comment: React.FC<CommentProps> = ({ commentNode, isNewComment }) => {
               return <Comment key={comment.id} commentNode={comment} />
             })}
           </ul>
-          {!isNewComment && commentNode.id !== '' ? (
-            <Subcomments parentId={commentNode.id} />
-          ) : null}
+          {!isNewComment && id !== '' ? <Subcomments parentId={id} /> : null}
         </div>
       </Collapse>
     </li>

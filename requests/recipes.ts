@@ -69,7 +69,6 @@ export interface AllRecipesVarsType {
   cursor: string | null
 }
 
-// need to do shortform recipe types and update the below 2 queries
 export const ALL_RECIPES = gql`
   query getAllRecipes($cursor: String) {
     connection: allRecipes(first: 10, after: $cursor) {

@@ -263,7 +263,7 @@ const UserPage: NextPage<UserPageProps> = ({ userInfo }) => {
               return (
                 <ul>
                   {edges.map((edge) => {
-                    return <ShortRecipe edge={edge} key={edge.cursor} />
+                    return <ShortRecipe node={edge.node} key={edge.cursor} />
                   })}
                 </ul>
               )

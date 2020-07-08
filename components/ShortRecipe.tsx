@@ -17,12 +17,11 @@ const SAVE_COLOR = require('images/icons/cookbook_color.svg')
 const PROFILE = require('images/chef-rj.svg')
 
 interface ShortRecipeProps {
-  edge: EdgeType<ShortRecipeNodeType>
+  node: ShortRecipeNodeType
 }
 
-const ShortRecipe: React.FC<ShortRecipeProps> = ({ edge }) => {
+const ShortRecipe: React.FC<ShortRecipeProps> = ({ node }) => {
   const [commentsOpen, setCommentsOpen] = React.useState(false)
-  const { node } = edge
   const {
     id,
     by,

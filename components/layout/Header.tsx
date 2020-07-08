@@ -42,7 +42,10 @@ const LoggedInHeader: React.FC<LoggedInHeaderProps> = ({
             />
           </div> */}
           <Logo closeMenus={closeMenus} className="col-span-2 m-auto" />
-          <SearchBar className="col-span-6 md:col-span-8 p-2 m-auto w-full outline-none border rounded" />
+          <SearchBar
+            key={Date.now()}
+            className="col-span-6 md:col-span-8 p-2 m-auto w-full outline-none border rounded"
+          />
           {/* <NavMenuDesktop
             closeMenus={closeMenus}
             testDropdownOpen={testDropdownOpen}

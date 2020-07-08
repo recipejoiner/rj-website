@@ -237,6 +237,7 @@ export const RECIPE_FULL_FRAGMENT = gql`
     steps {
       stepNum
       stepTitle
+      imageUrl
       additionalInfo
       ingredients {
         ingredientInfo {

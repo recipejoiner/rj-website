@@ -4,16 +4,20 @@ import { CurrentUserLoginCheckType } from 'requests/auth'
 
 const PROFILE = require('images/chef-rj.svg')
 
-type LogoProps = {
+type ProfileLinkProps = {
   closeMenus(): void
   currentUserInfo: CurrentUserLoginCheckType
 }
 
-const Logo: React.FC<LogoProps> = ({ closeMenus, currentUserInfo }) => {
+const ProfileLink: React.FC<ProfileLinkProps> = ({
+  closeMenus,
+  currentUserInfo,
+}) => {
+  const { me } = currentUserInfo
+  const { username, profileImageUrl } = me
   return (
-    // Logo, wrapped in an h2 tag
     <h2>
-      <Link href="/[username]" as={`/${currentUserInfo.me.username}`}>
+      <Link href="/[username]" as={`/${username}`}>
         {/* Need to close any open menus when navigating to another page, hence the onClick */}
         <a
           aria-label="RecipeJoiner create new recipe page"
@@ -21,7 +25,7 @@ const Logo: React.FC<LogoProps> = ({ closeMenus, currentUserInfo }) => {
         >
           <img
             className="w-10 rounded-full p-1 text-gray-900 hover:text-gray-700 fill-current"
-            src={PROFILE}
+            src={profileImageUrl ? profileImageUrl : PROFILE}
           />
         </a>
       </Link>
@@ -29,4 +33,4 @@ const Logo: React.FC<LogoProps> = ({ closeMenus, currentUserInfo }) => {
   )
 }
 
-export default Logo
+export default ProfileLink

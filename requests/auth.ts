@@ -62,6 +62,7 @@ export interface CurrentUserLoginCheckType {
   me: {
     username: string
     email: string
+    profileImageUrl: string
   }
 }
 export const CURRENT_USER_LOGIN_CHECK = gql`
@@ -69,6 +70,7 @@ export const CURRENT_USER_LOGIN_CHECK = gql`
     me {
       username
       email
+      profileImageUrl
     }
   }
 `

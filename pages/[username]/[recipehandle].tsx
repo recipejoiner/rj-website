@@ -20,7 +20,7 @@ import { getToken } from 'helpers/auth'
 import { setYumHandler, setRecipeSavedHandler } from 'helpers/user-interactions'
 import UserContext from 'helpers/UserContext'
 
-const IMAGE = require('images/food/fish-placeholder.jpg')
+const IMAGE_PLACEHOLDER = require('images/food/fish-placeholder.jpg')
 const TIME = require('images/icons/alarm-clock.svg')
 const SERVINGS = require('images/icons/hot-food.svg')
 const PROFILE = require('images/chef-rj.svg')
@@ -63,7 +63,8 @@ const Ingredient: React.FC<{ ingredient: IngredientType }> = ({
 }
 
 const Step: React.FC<StepProps> = ({ step, activeStep, updateActiveStep }) => {
-  const { stepTitle, ingredients, additionalInfo, stepNum } = step || {}
+  const { stepTitle, ingredients, additionalInfo, stepNum, imageUrl } =
+    step || {}
 
   return (
     <React.Fragment>
@@ -109,7 +110,10 @@ const Step: React.FC<StepProps> = ({ step, activeStep, updateActiveStep }) => {
             </div>
           </div>
           <div className=" grid items-center w-full h-full m-auto">
-            <img className=" m-auto" src={IMAGE} />
+            <img
+              className=" m-auto"
+              src={imageUrl ? imageUrl : IMAGE_PLACEHOLDER}
+            />
           </div>
           <div className="border border-black rounded my-2">
             {ingredients.map((ing) => (
@@ -141,6 +145,7 @@ const RecipePage: NextPage<RecipeProps> = ({ recipe }) => {
     commentCount,
     haveISaved,
     myReaction,
+    imageUrl,
   } = recipe.result || {}
   const { username } = by || {}
 
@@ -239,7 +244,10 @@ const RecipePage: NextPage<RecipeProps> = ({ recipe }) => {
           >
             <div key="overview">
               <div className=" grid items-center  w-full h-full  m-auto">
-                <img className="m-auto" src={IMAGE} />
+                <img
+                  className="m-auto"
+                  src={imageUrl ? imageUrl : IMAGE_PLACEHOLDER}
+                />
               </div>
               <div className=" w-full h-full rounded ">
                 <div className="h-full text-xl text-gray-700 m-2 ">

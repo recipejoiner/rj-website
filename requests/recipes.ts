@@ -16,6 +16,7 @@ export interface ShortRecipeNodeType {
   commentCount: number
   haveISaved: boolean | null
   myReaction: ReactionType
+  imageUrl: string | null
 }
 
 export const recipeConnectionNodeInit: ShortRecipeNodeType = {
@@ -31,6 +32,7 @@ export const recipeConnectionNodeInit: ShortRecipeNodeType = {
   commentCount: 0,
   haveISaved: null,
   myReaction: null,
+  imageUrl: null,
 }
 
 export const RECIPE_SHORT_FRAGMENT = gql`
@@ -47,6 +49,7 @@ export const RECIPE_SHORT_FRAGMENT = gql`
     commentCount
     haveISaved
     myReaction
+    imageUrl
   }
 `
 
@@ -192,6 +195,7 @@ export interface RecipeType {
     }
     id: string
     title: string
+    imageUrl: string | null
     handle: string
     description: string
     servings: number
@@ -213,6 +217,7 @@ export const RECIPE_FULL_FRAGMENT = gql`
     }
     description
     title
+    imageUrl
     reactionCount
     commentCount
     haveISaved

@@ -9,7 +9,7 @@ import RecipeComments from 'components/comments/RecipeComments'
 import { setYumHandler, setRecipeSavedHandler } from 'helpers/user-interactions'
 import UserContext from 'helpers/UserContext'
 
-const IMAGE = require('images/food/fish-placeholder.jpg')
+const IMAGE_PLACEHOLDER = require('images/food/fish-placeholder.jpg')
 const LIKE_BW = require('images/icons/yummy_bw.svg')
 const SAVE_BW = require('images/icons/cookbook_bw.svg')
 const LIKE_COLOR = require('images/icons/yummy_color.svg')
@@ -29,6 +29,7 @@ const ShortRecipe: React.FC<ShortRecipeProps> = ({ node }) => {
     id,
     by,
     title,
+    imageUrl,
     description,
     servings,
     handle,
@@ -72,7 +73,10 @@ const ShortRecipe: React.FC<ShortRecipeProps> = ({ node }) => {
         >
           <a>
             <div className=" grid items-center w-full h-full  m-auto">
-              <img className="m-auto" src={IMAGE} />
+              <img
+                className="m-auto"
+                src={imageUrl ? imageUrl : IMAGE_PLACEHOLDER}
+              />
             </div>
           </a>
         </Link>

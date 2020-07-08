@@ -28,7 +28,7 @@ const YUM_BW = require('images/icons/yummy_bw.svg')
 const SAVE_BW = require('images/icons/cookbook_bw.svg')
 const YUM_COLOR = require('images/icons/yummy_color.svg')
 const SAVE_COLOR = require('images/icons/cookbook_color.svg')
-const INGREDIENTS = require('images/icons/shopping-bag.svg')
+const INGREDIENTS = require('images/icons/basket.svg')
 const COMMENTS_BW = require('images/icons/comment_bw.svg')
 const COMMENTS_WB = require('images/icons/comment_wb.svg')
 
@@ -50,7 +50,7 @@ const Ingredient: React.FC<{ ingredient: IngredientType }> = ({
   ingredient,
 }) => {
   return (
-    <div className="my-2 p-2  grid grid-cols-2 gap-4 items-center">
+    <div className=" p-4  grid grid-cols-2 gap-4 items-center">
       <span className="text-lg capitalize">
         {ingredient.ingredientInfo.name}
       </span>
@@ -246,10 +246,10 @@ const RecipePage: NextPage<RecipeProps> = ({ recipe }) => {
                   {description}
                 </div>
               </div>
-              <div className="grid grid-cols-2">
+              <div className="grid grid-cols-2 w-10/12 m-auto">
                 <div className="grid grid-rows-2 p-2  rounded text-center text-xs ">
                   <img src={TIME} className="h-6 m-auto rounded" />
-                  <div className="w-8/12 m-auto text-center grid grid-cols-2 justify-center rounded">
+                  <div className="w-full m-auto text-center grid grid-cols-2 justify-center rounded">
                     <div className="text-xl w-full m-auto border border-black text-center col-span-2 grid p-2 grid-cols-2 rounded">
                       <span className="text-right">
                         {minutesToTime(recipeTime).hours || '0'}:
@@ -264,7 +264,7 @@ const RecipePage: NextPage<RecipeProps> = ({ recipe }) => {
                 </div>
                 <div className="grid  grid-rows-2 p-2 rounded text-center text-xs ">
                   <img src={SERVINGS} className="h-6 m-auto rounded" />
-                  <div className="w-8/12 m-auto text-center justify-center rounded ">
+                  <div className="w-full m-auto text-center justify-center rounded ">
                     <div className="text-xl w-full m-auto border border-black text-center p-2 rounded">
                       {servings}
                     </div>
@@ -272,7 +272,8 @@ const RecipePage: NextPage<RecipeProps> = ({ recipe }) => {
                   </div>
                 </div>
               </div>
-              <div className=" border border-black rounded m-2">
+              <img src={INGREDIENTS} className="h-6 m-auto rounded mt-6" />
+              <div className=" border border-black rounded w-11/12 m-auto my-4">
                 {ingredients.map((ing: IngredientType) => (
                   <Ingredient
                     key={`${ing.ingredientInfo.name}${ing.quantity}`}

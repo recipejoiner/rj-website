@@ -72,7 +72,11 @@ const ShortRecipe: React.FC<ShortRecipeProps> = ({ node }) => {
         >
           <a>
             <div className=" grid items-center w-full h-full  m-auto">
-              <img className="m-auto" src={IMAGE} />
+              {by.username ? (
+                <img className="m-auto" src={IMAGE} />
+              ) : (
+                <Skeleton width={300} />
+              )}
             </div>
           </a>
         </Link>

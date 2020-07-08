@@ -5,10 +5,6 @@ const {
 module.exports = {
   purge: false, // purgecss is configured in postcss.purge.js
   theme: {
-    top: {
-      '14': '3.5rem',
-      '16': '4rem',
-    },
     filter: {
       // defaults to {}
       none: 'none',
@@ -128,13 +124,16 @@ module.exports = {
       '4xl': '1rem',
       full: '9999px',
     },
-    inset: {
-      '14': '3.5rem',
-      '16': '4rem'
-    },
 
     extend: {
-
+      top: {
+        '14': '3.5rem',
+        '16': '4rem',
+      },
+      inset: {
+        '14': '3.5rem',
+        '16': '4rem'
+      }
     },
   },
   variants: {

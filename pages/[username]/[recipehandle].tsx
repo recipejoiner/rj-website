@@ -110,10 +110,7 @@ const Step: React.FC<StepProps> = ({ step, activeStep, updateActiveStep }) => {
             </div>
           </div>
           <div className=" grid items-center w-full h-full m-auto">
-            <img
-              className=" m-auto"
-              src={imageUrl ? imageUrl : IMAGE_PLACEHOLDER}
-            />
+            {imageUrl ? <img className=" m-auto" src={imageUrl} /> : null}
           </div>
           <div className="border border-black rounded my-2">
             {ingredients.map((ing) => (

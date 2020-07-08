@@ -9,7 +9,7 @@ import HamburgerMenu from 'components/layout/header/HamburgerMenu'
 import NavMenuMobile from 'components/layout/header/NavMenuMobile'
 import NavMenuDesktop from 'components/layout/header/NavMenuDesktop'
 import { CurrentUserLoginCheckType } from 'requests/auth'
-
+import { SearchBar } from 'components/layout/searchBar'
 interface LoggedInHeaderProps {
   setMenuOpen(menuOpenStatus: boolean): void
   currentUserInfo: CurrentUserLoginCheckType
@@ -33,23 +33,24 @@ const LoggedInHeader: React.FC<LoggedInHeaderProps> = ({
   return (
     <div>
       <header className="bg-white opacity-95 border-b border-gray-500 w-full fixed z-100 inset-x-0 top-0">
-        <div className="flex items-center justify-between p-4 relative max-w-12xl z-100 mx-auto h-14 md:h-16">
-          <div className="md:hidden">
+        <div className="grid grid-cols-12  relative max-w-12xl z-100 mx-auto h-14 md:h-16">
+          {/* <div className="md:hidden">
             <HamburgerMenu
               drawerOpen={drawerOpen}
               setDrawerOpen={setDrawerOpen}
               closeMenus={closeMenus}
             />
-          </div>
-          <Logo closeMenus={closeMenus} />
-          <NavMenuDesktop
+          </div> */}
+          <Logo closeMenus={closeMenus} className="col-span-2 m-auto" />
+          <SearchBar className="col-span-6 md:col-span-8 p-2 m-auto w-full outline-none border rounded" />
+          {/* <NavMenuDesktop
             closeMenus={closeMenus}
             testDropdownOpen={testDropdownOpen}
             setTestDropdownOpen={setTestDropdownOpen}
             currentUserInfo={currentUserInfo}
-          />
-          <div className="flex flex-row items-center">
-            <div className="hidden md:block">
+          /> */}
+          <div className="grid grid-cols-2 col-span-4 md:col-span-2 md:gap-4 m-auto">
+            <div className="">
               <ProfileLink
                 closeMenus={closeMenus}
                 currentUserInfo={currentUserInfo}
@@ -59,14 +60,14 @@ const LoggedInHeader: React.FC<LoggedInHeaderProps> = ({
           </div>
         </div>
         {/* The mobile navigation menu */}
-        <div className={`${drawerOpen ? 'block' : 'hidden'}`}>
+        {/* <div className={`${drawerOpen ? 'block' : 'hidden'}`}>
           <NavMenuMobile
             closeMenus={closeMenus}
             testDropdownOpen={testDropdownOpen}
             setTestDropdownOpen={setTestDropdownOpen}
             currentUserInfo={currentUserInfo}
           />
-        </div>
+        </div> */}
       </header>
     </div>
   )

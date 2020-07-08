@@ -2,12 +2,13 @@ import Link from 'next/link'
 
 type LogoProps = {
   closeMenus(): void
+  className?: string
 }
 
-const Logo: React.FC<LogoProps> = ({ closeMenus }) => {
+const Logo: React.FC<LogoProps> = ({ closeMenus, className }) => {
   return (
     // Logo, wrapped in an h2 tag
-    <h2>
+    <h2 className={className}>
       <Link href="/">
         {/* Need to close any open menus when navigating to another page, hence the onClick */}
         <a aria-label="RecipeJoiner home page" onClick={() => closeMenus()}>

@@ -99,9 +99,8 @@ export const UserRecipesFeed: React.FC<UserRecipesFeedProps> = ({}) => {
   }
 
   return (
-    <div className="bg-gray-100 pt-5 px-5 border-t">
+    <div className=" border-t">
       <div className="m-auto max-w-3xl">
-        <h3 className="text-center text-xl font-bold">Your Recipe Feed</h3>
         <InfiniteScroll
           QUERY={USER_RECIPES_FEED}
           hasJustConnection={false}

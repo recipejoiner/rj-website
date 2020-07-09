@@ -192,6 +192,7 @@ export interface RecipeType {
   result: {
     by: {
       username: string
+      profileImageUrl: string
     }
     id: string
     title: string
@@ -214,6 +215,7 @@ export const RECIPE_FULL_FRAGMENT = gql`
     id
     by {
       username
+      profileImageUrl
     }
     description
     title

@@ -144,7 +144,7 @@ const RecipePage: NextPage<RecipeProps> = ({ recipe }) => {
     myReaction,
     imageUrl,
   } = recipe.result || {}
-  const { username } = by || {}
+  const { username, profileImageUrl } = by || {}
 
   const [onOwnRecipe, setOnOwnRecipe] = React.useState(false)
   const [activeStep, setActiveStep] = React.useState(-1)
@@ -215,7 +215,7 @@ const RecipePage: NextPage<RecipeProps> = ({ recipe }) => {
               <Link href="/[username]" as={`/${username}`}>
                 <a className="flex align-middle w-full">
                   <img
-                    src={PROFILE}
+                    src={profileImageUrl ? profileImageUrl : PROFILE}
                     className="h-6 cursor-pointer rounded-full"
                   />
                   <span className="self-center ml-2 text-xs">

@@ -10,7 +10,8 @@ import {
   SetProfileImageVarsType,
   SET_PROFILE_IMAGE,
 } from 'requests/users'
-import Skeleton from 'react-loading-skeleton'
+
+import ImageFilePicker from 'helpers/ImageFilePicker'
 
 type UpdateProfileImageProps = {
   updateProfileImageUrl: (profileImageUrl: string) => void
@@ -27,46 +28,22 @@ const UpdateProfileImage: React.FC<UpdateProfileImageProps> = ({
 
   const [imageErrs, setImageErrs] = React.useState<readonly GraphQLError[]>([])
 
-  // create a preview as a side effect, whenever selected file is changed
-  React.useEffect(() => {
-    if (!selectedFile) {
-      setPreview(undefined)
-      return
-    }
-
-    const filesize = selectedFile.size / 1024 / 1024 //megabytes
-
-    const objectUrl = URL.createObjectURL(selectedFile)
-
-    if (filesize <= 5) {
-      setPreview(objectUrl)
-      onSubmit()
-    } else {
-      setImageErrs([new GraphQLError("Image can't be larger than 5mb!")])
-    }
-
-    // Free memory when ever this component is unmounted
-    return () => URL.revokeObjectURL(objectUrl)
-  }, [selectedFile])
-
-  const onSelectFile = (e: React.ChangeEvent<HTMLInputElement>) => {
-    if (!e.target.files || e.target.files.length === 0) {
-      setSelectedFile(undefined)
-      return
-    }
-
-    // Use first image
-    setSelectedFile(e.target.files[0])
-  }
-
   const { register, handleSubmit, watch, errors } = useForm<{
     files: FileList
   }>()
 
-  const onSubmit = handleSubmit(({ files }) => {
+  const onSubmit = handleSubmit(() => {
     setImageErrs([]) // clear the errors if any were set
+    if (selectedFile) {
+      submitForm(selectedFile)
+    } else {
+      setImageErrs([new GraphQLError('Image must be selected!')])
+    }
+  })
+
+  const submitForm = (selectedFile: File) => {
     const variables: SetProfileImageVarsType = {
-      profileImage: files[0],
+      profileImage: selectedFile,
     }
     client
       .mutate({
@@ -92,7 +69,19 @@ const UpdateProfileImage: React.FC<UpdateProfileImageProps> = ({
         setImageErrs(err.graphQLErrors)
         console.log('imageErrs', imageErrs)
       })
-  })
+  }
+
+  const imagePicker = new ImageFilePicker(
+    setSelectedFile,
+    setPreview,
+    setImageErrs,
+    onSubmit
+  )
+
+  React.useEffect(() => {
+    console.log('preview', preview)
+    console.log('imagePicker', imagePicker)
+  }, [preview])
 
   return (
     <div className="h-full w-full">
@@ -119,7 +108,10 @@ const UpdateProfileImage: React.FC<UpdateProfileImageProps> = ({
               Upload Photo
               {imageErrs.map((err) => {
                 return (
-                  <span className="absolute block text-center text-sm text-red-600 left-0 w-full mt-2">
+                  <span
+                    key={err.message}
+                    className="absolute block text-center text-sm text-red-600 left-0 w-full mt-2"
+                  >
                     {err.message}
                   </span>
                 )
@@ -133,7 +125,7 @@ const UpdateProfileImage: React.FC<UpdateProfileImageProps> = ({
             type="file"
             multiple={false}
             accept="image/*"
-            onChange={onSelectFile}
+            onChange={imagePicker.onSelectFile}
             ref={register}
           />
         </label>

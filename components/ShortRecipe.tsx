@@ -9,7 +9,7 @@ import RecipeComments from 'components/comments/RecipeComments'
 import { setYumHandler, setRecipeSavedHandler } from 'helpers/user-interactions'
 import UserContext from 'helpers/UserContext'
 
-const IMAGE_PLACEHOLDER = require('images/food/fish-placeholder.jpg')
+const IMAGE_PLACEHOLDER = require('images/food/picture.jpg')
 const LIKE_BW = require('images/icons/yummy_bw.svg')
 const SAVE_BW = require('images/icons/cookbook_bw.svg')
 const LIKE_COLOR = require('images/icons/yummy_color.svg')

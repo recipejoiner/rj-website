@@ -183,6 +183,7 @@ export interface IngredientType {
 export interface RecipeStepType {
   [id: string]: string | Array<IngredientInputType> | any
   stepNum: number
+  imageUrl: string | null
   stepTitle: string
   additionalInfo: string
   ingredients: Array<IngredientType>

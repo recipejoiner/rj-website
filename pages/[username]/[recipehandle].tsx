@@ -74,7 +74,7 @@ const Step: React.FC<StepProps> = ({ step, recipeImg, updateActiveStep }) => {
 
   return (
     <React.Fragment>
-      <div className="w-11/12 grid grid-cols-4 ">
+      <div className="w-11/12 grid grid-cols-4 lg:mt-10 ">
         <div className="m-auto ml-2">
           <img
             className="m-auto rounded w-full  "
@@ -109,7 +109,7 @@ const Step: React.FC<StepProps> = ({ step, recipeImg, updateActiveStep }) => {
           onClick={() => setImageOpen(!imageOpen)}
         ></div>
       )}
-      <div className="relative w-full overflow-hidden text-xl md:text-3xl  m-2">
+      <div className="relative w-full overflow-hidden text-xl md:text-3xl p-2 mb-2">
         <div className="absolute grid grid-cols-2 left-0 right-0 h-full">
           <div
             onClick={() => updateActiveStep(stepNum > 0 ? stepNum - 1 : 0)}
@@ -361,16 +361,23 @@ const RecipePage: NextPage<RecipeProps> = ({ recipe }) => {
 
           <div className="absolute left-0 top-0 bottom-0 right-0 max-w-3xl m-auto h-full shadow-lg ">
             <div className="z-100 absolute top-0  w-full ">
-              <div className={`grid grid-cols-${steps.length + 1} items-start`}>
+              <div
+                className="grid"
+                style={{
+                  gridTemplateColumns: `repeat(${
+                    steps.length + 1
+                  }, minmax(0, 1fr))`,
+                }}
+              >
                 {steps.map((step) => {
                   return (
                     <div
                       className={`${
                         step.stepNum === activeStep ? '' : 'opacity-25'
-                      }   border-2  border-black m-2 rounded `}
+                      }   border-2  border-black m-2 rounded text-center `}
                       onClick={() => updateActiveStep(step.stepNum)}
                     >
-                      {/* {step.stepNum + 1} */}
+                      {step.stepNum + 1}
                     </div>
                   )
                 })}

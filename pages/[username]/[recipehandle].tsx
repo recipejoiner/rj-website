@@ -86,7 +86,7 @@ const Step: React.FC<StepProps> = ({ step, recipeImg, updateActiveStep }) => {
           {stepTitle}
         </span>
       </div>
-      {!imageOpen ? (
+      {!imageOpen && ingredients.length > 0 ? (
         <div className="my-2 self-end ">
           <div
             className={`${
@@ -109,7 +109,7 @@ const Step: React.FC<StepProps> = ({ step, recipeImg, updateActiveStep }) => {
           onClick={() => setImageOpen(!imageOpen)}
         ></div>
       )}
-      <div className="relative w-full overflow-hidden text-xl md:text-3xl  p-2">
+      <div className="relative w-full overflow-hidden text-xl md:text-3xl  m-2">
         <div className="absolute grid grid-cols-2 left-0 right-0 h-full">
           <div
             onClick={() => updateActiveStep(stepNum > 0 ? stepNum - 1 : 0)}
@@ -269,7 +269,12 @@ const RecipePage: NextPage<RecipeProps> = ({ recipe }) => {
                 </div>
               </div>
               <img src={INGREDIENTS} className="h-6 m-auto rounded mt-6" />
-              <div className="  rounded w-11/12 m-auto my-4 border-black border p-2">
+
+              <div
+                className={`${
+                  ingredients.length <= 0 ? 'border-none' : 'border'
+                } rounded w-11/12 m-auto my-4 border-black  p-2`}
+              >
                 {ingredients.map((ing: IngredientType) => (
                   <Ingredient
                     key={`${ing.ingredientInfo.name}${ing.quantity}`}
@@ -355,55 +360,34 @@ const RecipePage: NextPage<RecipeProps> = ({ recipe }) => {
           </div>
 
           <div className="absolute left-0 top-0 bottom-0 right-0 max-w-3xl m-auto h-full shadow-lg ">
-            <img
-              className="absolute top-0 right-0 p-2 w-10 m-auto z-100"
-              onClick={() => updateActiveStep()}
-              src={CLOSE}
-            ></img>
+            <div className="z-100 absolute top-0  w-full ">
+              <div className={`grid grid-cols-${steps.length + 1} items-start`}>
+                {steps.map((step) => {
+                  return (
+                    <div
+                      className={`${
+                        step.stepNum === activeStep ? '' : 'opacity-25'
+                      }   border-2  border-black m-2 rounded `}
+                      onClick={() => updateActiveStep(step.stepNum)}
+                    >
+                      {/* {step.stepNum + 1} */}
+                    </div>
+                  )
+                })}
+                <img
+                  className=" p-2 w-10 "
+                  style={{ justifySelf: 'end' }}
+                  onClick={() => updateActiveStep()}
+                  src={CLOSE}
+                ></img>
+              </div>
+            </div>
             <div className="grid grid-rows-cook h-full overflow-hidden absolute">
               <Step
                 step={steps[activeStep]}
                 recipeImg={imageUrl || IMAGE_PLACEHOLDER}
                 updateActiveStep={updateActiveStep}
               />
-              <div className="w-full text-center self-end">
-                <div
-                  className={`grid grid-cols-${
-                    steps.length + 2
-                  } justify-between items-center`}
-                >
-                  <img
-                    className="m-auto p-2 rotate-180 transform"
-                    onClick={() => {
-                      activeStep > 0 ? updateActiveStep(activeStep - 1) : null
-                    }}
-                    src={RIGHT_ARROW}
-                  ></img>
-                  {steps.map((step) => {
-                    return (
-                      <div
-                        className={`${
-                          step.stepNum === activeStep
-                            ? 'text-2xl font-bold '
-                            : ''
-                        }   text-center  rounded-full `}
-                        onClick={() => updateActiveStep(step.stepNum)}
-                      >
-                        {step.stepNum + 1}
-                      </div>
-                    )
-                  })}
-                  <img
-                    className="m-auto p-2"
-                    onClick={() => {
-                      activeStep < steps.length - 1
-                        ? updateActiveStep(activeStep + 1)
-                        : null
-                    }}
-                    src={RIGHT_ARROW}
-                  ></img>
-                </div>
-              </div>
             </div>
           </div>
         </div>

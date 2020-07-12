@@ -7,7 +7,10 @@ module.exports = {
   theme: {
     extend: {
       gridTemplateRows: {
-        'cook': '20% 40% 40%'
+        'cook': '15% 45% 40%'
+      },
+      height: {
+        '1/2': '50%'
       }
     },
     filter: {

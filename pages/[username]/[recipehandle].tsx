@@ -301,6 +301,12 @@ const RecipePage: NextPage<RecipeProps> = ({ recipe }) => {
                   </div>
                 </div>
               ))}
+              <button
+                className="relative hover:scale-105 transform ease-in duration-200 border-b-2 w-full focus:outline-none text-xl text-gray-800 font-bold p-2  border border-black rounded"
+                onClick={() => updateActiveStep(0)}
+              >
+                Start
+              </button>
             </div>
 
             <div className="grid grid-cols-2 m-2 items-center">

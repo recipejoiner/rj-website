@@ -356,8 +356,8 @@ const RecipePage: NextPage<RecipeProps> = ({ recipe }) => {
 
           <div className="absolute left-0 top-0 bottom-0 right-0 max-w-3xl m-auto h-full shadow-lg ">
             <img
-              className="absolute top-0 right-0 p-2 w-10 m-auto"
-              onClick={() => updateActiveStep(-1)}
+              className="absolute top-0 right-0 p-2 w-10 m-auto z-100"
+              onClick={() => updateActiveStep()}
               src={CLOSE}
             ></img>
             <div className="grid grid-rows-cook h-full overflow-hidden absolute">

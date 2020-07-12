@@ -21,7 +21,7 @@ import { setYumHandler, setRecipeSavedHandler } from 'helpers/user-interactions'
 import UserContext from 'helpers/UserContext'
 import { act } from 'react-dom/test-utils'
 
-const IMAGE_PLACEHOLDER = require('images/food/picture.jpg')
+const IMAGE_PLACEHOLDER = require('images/icons/picture.svg')
 const TIME = require('images/icons/alarm-clock.svg')
 const SERVINGS = require('images/icons/hot-food.svg')
 const PROFILE = require('images/chef-rj.svg')
@@ -360,7 +360,7 @@ const RecipePage: NextPage<RecipeProps> = ({ recipe }) => {
               onClick={() => updateActiveStep(-1)}
               src={CLOSE}
             ></img>
-            <div className="grid grid-rows-cook h-full overflow-hidden">
+            <div className="grid grid-rows-cook h-full overflow-hidden absolute">
               <Step
                 step={steps[activeStep]}
                 recipeImg={imageUrl || IMAGE_PLACEHOLDER}

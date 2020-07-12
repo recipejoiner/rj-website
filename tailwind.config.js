@@ -5,6 +5,11 @@ const {
 module.exports = {
   purge: false, // purgecss is configured in postcss.purge.js
   theme: {
+    extend: {
+      gridTemplateRows: {
+        'cook': '20% 35% 35% 10%'
+      }
+    },
     filter: {
       // defaults to {}
       none: 'none',
@@ -16,6 +21,21 @@ module.exports = {
       // defaults to {}
       none: 'none',
       blur: 'blur(5px)',
+      blurMax: 'blur(10px)'
+    },
+    scale: {
+      '0': '0',
+      '25': '.25',
+      '50': '.5',
+      '75': '.75',
+      '90': '.9',
+      '95': '.95',
+      '100': '1',
+      '105': '1.05',
+      '110': '1.1',
+      '125': '1.25',
+      '150': '1.5',
+      '200': '2'
     },
     spacing: {
       px: '1px',
@@ -124,7 +144,6 @@ module.exports = {
       '4xl': '1rem',
       full: '9999px',
     },
-    extend: {},
   },
   variants: {
     filter: ['responsive'], // defaults to ['responsive']

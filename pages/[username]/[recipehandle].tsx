@@ -19,8 +19,9 @@ import RecipeComments from 'components/comments/RecipeComments'
 import { getToken } from 'helpers/auth'
 import { setYumHandler, setRecipeSavedHandler } from 'helpers/user-interactions'
 import UserContext from 'helpers/UserContext'
+import { act } from 'react-dom/test-utils'
 
-const IMAGE_PLACEHOLDER = require('images/food/fish-placeholder.jpg')
+const IMAGE_PLACEHOLDER = require('images/icons/picture.svg')
 const TIME = require('images/icons/alarm-clock.svg')
 const SERVINGS = require('images/icons/hot-food.svg')
 const PROFILE = require('images/chef-rj.svg')
@@ -31,6 +32,8 @@ const SAVE_COLOR = require('images/icons/cookbook_color.svg')
 const INGREDIENTS = require('images/icons/basket.svg')
 const COMMENTS_BW = require('images/icons/comment_bw.svg')
 const COMMENTS_WB = require('images/icons/comment_wb.svg')
+const RIGHT_ARROW = require('images/icons/right-arrow.svg')
+const CLOSE = require('images/icons/cancel.svg')
 
 const minutesToTime = (totalMinutes: number) => {
   return { hours: Math.floor(totalMinutes / 60), minutes: totalMinutes % 60 }
@@ -42,7 +45,7 @@ interface RecipeProps {
 
 interface StepProps {
   step: RecipeStepType
-  activeStep: number
+  recipeImg: string
   updateActiveStep: (stepNum?: number) => void
 }
 
@@ -50,79 +53,71 @@ const Ingredient: React.FC<{ ingredient: IngredientType }> = ({
   ingredient,
 }) => {
   return (
-    <div className=" p-4  grid grid-cols-2 gap-4 items-center">
-      <span className="text-lg capitalize">
+    <div className=" h-auto items-center text-center  grid grid-cols-2 ">
+      <span className=" font-black text-lg capitalize text-left">
         {ingredient.ingredientInfo.name}
       </span>
-      <div className="grid grid-rows-2 text-center">
-        <span className="text-lg">{toMixedNumber(ingredient.quantity)}</span>
+      <div className="grid grid-rows-2 text-center ">
+        <span className="text-md">{toMixedNumber(ingredient.quantity)}</span>
         <span className="text-sm">{ingredient.unit.name}</span>
       </div>
     </div>
   )
 }
 
-const Step: React.FC<StepProps> = ({ step, activeStep, updateActiveStep }) => {
-  const { stepTitle, ingredients, additionalInfo, stepNum, imageUrl } =
+const Step: React.FC<StepProps> = ({ step, recipeImg, updateActiveStep }) => {
+  const [imageOpen, setImageOpen] = React.useState(false)
+
+  const { ingredients, additionalInfo, imageUrl, stepTitle, stepNum } =
     step || {}
+  let image = imageUrl != null ? imageUrl : recipeImg
 
   return (
     <React.Fragment>
-      {/* {stepNum !== activeStep ? ( */}
-      <Collapse
-        isOpen={stepNum !== activeStep}
-        transition={`height 500ms cubic-bezier(.4, 0, .2, 1)`}
-      >
-        <div
-          className="hover:scale-95 transform ease-in duration-200 w-full my-2 cursor-pointer "
-          onClick={() => updateActiveStep(stepNum)}
-        >
-          <div className="grid grid-cols-12  border-b-2 text-l rounded  ">
-            <span className="bg-black  flex col-span-2 text-2xl h-full w-full text-white m-auto rounded rounded-r-none border-black border-b-2  ">
-              <span className="m-auto">{stepNum + 1}</span>
-            </span>
-            <span className="col-span-10 bg-white my-auto p-4 rounded m-1">
-              {stepTitle}
-            </span>
-          </div>
+      <div className=" grid grid-cols-4 mr-8 ">
+        <div className="m-auto rounded">
+          <img
+            className="m-auto rounded w-full  "
+            src={image}
+            onClick={() => setImageOpen(!imageOpen)}
+          />
         </div>
-      </Collapse>
-      {/* ) : ( */}
-      <Collapse
-        isOpen={stepNum === activeStep}
-        transition={`height 1000ms cubic-bezier(.4, 0, .2, 1)`}
-      >
-        <div className="w-full">
+        <span className="text-2xl md:text-5xl leading-tight focus:outline-none font-bold col-span-3 ml-2 my-auto">
+          {stepTitle}
+        </span>
+      </div>
+      {!imageOpen && ingredients.length > 0 ? (
+        <div className="my-2 self-end mr-8 ">
           <div
-            className=" w-full my-2 cursor-pointer "
-            onClick={() => updateActiveStep()}
+            className={`${
+              ingredients.length <= 0 ? 'border-none' : 'border'
+            }  rounded overflow-hidden border-black border rounded-l-none border-l-0 m-l-0`}
+            onClick={() => setImageOpen(!imageOpen)}
           >
-            <div
-              id={`step-${stepNum}`}
-              className="grid grid-cols-12  border-b-2 text-xl  rounded-lg "
-            >
-              <span className="bg-black  flex col-span-2 text-2xl h-full w-full text-white m-auto rounded rounded-r-none border-black border-b-2  ">
-                <span className="m-auto">{stepNum + 1}</span>
-              </span>
-              <span className="col-span-10 bg-white my-auto p-4 rounded m-1">
-                {stepTitle}
-              </span>
-            </div>
-          </div>
-          <div className=" grid items-center w-full h-full m-auto">
-            {imageUrl ? <img className=" m-auto" src={imageUrl} /> : null}
-          </div>
-          <div className="border border-black rounded my-2">
             {ingredients.map((ing) => (
               <Ingredient ingredient={ing} />
             ))}
           </div>
-          <div className="w-full h-full text-xl rounded p-2 my-4">
-            {additionalInfo}
-          </div>
         </div>
-      </Collapse>
-      {/* )} */}
+      ) : (
+        <div
+          className=" bg-cover rounded mr-8 mt-8"
+          style={{
+            backgroundImage: `url(${image}
+          )`,
+          }}
+          onClick={() => setImageOpen(!imageOpen)}
+        ></div>
+      )}
+      <div className="relative w-full overflow-hidden text-xl md:text-3xl mb-2">
+        <div className="absolute grid grid-cols-2 left-0 right-0 h-full">
+          <div
+            onClick={() => updateActiveStep(stepNum > 0 ? stepNum - 1 : 0)}
+          ></div>
+          <div onClick={() => updateActiveStep(stepNum + 1)}></div>
+        </div>
+        {additionalInfo}
+      </div>
     </React.Fragment>
   )
 }
@@ -162,13 +157,9 @@ const RecipePage: NextPage<RecipeProps> = ({ recipe }) => {
     setOnOwnRecipe(true)
   }
 
-  console.log(recipe)
   const updateActiveStep = (stepNum?: number) => {
-    stepNum = stepNum !== undefined && stepNum >= 0 ? stepNum : -1
-    setActiveStep(stepNum)
-    stepNum >= 0
-      ? document.getElementById(`step-${stepNum}`)?.scrollIntoView()
-      : null
+    if (stepNum === undefined) stepNum = -1
+    stepNum < steps.length && stepNum >= -1 ? setActiveStep(stepNum) : null
   }
 
   const handleSave = () => {
@@ -202,43 +193,43 @@ const RecipePage: NextPage<RecipeProps> = ({ recipe }) => {
           {/* OpenGraph tags end */}
         </Head>
       )}
-      <div className="max-w-3xl lg:my-8 mx-auto font-mono">
-        <div className=" mx-auto mt-6 bg-white rounded-lg shadow-xl ">
-          <div className="m-2 ">
-            <div
-              className=" bg-transparent cursor-pointer w-full text-3xl lg:text-5xl  leading-tight focus:outline-none font-bold"
-              onClick={() => updateActiveStep()}
-            >
-              {title}
+      {activeStep < 0 ? (
+        <div className="max-w-3xl lg:my-8 mx-auto font-mono">
+          <div className=" mx-auto mt-6 bg-white rounded-lg shadow-xl ">
+            <div className="m-2 ">
+              <div
+                className=" bg-transparent cursor-pointer w-full text-3xl lg:text-5xl  leading-tight focus:outline-none font-bold"
+                onClick={() => updateActiveStep()}
+              >
+                {title}
+              </div>
+              <div className=" w-full flex align-middle">
+                <Link href="/[username]" as={`/${username}`}>
+                  <a className="flex align-middle w-full">
+                    <img
+                      src={profileImageUrl ? profileImageUrl : PROFILE}
+                      className="h-6 cursor-pointer rounded-full"
+                    />
+                    <span className="self-center ml-2 text-xs">
+                      {username || <Skeleton width={40} />}
+                    </span>
+                  </a>
+                </Link>
+                {onOwnRecipe ? (
+                  <div className="">
+                    <Link
+                      href="/[username]/[recipehandle]/edit"
+                      as={`/${username}/${handle}/edit`}
+                    >
+                      <a className="w-28 m-auto btn text-sm font-normal">
+                        Edit
+                      </a>
+                    </Link>
+                  </div>
+                ) : null}
+              </div>
             </div>
-            <div className=" w-full flex align-middle">
-              <Link href="/[username]" as={`/${username}`}>
-                <a className="flex align-middle w-full">
-                  <img
-                    src={profileImageUrl ? profileImageUrl : PROFILE}
-                    className="h-6 cursor-pointer rounded-full"
-                  />
-                  <span className="self-center ml-2 text-xs">
-                    {username || <Skeleton width={40} />}
-                  </span>
-                </a>
-              </Link>
-              {onOwnRecipe ? (
-                <div className="">
-                  <Link
-                    href="/[username]/[recipehandle]/edit"
-                    as={`/${username}/${handle}/edit`}
-                  >
-                    <a className="w-28 m-auto btn text-sm font-normal">Edit</a>
-                  </Link>
-                </div>
-              ) : null}
-            </div>
-          </div>
-          <Collapse
-            isOpen={activeStep < 0}
-            transition={`height 500ms cubic-bezier(.4, 0, .2, 1)`}
-          >
+
             <div key="overview">
               <div className=" grid items-center  w-full h-full  m-auto">
                 <img
@@ -278,7 +269,12 @@ const RecipePage: NextPage<RecipeProps> = ({ recipe }) => {
                 </div>
               </div>
               <img src={INGREDIENTS} className="h-6 m-auto rounded mt-6" />
-              <div className=" border border-black rounded w-11/12 m-auto my-4">
+
+              <div
+                className={`${
+                  ingredients.length <= 0 ? 'border-none' : 'border'
+                } rounded w-11/12 m-auto my-4 border-black  p-2`}
+              >
                 {ingredients.map((ing: IngredientType) => (
                   <Ingredient
                     key={`${ing.ingredientInfo.name}${ing.quantity}`}
@@ -287,58 +283,121 @@ const RecipePage: NextPage<RecipeProps> = ({ recipe }) => {
                 ))}
               </div>
             </div>
-          </Collapse>
-          <div className="m-2">
-            {steps.map((step) => (
-              <Step
-                key={step.stepNum}
-                step={step}
-                activeStep={activeStep}
-                updateActiveStep={updateActiveStep}
+            <div className="m-2">
+              {steps.map((step) => (
+                <div>
+                  <div
+                    className="hover:scale-95 transform ease-in duration-200 w-full my-2 cursor-pointer "
+                    onClick={() => updateActiveStep(step.stepNum)}
+                  >
+                    <div className="grid grid-cols-12  border-b-2 text-l rounded  ">
+                      <span className="bg-black  flex col-span-2 text-2xl h-full w-full text-white m-auto rounded rounded-r-none border-black border-b-2  ">
+                        <span className="m-auto">{step.stepNum + 1}</span>
+                      </span>
+                      <span className="col-span-10 bg-white my-auto p-4 rounded m-1">
+                        {step.stepTitle}
+                      </span>
+                    </div>
+                  </div>
+                </div>
+              ))}
+              <button
+                className="relative hover:scale-105 transform ease-in duration-200 border-b-2 w-full focus:outline-none text-xl text-gray-800 font-bold p-2  border border-black rounded"
+                onClick={() => updateActiveStep(0)}
+              >
+                Start
+              </button>
+            </div>
+
+            <div className="grid grid-cols-2 m-2 items-center">
+              <img
+                className="h-8 m-2 cursor-pointer"
+                src={!!commentsOpen ? COMMENTS_BW : COMMENTS_WB}
+                onClick={() => setCommentsOpen(!commentsOpen)}
               />
-            ))}
+              <div className="flex justify-end  ">
+                <img
+                  className="h-8 m-2 cursor-pointer"
+                  src={!!saved ? SAVE_COLOR : SAVE_BW}
+                  onClick={handleSave}
+                />
+                <img
+                  className="h-8 m-2 cursor-pointer"
+                  src={recipeReaction != null ? YUM_COLOR : YUM_BW}
+                  onClick={() =>
+                    setYumHandler(
+                      currentUserInfo,
+                      id,
+                      recipeReaction,
+                      setRecipeReaction
+                    )
+                  }
+                />
+              </div>
+            </div>
+            <Collapse
+              isOpen={commentsOpen}
+              transition={`height 500ms cubic-bezier(.4, 0, .2, 1)`}
+            >
+              {username && handle && (
+                <RecipeComments
+                  id={id}
+                  username={username}
+                  handle={handle}
+                  className="rounded p-2"
+                />
+              )}
+            </Collapse>
           </div>
-          <div className="grid grid-cols-2 m-2 items-center">
-            <img
-              className="h-8 m-2 cursor-pointer"
-              src={!!commentsOpen ? COMMENTS_BW : COMMENTS_WB}
-              onClick={() => setCommentsOpen(!commentsOpen)}
-            />
-            <div className="flex justify-end  ">
-              <img
-                className="h-8 m-2 cursor-pointer"
-                src={!!saved ? SAVE_COLOR : SAVE_BW}
-                onClick={handleSave}
-              />
-              <img
-                className="h-8 m-2 cursor-pointer"
-                src={recipeReaction != null ? YUM_COLOR : YUM_BW}
-                onClick={() =>
-                  setYumHandler(
-                    currentUserInfo,
-                    id,
-                    recipeReaction,
-                    setRecipeReaction
+        </div>
+      ) : (
+        <div className="fixed top-0 bottom-0 z-100 bg-white font-mono whitespace-normal w-screen">
+          <div
+            className="absolute h-full w-full opacity-25 bg-cover "
+            style={{
+              backgroundImage: `url(${
+                steps[activeStep].imageUrl !== null
+                  ? steps[activeStep].imageUrl
+                  : imageUrl
+              })`,
+            }}
+          >
+            <div className="w-full h-full backdrop-blurMax"></div>
+          </div>
+
+          <div className="absolute left-0 top-0 bottom-0 right-0 max-w-3xl m-auto h-full shadow-lg ">
+            <div className="z-100 absolute top-0 right-0 h-1/2 ">
+              <div className="grid  justify-end">
+                <img
+                  className=" p-2 w-10 "
+                  style={{ justifySelf: 'end' }}
+                  onClick={() => updateActiveStep()}
+                  src={CLOSE}
+                ></img>
+                {steps.map((step) => {
+                  return (
+                    <div
+                      className={`${
+                        step.stepNum === activeStep ? '' : 'opacity-25'
+                      }   rounded text-center lg:text-2xl`}
+                      onClick={() => updateActiveStep(step.stepNum)}
+                    >
+                      {step.stepNum + 1}
+                    </div>
                   )
-                }
+                })}
+              </div>
+            </div>
+            <div className="grid grid-rows-cook h-full overflow-hidden p-2 absolute">
+              <Step
+                step={steps[activeStep]}
+                recipeImg={imageUrl || IMAGE_PLACEHOLDER}
+                updateActiveStep={updateActiveStep}
               />
             </div>
           </div>
-          <Collapse
-            isOpen={commentsOpen}
-            transition={`height 500ms cubic-bezier(.4, 0, .2, 1)`}
-          >
-            {username && handle && (
-              <RecipeComments
-                id={id}
-                username={username}
-                handle={handle}
-                className="rounded p-2"
-              />
-            )}
-          </Collapse>
         </div>
-      </div>
+      )}
     </React.Fragment>
   )
 }

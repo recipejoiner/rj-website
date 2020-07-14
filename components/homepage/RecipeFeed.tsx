@@ -30,7 +30,7 @@ export const UserSavedRecipes: React.FC<UserSavedRecipesProps> = ({
     cursor: null,
   }
   return (
-    <div className="bg-gray-100 pt-5 px-5 border-t">
+    <div className="border-t">
       <div className="m-auto max-w-3xl">
         <h3 className="text-center text-xl font-bold">{`${
           username ? `${username}'s` : 'Your'
@@ -127,7 +127,7 @@ export const AllRecipesFeed: React.FC<AllRecipesFeedProps> = ({}) => {
   }
 
   return (
-    <div className="bg-gray-100 pt-5 px-5 border-t">
+    <div className=" border-t">
       <div className="m-auto max-w-3xl">
         <h3 className="text-center text-xl font-bold">
           Check out some of our latest recipes!

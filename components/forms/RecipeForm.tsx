@@ -10,6 +10,8 @@ import {
   CreateRecipeVars,
 } from 'requests/recipes'
 
+import ImageFilePicker from 'helpers/ImageFilePicker'
+
 //start GLOBAL VARIABLES
 const IMAGE = require('images/icons/add.svg')
 const TIME = require('images/icons/alarm-clock.svg')
@@ -71,13 +73,15 @@ const NewIngredient = () => ({
 
 const NewStep = (index: number) => ({
   stepTitle: '',
+  image: undefined,
   stepNum: index,
   ingredients: [],
   additionalInfo: '',
 })
 
-const NewRecipe = () => ({
+const NewRecipe: () => RecipeInputType = () => ({
   title: '',
+  image: IMAGE,
   description: '',
   servings: 1,
   recipeTime: 0,
@@ -194,6 +198,11 @@ const RecipeStepMode: React.FC<RecipeStepProps> = ({
 }) => {
   const currentStep = step
 
+  const [selectedFile, setSelectedFile] = React.useState<File | undefined>()
+  const [preview, setPreview] = React.useState<string | undefined>()
+
+  const [imageErrs, setImageErrs] = React.useState<readonly GraphQLError[]>([])
+
   const validateQuantity = (value: string) => {
     const match =
       value && typeof value == 'string'
@@ -257,10 +266,21 @@ const RecipeStepMode: React.FC<RecipeStepProps> = ({
     updateValue(name, value, id)
   }
 
+  const onImageSelect = () => {
+    console.log('preview', preview)
+  }
+
+  const imagePicker = new ImageFilePicker(
+    setSelectedFile,
+    setPreview,
+    setImageErrs,
+    onImageSelect
+  )
+
   return (
     <React.Fragment>
-      <div className="grid grid-cols-3">
-        <div className="grid grid-rows-2 col-span-2">
+      <div className="">
+        <div className="grid grid-rows-2">
           <span className="text-4xl">Step {currentStep + 1}:</span>
           <input
             className="bg-transparent w-full text-4xl text-gray-700 leading-tight focus:outline-none"
@@ -271,9 +291,34 @@ const RecipeStepMode: React.FC<RecipeStepProps> = ({
             onChange={handleChange}
           ></input>
         </div>
-        <div className="text-center rounded">
-          <div className=" grid items-center  p-4 w-28 h-28 lg:w-32 lg:h-32 m-auto">
-            <img className="m-auto" src={IMAGE} />
+        <div className="text-center rounded mt-4 mx-auto w-full h-auto bg-gray-500">
+          <div className="w-full h-auto lg:w-32 lg:h-32 m-auto">
+            <label className="cursor-pointer w-full block">
+              <img
+                className="object-cover w-full h-auto"
+                src={preview ? preview : IMAGE}
+              />
+              <div className="mb-1">
+                {imageErrs.map((err) => {
+                  return (
+                    <span
+                      key={err.message}
+                      className="text-center text-sm text-red-600 left-0 w-full mt-2"
+                    >
+                      {err.message}
+                    </span>
+                  )
+                })}
+              </div>
+              <input
+                className="hidden"
+                name="files"
+                type="file"
+                multiple={false}
+                accept="image/*"
+                onChange={imagePicker.onSelectFile}
+              />
+            </label>
           </div>
         </div>
       </div>

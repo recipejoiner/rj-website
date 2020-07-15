@@ -37,7 +37,6 @@ class ImageFilePicker {
 
     if (filesize <= 5) {
       this.setImageErrs([])
-      console.log('setting preview to:', objectUrl)
       this.setPreview(objectUrl)
       this.onImageSelect()
     } else {

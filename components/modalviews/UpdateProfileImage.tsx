@@ -1,5 +1,4 @@
 import React from 'react'
-import { useForm } from 'react-hook-form'
 import { GraphQLError } from 'graphql'
 import ReactLoading from 'react-loading'
 
@@ -23,23 +22,17 @@ const UpdateProfileImage: React.FC<UpdateProfileImageProps> = ({
   const linkStyle =
     'w-full px-8 py-4 block font-semibold hover:text-gray-700 focus:text-gray-900 text-center text-sm tracking-widest border-b border-gray-300 focus:outline-none focus:shadow-outline'
 
-  const [selectedFile, setSelectedFile] = React.useState<File | undefined>()
   const [preview, setPreview] = React.useState<string | undefined>()
 
   const [imageErrs, setImageErrs] = React.useState<readonly GraphQLError[]>([])
 
-  const { register, handleSubmit, watch, errors } = useForm<{
-    files: FileList
-  }>()
-
-  const onSubmit = handleSubmit(() => {
-    setImageErrs([]) // clear the errors if any were set
-    if (selectedFile) {
-      submitForm(selectedFile)
+  const onImageSelect = (file: File | undefined) => {
+    if (file) {
+      submitForm(file)
     } else {
       setImageErrs([new GraphQLError('Image must be selected!')])
     }
-  })
+  }
 
   const submitForm = (selectedFile: File) => {
     const variables: SetProfileImageVarsType = {
@@ -72,10 +65,9 @@ const UpdateProfileImage: React.FC<UpdateProfileImageProps> = ({
   }
 
   const imagePicker = new ImageFilePicker(
-    setSelectedFile,
+    onImageSelect,
     setPreview,
-    setImageErrs,
-    onSubmit
+    setImageErrs
   )
 
   React.useEffect(() => {
@@ -85,11 +77,11 @@ const UpdateProfileImage: React.FC<UpdateProfileImageProps> = ({
 
   return (
     <div className="h-full w-full">
-      <form className="h-full" onSubmit={onSubmit}>
+      <form className="h-full">
         <label
           className={`${linkStyle} flex flex-row items-center justify-center -mt-5 h-full border-none text-base text-blue-600 focus:text-red-700 cursor-pointer`}
         >
-          {selectedFile && imageErrs.length === 0 ? (
+          {preview && imageErrs.length === 0 ? (
             <div className="w-48 h-48">
               <ReactLoading
                 type="bubbles"
@@ -126,7 +118,6 @@ const UpdateProfileImage: React.FC<UpdateProfileImageProps> = ({
             multiple={false}
             accept="image/*"
             onChange={imagePicker.onSelectFile}
-            ref={register}
           />
         </label>
       </form>

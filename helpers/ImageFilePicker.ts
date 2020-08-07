@@ -1,6 +1,8 @@
 import React from 'react'
 import { GraphQLError } from 'graphql'
 
+import { ensureVarIsSet } from 'helpers/methods'
+
 class ImageFilePicker {
   setSelectedFile: (file: File | undefined) => void
   setPreview: (preview: string | undefined) => void
@@ -19,7 +21,7 @@ class ImageFilePicker {
     this.onImageSelect = onImageSelect
   }
 
-  onSelectFile = (e: React.ChangeEvent<HTMLInputElement>) => {
+  onSelectFile = async (e: React.ChangeEvent<HTMLInputElement>) => {
     // debugger
     if (!e.target.files || e.target.files.length === 0) {
       this.setSelectedFile(undefined)

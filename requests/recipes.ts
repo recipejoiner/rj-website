@@ -292,7 +292,7 @@ export interface RecipeStepInputType {
   // [id: string]: string | Array<IngredientInputType> | any
   stepNum: number
   stepTitle: string
-  image?: File | null
+  image?: File | null | Object
   additionalInfo: string
   ingredients: Array<IngredientInputType>
 }

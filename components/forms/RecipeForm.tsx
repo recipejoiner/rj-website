@@ -3,7 +3,11 @@ import { GraphQLError } from 'graphql'
 import TextField from '@material-ui/core/TextField'
 import Autocomplete from '@material-ui/lab/Autocomplete'
 
-import { convertFractionToDecimal, removeFieldsByKey } from 'helpers/methods'
+import {
+  convertFractionToDecimal,
+  removeFieldsByKey,
+  ensureVarIsSet,
+} from 'helpers/methods'
 import {
   RecipeInputType,
   RecipeStepInputType,
@@ -163,6 +167,13 @@ const StepMiniView = ({
         <span className=" text-2xl rounded-full text-center m-auto">
           {stepIndex + 1}
         </span>
+        {console.log(
+          'recipe.steps[stepIndex].image',
+          recipe.steps[stepIndex].image
+        )}
+        {/* {recipe.steps[stepIndex].image ? (
+          <img src={} />
+        ) : null} */}
         <span className="col-span-2 bg-white text-center rounded m-1">
           {recipe.steps[stepIndex].stepTitle}{' '}
         </span>
@@ -210,30 +221,42 @@ const RecipeStepMode: React.FC<RecipeStepProps> = ({
         : ''
     return match?.length ? match[0] : ''
   }
-  const updateValue = (name: string, value: string, id?: string) => {
+  const updateValue = (name: string, value: string | Object, id?: string) => {
     let recipeCopy = JSON.parse(JSON.stringify(recipe))
     let index = -1
-    switch (name) {
-      //modified field is part of ingredient
-      case 'name':
-      case 'unit':
-      case 'quantity':
-        index = recipeCopy.steps[currentStep].ingredients.indexOf(
-          recipeCopy.steps[currentStep].ingredients.filter(
-            (ing: { id: string }) =>
-              id && ing.id === id.substring(0, id.indexOf('-'))
-          )[0]
-        )
-        if (name === 'quantity') value = validateQuantity(value)
-        if (index > -1)
-          recipeCopy.steps[currentStep].ingredients[index][name] = value
-        break
-      default:
-        recipeCopy.steps[currentStep][name] = value
-        break
+    if (typeof value === 'string') {
+      switch (name) {
+        //modified field is part of ingredient
+        case 'name':
+        case 'unit':
+        case 'quantity':
+          index = recipeCopy.steps[currentStep].ingredients.indexOf(
+            recipeCopy.steps[currentStep].ingredients.filter(
+              (ing: { id: string }) =>
+                id && ing.id === id.substring(0, id.indexOf('-'))
+            )[0]
+          )
+          if (name === 'quantity') value = validateQuantity(value)
+          if (index > -1)
+            recipeCopy.steps[currentStep].ingredients[index][name] = value
+          break
+        default:
+          recipeCopy.steps[currentStep][name] = value
+          break
+      }
+      updateRecipe(recipeCopy)
+      if (typeof value === 'string') {
+        updateError(id || name, value)
+      }
+    } else {
+      console.log('here')
+      if (name === 'image') {
+        console.log('val', value)
+        recipeCopy.steps[currentStep]['image'] = value
+        updateRecipe(recipeCopy)
+        return
+      }
     }
-    updateRecipe(recipeCopy)
-    updateError(id || name, value)
   }
 
   const createIngredient = () => {
@@ -266,8 +289,20 @@ const RecipeStepMode: React.FC<RecipeStepProps> = ({
     updateValue(name, value, id)
   }
 
-  const onImageSelect = () => {
-    console.log('preview', preview)
+  const onImageSelect = async () => {
+    const wait = new Promise((resolve, reject) => {
+      ;(function waitForFile() {
+        // console.log('selectedfile', selectedFile)
+        if (selectedFile) {
+          return resolve(selectedFile)
+        }
+        setTimeout(waitForFile, 300)
+      })()
+    })
+    wait.then((res) => {
+      const image = res as File
+      updateValue('image', image)
+    })
   }
 
   const imagePicker = new ImageFilePicker(
@@ -729,6 +764,7 @@ const RecipeForm: React.FC<RecipeFormProps> = ({
   }
 
   const updateRecipe = (updatedRecipe: RecipeInputType) => {
+    console.log('Updating recipe to:', updatedRecipe)
     setRecipe(updatedRecipe)
   }
 

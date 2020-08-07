@@ -299,7 +299,7 @@ export interface RecipeStepInputType {
 
 export interface RecipeInputType {
   title: string
-  image: File
+  image: Array<File>
   description: string
   servings: number
   recipeTime: number

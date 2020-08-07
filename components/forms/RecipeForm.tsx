@@ -85,7 +85,7 @@ const NewStep = (index: number) => ({
 
 const NewRecipe: () => RecipeInputType = () => ({
   title: '',
-  image: IMAGE,
+  image: [],
   description: '',
   servings: 1,
   recipeTime: 0,
@@ -205,9 +205,7 @@ const RecipeStepMode: React.FC<RecipeStepProps> = ({
 }) => {
   const currentStep = step
 
-  const [selectedFile, setSelectedFile] = React.useState<File | undefined>()
   const [preview, setPreview] = React.useState<string | undefined>()
-
   const [imageErrs, setImageErrs] = React.useState<readonly GraphQLError[]>([])
 
   const validateQuantity = (value: string) => {
@@ -484,7 +482,7 @@ interface RecipeReviewProps {
   goToStep: (step: number) => void
   updateRecipe: (updatedRecipe: RecipeInputType) => void
   getError: (key: string) => Array<Error>
-  updateError: (key: string, value?: string | number) => void
+  updateError: (key: string, value?: string | number | File) => void
   deleteError: (key: string) => void
 }
 const RecipeReviewMode: React.FC<RecipeReviewProps> = ({
@@ -495,7 +493,10 @@ const RecipeReviewMode: React.FC<RecipeReviewProps> = ({
   updateError,
   deleteError,
 }) => {
-  const updateValue = (name: string, value: string | number) => {
+  const [preview, setPreview] = React.useState<string | undefined>()
+  const [imageErrs, setImageErrs] = React.useState<readonly GraphQLError[]>([])
+
+  const updateValue = (name: string, value: string | number | File) => {
     let recipeCopy = cloneDeep<any>(recipe)
     let index = -1
     switch (name) {
@@ -510,6 +511,9 @@ const RecipeReviewMode: React.FC<RecipeReviewProps> = ({
       case 'servings':
         recipeCopy[name] = Number(value)
         break
+      case 'image':
+        recipeCopy['image'][0] = value
+        break
       default:
         recipeCopy[name] = value
         break
@@ -521,6 +525,27 @@ const RecipeReviewMode: React.FC<RecipeReviewProps> = ({
   const handleChange = (data: { target: { name: any; value: any } }) => {
     const { name, value }: { name: string; value: string } = data.target
     updateValue(name, value)
+  }
+  const onImageSelect = (file: File | undefined) => {
+    if (file) {
+      updateValue('image', file)
+    }
+  }
+
+  const imagePicker = new ImageFilePicker(
+    onImageSelect,
+    setPreview,
+    setImageErrs
+  )
+
+  const createImage = () => {
+    const file = recipe.image
+    if (file && file.length) {
+      const objectUrl = URL.createObjectURL(file[0])
+      setTimeout(() => URL.revokeObjectURL(objectUrl), 10000)
+      return objectUrl
+    }
+    return IMAGE
   }
   return (
     <React.Fragment>
@@ -548,15 +573,34 @@ const RecipeReviewMode: React.FC<RecipeReviewProps> = ({
           />
         )
       })}
-      <div className="grid grid-cols-3  my-8">
-        <div className=" grid items-center  p-2 w-32 h-32 m-auto">
-          <img className="p-4  m-auto" src={IMAGE} />
-        </div>{' '}
-        <div className=" grid items-center p-2 w-32 h-32 m-auto">
-          <img className="p-4  m-auto" src={IMAGE} />
-        </div>{' '}
-        <div className=" grid items-center  p-2 w-32 h-32 m-auto">
-          <img className="p-4  m-auto" src={IMAGE} />
+      <div className="text-center rounded mt-4 mx-auto w-full h-auto bg-gray-500">
+        <div className="w-full h-auto lg:w-32 lg:h-32 m-auto">
+          <label className="cursor-pointer w-full block">
+            <img
+              className="object-cover w-full h-auto"
+              src={preview ? preview : createImage()}
+            />
+            <div className="mb-1">
+              {imageErrs.map((err) => {
+                return (
+                  <span
+                    key={err.message}
+                    className="text-center text-sm text-red-600 left-0 w-full mt-2"
+                  >
+                    {err.message}
+                  </span>
+                )
+              })}
+            </div>
+            <input
+              className="hidden"
+              name="files"
+              type="file"
+              multiple={false}
+              accept="image/*"
+              onChange={imagePicker.onSelectFile}
+            />
+          </label>
         </div>
       </div>
       <div className="grid  grid-cols-2 border border-black p-2 gap-4  rounded ">
@@ -656,7 +700,7 @@ const RecipeForm: React.FC<RecipeFormProps> = ({
     setErrors(updatedErrors)
   }
 
-  const updateError = (key: string, value?: string | number) => {
+  const updateError = (key: string, value?: string | number | File) => {
     if (value && getError(key).length) deleteError(key)
   }
 

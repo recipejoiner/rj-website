@@ -800,9 +800,7 @@ const RecipeForm: React.FC<RecipeFormProps> = ({
   }
 
   const updateRecipe = (updatedRecipe: RecipeInputType) => {
-    console.log('Updating recipe to:', updatedRecipe)
     setRecipe(updatedRecipe)
-    console.log('updated recipe: ', recipe)
   }
 
   const convertValuesForDB = () => {

@@ -289,7 +289,7 @@ const RecipeStepMode: React.FC<RecipeStepProps> = ({
         if (selectedFile) {
           return resolve(selectedFile)
         }
-        setTimeout(waitForFile, 300)
+        setTimeout(waitForFile, 500)
       })()
     })
     wait.then((res) => {
@@ -305,10 +305,11 @@ const RecipeStepMode: React.FC<RecipeStepProps> = ({
     onImageSelect
   )
 
-  const createImage = (file: Array<File> | undefined) => {
-    console.log('file....', file)
+  const createImage = () => {
+    const file = recipe.steps[currentStep].image
     if (file && file.length) {
       const objectUrl = URL.createObjectURL(file[0])
+      setTimeout(() => URL.revokeObjectURL(objectUrl), 10000)
       return objectUrl
     }
     return IMAGE
@@ -333,11 +334,7 @@ const RecipeStepMode: React.FC<RecipeStepProps> = ({
             <label className="cursor-pointer w-full block">
               <img
                 className="object-cover w-full h-auto"
-                src={
-                  preview
-                    ? preview
-                    : createImage(recipe.steps[currentStep].image)
-                }
+                src={preview ? preview : createImage()}
               />
               <div className="mb-1">
                 {imageErrs.map((err) => {

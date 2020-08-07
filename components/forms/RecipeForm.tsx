@@ -283,26 +283,16 @@ const RecipeStepMode: React.FC<RecipeStepProps> = ({
     updateValue(name, value, id)
   }
 
-  const onImageSelect = async () => {
-    const wait = new Promise((resolve, reject) => {
-      ;(function waitForFile() {
-        if (selectedFile) {
-          return resolve(selectedFile)
-        }
-        setTimeout(waitForFile, 500)
-      })()
-    })
-    wait.then((res) => {
-      const image = res as File
-      updateValue('image', image)
-    })
+  const onImageSelect = (file: File | undefined) => {
+    if (file) {
+      updateValue('image', file)
+    }
   }
 
   const imagePicker = new ImageFilePicker(
-    setSelectedFile,
+    onImageSelect,
     setPreview,
-    setImageErrs,
-    onImageSelect
+    setImageErrs
   )
 
   const createImage = () => {

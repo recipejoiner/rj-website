@@ -4,18 +4,15 @@ import { GraphQLError } from 'graphql'
 import { ensureVarIsSet } from 'helpers/methods'
 
 class ImageFilePicker {
-  setSelectedFile: (file: File | undefined) => void
+  onImageSelect: (file: File | undefined) => void
   setPreview: (preview: string | undefined) => void
   setImageErrs: (errors: readonly GraphQLError[]) => void
-  onImageSelect: () => void
 
   constructor(
-    setSelectedFile: (file: File | undefined) => void,
+    onImageSelect: (file: File | undefined) => void,
     setPreview: (preview: string | undefined) => void,
-    setImageErrs: (errors: readonly GraphQLError[]) => void,
-    onImageSelect: () => void
+    setImageErrs: (errors: readonly GraphQLError[]) => void
   ) {
-    this.setSelectedFile = setSelectedFile
     this.setPreview = setPreview
     this.setImageErrs = setImageErrs
     this.onImageSelect = onImageSelect
@@ -24,14 +21,12 @@ class ImageFilePicker {
   onSelectFile = async (e: React.ChangeEvent<HTMLInputElement>) => {
     // debugger
     if (!e.target.files || e.target.files.length === 0) {
-      this.setSelectedFile(undefined)
+      this.onImageSelect(undefined)
       this.setPreview(undefined)
       return
     }
 
     const selectedFile = e.target.files[0]
-
-    this.setSelectedFile(selectedFile)
 
     const filesize = selectedFile.size / 1024 / 1024 //megabytes
 
@@ -40,7 +35,7 @@ class ImageFilePicker {
     if (filesize <= 5) {
       this.setImageErrs([])
       this.setPreview(objectUrl)
-      this.onImageSelect()
+      this.onImageSelect(selectedFile)
     } else {
       this.setImageErrs([new GraphQLError("Image can't be larger than 5mb!")])
     }

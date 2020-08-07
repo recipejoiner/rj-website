@@ -2,7 +2,7 @@ import * as React from 'react'
 import { GraphQLError } from 'graphql'
 import TextField from '@material-ui/core/TextField'
 import Autocomplete from '@material-ui/lab/Autocomplete'
-
+import { cloneDeep } from 'lodash'
 import {
   convertFractionToDecimal,
   removeFieldsByKey,
@@ -77,7 +77,7 @@ const NewIngredient = () => ({
 
 const NewStep = (index: number) => ({
   stepTitle: '',
-  image: undefined,
+  image: [],
   stepNum: index,
   ingredients: [],
   additionalInfo: '',
@@ -167,10 +167,6 @@ const StepMiniView = ({
         <span className=" text-2xl rounded-full text-center m-auto">
           {stepIndex + 1}
         </span>
-        {console.log(
-          'recipe.steps[stepIndex].image',
-          recipe.steps[stepIndex].image
-        )}
         {/* {recipe.steps[stepIndex].image ? (
           <img src={} />
         ) : null} */}
@@ -222,7 +218,7 @@ const RecipeStepMode: React.FC<RecipeStepProps> = ({
     return match?.length ? match[0] : ''
   }
   const updateValue = (name: string, value: string | Object, id?: string) => {
-    let recipeCopy = JSON.parse(JSON.stringify(recipe))
+    let recipeCopy = cloneDeep<any>(recipe)
     let index = -1
     if (typeof value === 'string') {
       switch (name) {
@@ -249,10 +245,8 @@ const RecipeStepMode: React.FC<RecipeStepProps> = ({
         updateError(id || name, value)
       }
     } else {
-      console.log('here')
       if (name === 'image') {
-        console.log('val', value)
-        recipeCopy.steps[currentStep]['image'] = value
+        recipeCopy.steps[currentStep].image[0] = value
         updateRecipe(recipeCopy)
         return
       }
@@ -260,13 +254,13 @@ const RecipeStepMode: React.FC<RecipeStepProps> = ({
   }
 
   const createIngredient = () => {
-    let recipeCopy = JSON.parse(JSON.stringify(recipe))
+    let recipeCopy = cloneDeep<any>(recipe)
     recipeCopy.steps[currentStep].ingredients.push(NewIngredient())
     updateRecipe(recipeCopy)
   }
 
   const deleteIngredient = (ingredientId: string) => {
-    let recipeCopy = JSON.parse(JSON.stringify(recipe))
+    let recipeCopy = cloneDeep<any>(recipe)
     let toDelete = recipeCopy.steps[currentStep].ingredients.filter(
       (ing: { id: string }) => ing.id == ingredientId
     )[0]
@@ -292,7 +286,6 @@ const RecipeStepMode: React.FC<RecipeStepProps> = ({
   const onImageSelect = async () => {
     const wait = new Promise((resolve, reject) => {
       ;(function waitForFile() {
-        // console.log('selectedfile', selectedFile)
         if (selectedFile) {
           return resolve(selectedFile)
         }
@@ -311,6 +304,15 @@ const RecipeStepMode: React.FC<RecipeStepProps> = ({
     setImageErrs,
     onImageSelect
   )
+
+  const createImage = (file: Array<File> | undefined) => {
+    console.log('file....', file)
+    if (file && file.length) {
+      const objectUrl = URL.createObjectURL(file[0])
+      return objectUrl
+    }
+    return IMAGE
+  }
 
   return (
     <React.Fragment>
@@ -331,7 +333,11 @@ const RecipeStepMode: React.FC<RecipeStepProps> = ({
             <label className="cursor-pointer w-full block">
               <img
                 className="object-cover w-full h-auto"
-                src={preview ? preview : IMAGE}
+                src={
+                  preview
+                    ? preview
+                    : createImage(recipe.steps[currentStep].image)
+                }
               />
               <div className="mb-1">
                 {imageErrs.map((err) => {
@@ -503,7 +509,7 @@ const RecipeReviewMode: React.FC<RecipeReviewProps> = ({
   deleteError,
 }) => {
   const updateValue = (name: string, value: string | number) => {
-    let recipeCopy = JSON.parse(JSON.stringify(recipe))
+    let recipeCopy = cloneDeep<any>(recipe)
     let index = -1
     switch (name) {
       case 'hours':
@@ -672,7 +678,7 @@ const RecipeForm: React.FC<RecipeFormProps> = ({
   }
 
   const createStep = () => {
-    let recipeCopy = JSON.parse(JSON.stringify(recipe))
+    let recipeCopy = cloneDeep<any>(recipe)
     let newStep: RecipeStepInputType = NewStep(currentStep + 1)
     recipeCopy.steps.push(newStep)
     setRecipe(recipeCopy)
@@ -680,7 +686,7 @@ const RecipeForm: React.FC<RecipeFormProps> = ({
 
   const deleteStep = (stepNum: number) => {
     if (stepNum > -1) {
-      let recipeCopy = JSON.parse(JSON.stringify(recipe))
+      let recipeCopy = cloneDeep<any>(recipe)
       if (recipeCopy.steps.length == 1) recipeCopy.steps[0] = NewStep(0)
       else recipeCopy.steps.splice(stepNum, 1)
       for (let stepIndex = 0; stepIndex < recipeCopy.steps.length; stepIndex++)
@@ -731,7 +737,6 @@ const RecipeForm: React.FC<RecipeFormProps> = ({
         }
         break
       case 'isRealNumber':
-        console.log(value)
         let match =
           value && typeof value == 'string'
             ? value.match(/[0-9]+([ ]{1}[1-9]{1}([\/]{1})[0-9]{1,2})?/)
@@ -766,10 +771,11 @@ const RecipeForm: React.FC<RecipeFormProps> = ({
   const updateRecipe = (updatedRecipe: RecipeInputType) => {
     console.log('Updating recipe to:', updatedRecipe)
     setRecipe(updatedRecipe)
+    console.log('updated recipe: ', recipe)
   }
 
   const convertValuesForDB = () => {
-    let recipeCopy = JSON.parse(JSON.stringify(recipe))
+    let recipeCopy = cloneDeep<any>(recipe)
 
     recipeCopy.steps.map((step: { ingredients: { quantity: string }[] }) => {
       step.ingredients.map((ing: { quantity: string }) => {
@@ -783,7 +789,6 @@ const RecipeForm: React.FC<RecipeFormProps> = ({
   const submitRecipe = () => {
     if (validateValue('title', recipe.title, 'required')) {
       let recipeFinal = convertValuesForDB()
-      console.log('submitting recipe: ', recipeFinal)
       submit({ attributes: recipeFinal })
     }
   }

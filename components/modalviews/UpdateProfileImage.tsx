@@ -1,5 +1,4 @@
 import React from 'react'
-import { useForm } from 'react-hook-form'
 import { GraphQLError } from 'graphql'
 import ReactLoading from 'react-loading'
 
@@ -10,7 +9,8 @@ import {
   SetProfileImageVarsType,
   SET_PROFILE_IMAGE,
 } from 'requests/users'
-import Skeleton from 'react-loading-skeleton'
+
+import ImageFilePicker from 'helpers/ImageFilePicker'
 
 type UpdateProfileImageProps = {
   updateProfileImageUrl: (profileImageUrl: string) => void
@@ -22,51 +22,21 @@ const UpdateProfileImage: React.FC<UpdateProfileImageProps> = ({
   const linkStyle =
     'w-full px-8 py-4 block font-semibold hover:text-gray-700 focus:text-gray-900 text-center text-sm tracking-widest border-b border-gray-300 focus:outline-none focus:shadow-outline'
 
-  const [selectedFile, setSelectedFile] = React.useState<File | undefined>()
   const [preview, setPreview] = React.useState<string | undefined>()
 
   const [imageErrs, setImageErrs] = React.useState<readonly GraphQLError[]>([])
 
-  // create a preview as a side effect, whenever selected file is changed
-  React.useEffect(() => {
-    if (!selectedFile) {
-      setPreview(undefined)
-      return
-    }
-
-    const filesize = selectedFile.size / 1024 / 1024 //megabytes
-
-    const objectUrl = URL.createObjectURL(selectedFile)
-
-    if (filesize <= 5) {
-      setPreview(objectUrl)
-      onSubmit()
+  const onImageSelect = (file: File | undefined) => {
+    if (file) {
+      submitForm(file)
     } else {
-      setImageErrs([new GraphQLError("Image can't be larger than 5mb!")])
+      setImageErrs([new GraphQLError('Image must be selected!')])
     }
-
-    // Free memory when ever this component is unmounted
-    return () => URL.revokeObjectURL(objectUrl)
-  }, [selectedFile])
-
-  const onSelectFile = (e: React.ChangeEvent<HTMLInputElement>) => {
-    if (!e.target.files || e.target.files.length === 0) {
-      setSelectedFile(undefined)
-      return
-    }
-
-    // Use first image
-    setSelectedFile(e.target.files[0])
   }
 
-  const { register, handleSubmit, watch, errors } = useForm<{
-    files: FileList
-  }>()
-
-  const onSubmit = handleSubmit(({ files }) => {
-    setImageErrs([]) // clear the errors if any were set
+  const submitForm = (selectedFile: File) => {
     const variables: SetProfileImageVarsType = {
-      profileImage: files[0],
+      profileImage: selectedFile,
     }
     client
       .mutate({
@@ -92,15 +62,26 @@ const UpdateProfileImage: React.FC<UpdateProfileImageProps> = ({
         setImageErrs(err.graphQLErrors)
         console.log('imageErrs', imageErrs)
       })
-  })
+  }
+
+  const imagePicker = new ImageFilePicker(
+    onImageSelect,
+    setPreview,
+    setImageErrs
+  )
+
+  React.useEffect(() => {
+    console.log('preview', preview)
+    console.log('imagePicker', imagePicker)
+  }, [preview])
 
   return (
     <div className="h-full w-full">
-      <form className="h-full" onSubmit={onSubmit}>
+      <form className="h-full">
         <label
           className={`${linkStyle} flex flex-row items-center justify-center -mt-5 h-full border-none text-base text-blue-600 focus:text-red-700 cursor-pointer`}
         >
-          {selectedFile && imageErrs.length === 0 ? (
+          {preview && imageErrs.length === 0 ? (
             <div className="w-48 h-48">
               <ReactLoading
                 type="bubbles"
@@ -119,7 +100,10 @@ const UpdateProfileImage: React.FC<UpdateProfileImageProps> = ({
               Upload Photo
               {imageErrs.map((err) => {
                 return (
-                  <span className="absolute block text-center text-sm text-red-600 left-0 w-full mt-2">
+                  <span
+                    key={err.message}
+                    className="absolute block text-center text-sm text-red-600 left-0 w-full mt-2"
+                  >
                     {err.message}
                   </span>
                 )
@@ -133,8 +117,7 @@ const UpdateProfileImage: React.FC<UpdateProfileImageProps> = ({
             type="file"
             multiple={false}
             accept="image/*"
-            onChange={onSelectFile}
-            ref={register}
+            onChange={imagePicker.onSelectFile}
           />
         </label>
       </form>

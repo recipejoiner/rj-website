@@ -2,13 +2,19 @@ import * as React from 'react'
 import { GraphQLError } from 'graphql'
 import TextField from '@material-ui/core/TextField'
 import Autocomplete from '@material-ui/lab/Autocomplete'
-
-import { convertFractionToDecimal, removeFieldsByKey } from 'helpers/methods'
+import { cloneDeep } from 'lodash'
+import {
+  convertFractionToDecimal,
+  removeFieldsByKey,
+  ensureVarIsSet,
+} from 'helpers/methods'
 import {
   RecipeInputType,
   RecipeStepInputType,
   CreateRecipeVars,
 } from 'requests/recipes'
+
+import ImageFilePicker from 'helpers/ImageFilePicker'
 
 //start GLOBAL VARIABLES
 const IMAGE = require('images/icons/add.svg')
@@ -71,13 +77,15 @@ const NewIngredient = () => ({
 
 const NewStep = (index: number) => ({
   stepTitle: '',
+  image: [],
   stepNum: index,
   ingredients: [],
   additionalInfo: '',
 })
 
-const NewRecipe = () => ({
+const NewRecipe: () => RecipeInputType = () => ({
   title: '',
+  image: [],
   description: '',
   servings: 1,
   recipeTime: 0,
@@ -159,6 +167,9 @@ const StepMiniView = ({
         <span className=" text-2xl rounded-full text-center m-auto">
           {stepIndex + 1}
         </span>
+        {/* {recipe.steps[stepIndex].image ? (
+          <img src={} />
+        ) : null} */}
         <span className="col-span-2 bg-white text-center rounded m-1">
           {recipe.steps[stepIndex].stepTitle}{' '}
         </span>
@@ -194,6 +205,9 @@ const RecipeStepMode: React.FC<RecipeStepProps> = ({
 }) => {
   const currentStep = step
 
+  const [preview, setPreview] = React.useState<string | undefined>()
+  const [imageErrs, setImageErrs] = React.useState<readonly GraphQLError[]>([])
+
   const validateQuantity = (value: string) => {
     const match =
       value && typeof value == 'string'
@@ -201,40 +215,50 @@ const RecipeStepMode: React.FC<RecipeStepProps> = ({
         : ''
     return match?.length ? match[0] : ''
   }
-  const updateValue = (name: string, value: string, id?: string) => {
-    let recipeCopy = JSON.parse(JSON.stringify(recipe))
+  const updateValue = (name: string, value: string | Object, id?: string) => {
+    let recipeCopy = cloneDeep<any>(recipe)
     let index = -1
-    switch (name) {
-      //modified field is part of ingredient
-      case 'name':
-      case 'unit':
-      case 'quantity':
-        index = recipeCopy.steps[currentStep].ingredients.indexOf(
-          recipeCopy.steps[currentStep].ingredients.filter(
-            (ing: { id: string }) =>
-              id && ing.id === id.substring(0, id.indexOf('-'))
-          )[0]
-        )
-        if (name === 'quantity') value = validateQuantity(value)
-        if (index > -1)
-          recipeCopy.steps[currentStep].ingredients[index][name] = value
-        break
-      default:
-        recipeCopy.steps[currentStep][name] = value
-        break
+    if (typeof value === 'string') {
+      switch (name) {
+        //modified field is part of ingredient
+        case 'name':
+        case 'unit':
+        case 'quantity':
+          index = recipeCopy.steps[currentStep].ingredients.indexOf(
+            recipeCopy.steps[currentStep].ingredients.filter(
+              (ing: { id: string }) =>
+                id && ing.id === id.substring(0, id.indexOf('-'))
+            )[0]
+          )
+          if (name === 'quantity') value = validateQuantity(value)
+          if (index > -1)
+            recipeCopy.steps[currentStep].ingredients[index][name] = value
+          break
+        default:
+          recipeCopy.steps[currentStep][name] = value
+          break
+      }
+      updateRecipe(recipeCopy)
+      if (typeof value === 'string') {
+        updateError(id || name, value)
+      }
+    } else {
+      if (name === 'image') {
+        recipeCopy.steps[currentStep].image[0] = value
+        updateRecipe(recipeCopy)
+        return
+      }
     }
-    updateRecipe(recipeCopy)
-    updateError(id || name, value)
   }
 
   const createIngredient = () => {
-    let recipeCopy = JSON.parse(JSON.stringify(recipe))
+    let recipeCopy = cloneDeep<any>(recipe)
     recipeCopy.steps[currentStep].ingredients.push(NewIngredient())
     updateRecipe(recipeCopy)
   }
 
   const deleteIngredient = (ingredientId: string) => {
-    let recipeCopy = JSON.parse(JSON.stringify(recipe))
+    let recipeCopy = cloneDeep<any>(recipe)
     let toDelete = recipeCopy.steps[currentStep].ingredients.filter(
       (ing: { id: string }) => ing.id == ingredientId
     )[0]
@@ -257,10 +281,32 @@ const RecipeStepMode: React.FC<RecipeStepProps> = ({
     updateValue(name, value, id)
   }
 
+  const onImageSelect = (file: File | undefined) => {
+    if (file) {
+      updateValue('image', file)
+    }
+  }
+
+  const imagePicker = new ImageFilePicker(
+    onImageSelect,
+    setPreview,
+    setImageErrs
+  )
+
+  const createImage = () => {
+    const file = recipe.steps[currentStep].image
+    if (file && file.length) {
+      const objectUrl = URL.createObjectURL(file[0])
+      setTimeout(() => URL.revokeObjectURL(objectUrl), 10000)
+      return objectUrl
+    }
+    return IMAGE
+  }
+
   return (
     <React.Fragment>
-      <div className="grid grid-cols-3">
-        <div className="grid grid-rows-2 col-span-2">
+      <div className="">
+        <div className="grid grid-rows-2">
           <span className="text-4xl">Step {currentStep + 1}:</span>
           <input
             className="bg-transparent w-full text-4xl text-gray-700 leading-tight focus:outline-none"
@@ -271,9 +317,34 @@ const RecipeStepMode: React.FC<RecipeStepProps> = ({
             onChange={handleChange}
           ></input>
         </div>
-        <div className="text-center rounded">
-          <div className=" grid items-center  p-4 w-28 h-28 lg:w-32 lg:h-32 m-auto">
-            <img className="m-auto" src={IMAGE} />
+        <div className="text-center rounded mt-4 mx-auto w-full h-auto bg-gray-500">
+          <div className="w-full h-auto lg:w-32 lg:h-32 m-auto">
+            <label className="cursor-pointer w-full block">
+              <img
+                className="object-cover w-full h-auto"
+                src={preview ? preview : createImage()}
+              />
+              <div className="mb-1">
+                {imageErrs.map((err) => {
+                  return (
+                    <span
+                      key={err.message}
+                      className="text-center text-sm text-red-600 left-0 w-full mt-2"
+                    >
+                      {err.message}
+                    </span>
+                  )
+                })}
+              </div>
+              <input
+                className="hidden"
+                name="files"
+                type="file"
+                multiple={false}
+                accept="image/*"
+                onChange={imagePicker.onSelectFile}
+              />
+            </label>
           </div>
         </div>
       </div>
@@ -411,7 +482,7 @@ interface RecipeReviewProps {
   goToStep: (step: number) => void
   updateRecipe: (updatedRecipe: RecipeInputType) => void
   getError: (key: string) => Array<Error>
-  updateError: (key: string, value?: string | number) => void
+  updateError: (key: string, value?: string | number | File) => void
   deleteError: (key: string) => void
 }
 const RecipeReviewMode: React.FC<RecipeReviewProps> = ({
@@ -422,8 +493,11 @@ const RecipeReviewMode: React.FC<RecipeReviewProps> = ({
   updateError,
   deleteError,
 }) => {
-  const updateValue = (name: string, value: string | number) => {
-    let recipeCopy = JSON.parse(JSON.stringify(recipe))
+  const [preview, setPreview] = React.useState<string | undefined>()
+  const [imageErrs, setImageErrs] = React.useState<readonly GraphQLError[]>([])
+
+  const updateValue = (name: string, value: string | number | File) => {
+    let recipeCopy = cloneDeep<any>(recipe)
     let index = -1
     switch (name) {
       case 'hours':
@@ -437,6 +511,9 @@ const RecipeReviewMode: React.FC<RecipeReviewProps> = ({
       case 'servings':
         recipeCopy[name] = Number(value)
         break
+      case 'image':
+        recipeCopy['image'][0] = value
+        break
       default:
         recipeCopy[name] = value
         break
@@ -448,6 +525,27 @@ const RecipeReviewMode: React.FC<RecipeReviewProps> = ({
   const handleChange = (data: { target: { name: any; value: any } }) => {
     const { name, value }: { name: string; value: string } = data.target
     updateValue(name, value)
+  }
+  const onImageSelect = (file: File | undefined) => {
+    if (file) {
+      updateValue('image', file)
+    }
+  }
+
+  const imagePicker = new ImageFilePicker(
+    onImageSelect,
+    setPreview,
+    setImageErrs
+  )
+
+  const createImage = () => {
+    const file = recipe.image
+    if (file && file.length) {
+      const objectUrl = URL.createObjectURL(file[0])
+      setTimeout(() => URL.revokeObjectURL(objectUrl), 10000)
+      return objectUrl
+    }
+    return IMAGE
   }
   return (
     <React.Fragment>
@@ -475,15 +573,34 @@ const RecipeReviewMode: React.FC<RecipeReviewProps> = ({
           />
         )
       })}
-      <div className="grid grid-cols-3  my-8">
-        <div className=" grid items-center  p-2 w-32 h-32 m-auto">
-          <img className="p-4  m-auto" src={IMAGE} />
-        </div>{' '}
-        <div className=" grid items-center p-2 w-32 h-32 m-auto">
-          <img className="p-4  m-auto" src={IMAGE} />
-        </div>{' '}
-        <div className=" grid items-center  p-2 w-32 h-32 m-auto">
-          <img className="p-4  m-auto" src={IMAGE} />
+      <div className="text-center rounded mt-4 mx-auto w-full h-auto bg-gray-500">
+        <div className="w-full h-auto lg:w-32 lg:h-32 m-auto">
+          <label className="cursor-pointer w-full block">
+            <img
+              className="object-cover w-full h-auto"
+              src={preview ? preview : createImage()}
+            />
+            <div className="mb-1">
+              {imageErrs.map((err) => {
+                return (
+                  <span
+                    key={err.message}
+                    className="text-center text-sm text-red-600 left-0 w-full mt-2"
+                  >
+                    {err.message}
+                  </span>
+                )
+              })}
+            </div>
+            <input
+              className="hidden"
+              name="files"
+              type="file"
+              multiple={false}
+              accept="image/*"
+              onChange={imagePicker.onSelectFile}
+            />
+          </label>
         </div>
       </div>
       <div className="grid  grid-cols-2 border border-black p-2 gap-4  rounded ">
@@ -583,7 +700,7 @@ const RecipeForm: React.FC<RecipeFormProps> = ({
     setErrors(updatedErrors)
   }
 
-  const updateError = (key: string, value?: string | number) => {
+  const updateError = (key: string, value?: string | number | File) => {
     if (value && getError(key).length) deleteError(key)
   }
 
@@ -592,7 +709,7 @@ const RecipeForm: React.FC<RecipeFormProps> = ({
   }
 
   const createStep = () => {
-    let recipeCopy = JSON.parse(JSON.stringify(recipe))
+    let recipeCopy = cloneDeep<any>(recipe)
     let newStep: RecipeStepInputType = NewStep(currentStep + 1)
     recipeCopy.steps.push(newStep)
     setRecipe(recipeCopy)
@@ -600,7 +717,7 @@ const RecipeForm: React.FC<RecipeFormProps> = ({
 
   const deleteStep = (stepNum: number) => {
     if (stepNum > -1) {
-      let recipeCopy = JSON.parse(JSON.stringify(recipe))
+      let recipeCopy = cloneDeep<any>(recipe)
       if (recipeCopy.steps.length == 1) recipeCopy.steps[0] = NewStep(0)
       else recipeCopy.steps.splice(stepNum, 1)
       for (let stepIndex = 0; stepIndex < recipeCopy.steps.length; stepIndex++)
@@ -651,7 +768,6 @@ const RecipeForm: React.FC<RecipeFormProps> = ({
         }
         break
       case 'isRealNumber':
-        console.log(value)
         let match =
           value && typeof value == 'string'
             ? value.match(/[0-9]+([ ]{1}[1-9]{1}([\/]{1})[0-9]{1,2})?/)
@@ -688,7 +804,7 @@ const RecipeForm: React.FC<RecipeFormProps> = ({
   }
 
   const convertValuesForDB = () => {
-    let recipeCopy = JSON.parse(JSON.stringify(recipe))
+    let recipeCopy = cloneDeep<any>(recipe)
 
     recipeCopy.steps.map((step: { ingredients: { quantity: string }[] }) => {
       step.ingredients.map((ing: { quantity: string }) => {
@@ -702,7 +818,6 @@ const RecipeForm: React.FC<RecipeFormProps> = ({
   const submitRecipe = () => {
     if (validateValue('title', recipe.title, 'required')) {
       let recipeFinal = convertValuesForDB()
-      console.log('submitting recipe: ', recipeFinal)
       submit({ attributes: recipeFinal })
     }
   }

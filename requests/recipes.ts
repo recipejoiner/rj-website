@@ -197,7 +197,7 @@ export interface RecipeType {
     }
     id: string
     title: string
-    imageUrl: string | null
+    imageUrl: string
     handle: string
     description: string
     servings: number

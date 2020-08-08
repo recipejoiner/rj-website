@@ -4,7 +4,6 @@ import { GetServerSideProps } from 'next'
 import * as React from 'react'
 import Router from 'next/router'
 import { GraphQLError } from 'graphql'
-// import { v4 as uuid } from 'uuid'
 
 import { toMixedNumber } from 'helpers/methods'
 import { getToken } from 'helpers/auth'
@@ -13,6 +12,8 @@ import {
   CurrentUserLoginCheckType,
   CURRENT_USER_LOGIN_CHECK,
 } from 'requests/auth'
+
+import { urlToFile } from 'helpers/methods'
 
 import client from 'requests/client'
 
@@ -31,19 +32,115 @@ import {
 
 import RecipeForm from 'components/forms/RecipeForm'
 
-interface EditRecipePageProps {
-  existingRecipeId: number
+interface GetExistingRecipeAttributesReturnType {
+  existingRecipeId: string
   oldAttributes: RecipeInputType
 }
 
+const getExistingRecipeAttributes = async (
+  username: string,
+  recipehandle: string
+): Promise<GetExistingRecipeAttributesReturnType> => {
+  const existingRecipeData: RecipeType = await client
+    .query({
+      query: RECIPE_BY_USERNAME_AND_HANDLE,
+      variables: {
+        username: username,
+        handle: recipehandle,
+      },
+      context: {
+        // example of setting the headers with context per operation
+        headers: {
+          authorization: `Bearer ${getToken()}`,
+        },
+      },
+    })
+    .then((res) => {
+      const { data }: { data?: RecipeType } = res || {}
+      if (!!data) {
+        return data
+      } else {
+        throw 'No recipe data returned!'
+      }
+    })
+
+  const { result } = existingRecipeData
+  const {
+    id,
+    title,
+    description,
+    servings,
+    steps,
+    recipeTime,
+    imageUrl,
+  } = result
+
+  const image = await urlToFile(imageUrl)
+
+  const formatSteps = (steps: RecipeStepType[]) => {
+    let formattedSteps: Array<RecipeStepInputType> = []
+    let stepIndexZero = steps[0].stepNum === 0 ? true : false
+    steps.map(async (step) => {
+      let stepImage = null
+      if (step.imageUrl) {
+        stepImage = await urlToFile(step.imageUrl)
+      }
+      let formattedIngredients: Array<IngredientInputType> = []
+      step.ingredients.map((ing) => {
+        formattedIngredients.push({
+          id: (Date.now() * Math.random()).toFixed(0).toString(),
+          name: ing.ingredientInfo.name,
+          quantity: toMixedNumber(ing.quantity),
+          unit: ing.unit.name,
+        })
+      })
+      formattedSteps.push({
+        stepNum: stepIndexZero ? step.stepNum : step.stepNum - 1,
+        stepTitle: step.stepTitle,
+        image: stepImage ? [stepImage] : undefined,
+        additionalInfo: step.additionalInfo,
+        ingredients: formattedIngredients,
+      })
+    })
+    return formattedSteps
+  }
+  const existingRecipeId = id
+  // convert the type
+  var oldAttributes: RecipeInputType = {
+    title: title,
+    image: [image],
+    description: description,
+    servings: servings,
+    recipeTime: recipeTime,
+    steps: formatSteps(steps),
+  }
+
+  return { existingRecipeId: existingRecipeId, oldAttributes: oldAttributes }
+}
+
+interface EditRecipePageProps {
+  username: string
+  recipehandle: string
+}
+
 const EditRecipePage: NextPage<EditRecipePageProps> = ({
-  existingRecipeId,
-  oldAttributes,
+  username,
+  recipehandle,
 }) => {
+  const [existingRecipeId, setExistingRecipeId] = React.useState<string>()
+  const [oldAttributes, setOldAttributes] = React.useState<RecipeInputType>()
+  if (!oldAttributes) {
+    getExistingRecipeAttributes(username, recipehandle)
+      .then((res) => {
+        setExistingRecipeId(res.existingRecipeId)
+        setOldAttributes(res.oldAttributes)
+      })
+      .catch((err) => console.log(err))
+  }
+
   const [newRecipeErrs, setNewRecipeErrs] = React.useState<
     readonly GraphQLError[]
   >([])
-  // console.log('attributes', watch('attributes'))
   const onSubmit = (variables: CreateRecipeVars) => {
     client
       .mutate({
@@ -102,12 +199,14 @@ const EditRecipePage: NextPage<EditRecipePageProps> = ({
         />
         {/* OpenGraph tags end */}
       </Head>
-      <RecipeForm
-        submit={onSubmit}
-        recipeInit={oldAttributes}
-        reviewModeInit={true}
-        serverErrors={newRecipeErrs}
-      />
+      {oldAttributes && (
+        <RecipeForm
+          submit={onSubmit}
+          recipeInit={oldAttributes}
+          reviewModeInit={true}
+          serverErrors={newRecipeErrs}
+        />
+      )}
     </React.Fragment>
   )
 }
@@ -144,74 +243,10 @@ export const getServerSideProps: GetServerSideProps = async (ctx) => {
         throw 'No user!'
       })
 
-    const existingRecipeData: RecipeType = await client
-      .query({
-        query: RECIPE_BY_USERNAME_AND_HANDLE,
-        variables: {
-          username: username,
-          handle: recipehandle,
-        },
-        context: {
-          // example of setting the headers with context per operation
-          headers: {
-            authorization: `Bearer ${getToken(ctx)}`,
-          },
-        },
-      })
-      .then((res) => {
-        const { data }: { data?: RecipeType } = res || {}
-        if (!!data) {
-          return data
-        } else {
-          throw 'No recipe data returned!'
-        }
-      })
-
-    const { result } = existingRecipeData
-    const { id, title, description, servings, steps, recipeTime } = result
-
-    const formatSteps = (steps: RecipeStepType[]) => {
-      let formattedSteps: Array<RecipeStepInputType> = []
-      let stepIndexZero = steps[0].stepNum === 0 ? true : false
-      steps.map(
-        (step: {
-          stepNum: number
-          stepTitle: string
-          additionalInfo: string
-          ingredients: any[]
-        }) => {
-          let formattedIngredients: Array<IngredientInputType> = []
-          step.ingredients.map((ing) => {
-            formattedIngredients.push({
-              id: (Date.now() * Math.random()).toFixed(0).toString(),
-              name: ing.ingredientInfo.name,
-              quantity: toMixedNumber(ing.quantity),
-              unit: ing.unit.name,
-            })
-          })
-          formattedSteps.push({
-            stepNum: stepIndexZero ? step.stepNum : step.stepNum - 1,
-            stepTitle: step.stepTitle,
-            additionalInfo: step.additionalInfo,
-            ingredients: formattedIngredients,
-          })
-        }
-      )
-      return formattedSteps
-    }
-    const existingRecipeId = id
-    // convert the type
-    var oldAttributes: RecipeInputType = {
-      title: title,
-      description: description,
-      servings: servings,
-      recipeTime: recipeTime,
-      steps: formatSteps(steps),
-    }
     return {
       props: {
-        existingRecipeId: existingRecipeId,
-        oldAttributes: oldAttributes,
+        username: username,
+        recipehandle: recipehandle,
       },
     }
   } catch (err) {

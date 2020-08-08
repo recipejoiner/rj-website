@@ -148,6 +148,26 @@ export function removeFieldsByKey(data: any, deleteKeys: Array<any>) {
   })
 }
 
+export function blobToFile(theBlob: Blob, fileName: string): File {
+  var b: any = theBlob
+  //A Blob() is almost a File() - it's just missing the two properties below which we will add
+  b.lastModifiedDate = new Date()
+  b.name = fileName
+
+  //Cast to a File() type
+  return theBlob as File
+}
+
+export async function urlToFile(url: string) {
+  const imageFile = await fetch(url)
+    .then((res) => res.blob())
+    .then((blob) => {
+      const file = blobToFile(blob, url)
+      return file
+    })
+  return imageFile
+}
+
 // EXPERIMENTAL METHOD
 export function ensureVarIsSet(variable: any) {
   return new Promise(function (resolve, reject) {

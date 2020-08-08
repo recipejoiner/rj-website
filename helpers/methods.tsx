@@ -124,7 +124,7 @@ export function toMixedNumber(num: number) {
 }
 
 export const convertFractionToDecimal = (fraction: string) => {
-  let evalFraction = fraction.replace(' ', '+')
+  let evalFraction = fraction.toString().replace(' ', '+')
   let decimal = eval(evalFraction)
   return decimal
 }

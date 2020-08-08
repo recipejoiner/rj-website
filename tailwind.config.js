@@ -1,17 +1,15 @@
-const {
-  colors
-} = require('tailwindcss/defaultTheme')
+const { colors } = require('tailwindcss/defaultTheme')
 
 module.exports = {
-  purge: false, // purgecss is configured in postcss.purge.js
+  purge: ['./pages/**/*.tsx', './components/**/*.tsx', './styles/tailwind.css'],
   theme: {
     extend: {
       gridTemplateRows: {
-        'cook': '15% 45% 40%'
+        cook: '15% 45% 40%',
       },
       height: {
-        '1/2': '50%'
-      }
+        '1/2': '50%',
+      },
     },
     filter: {
       // defaults to {}
@@ -24,7 +22,7 @@ module.exports = {
       // defaults to {}
       none: 'none',
       blur: 'blur(5px)',
-      blurMax: 'blur(10px)'
+      blurMax: 'blur(10px)',
     },
     scale: {
       '0': '0',
@@ -38,7 +36,7 @@ module.exports = {
       '110': '1.1',
       '125': '1.25',
       '150': '1.5',
-      '200': '2'
+      '200': '2',
     },
     spacing: {
       px: '1px',

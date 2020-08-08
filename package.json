@@ -50,6 +50,7 @@
     "react-dom": "16.13.1",
     "react-expanding-textarea": "^2.2.0",
     "react-hook-form": "^5.7.2",
+    "react-image-lightbox": "^5.1.1",
     "react-loading": "^2.0.3",
     "react-loading-skeleton": "^2.0.1",
     "react-modal": "^3.11.2",

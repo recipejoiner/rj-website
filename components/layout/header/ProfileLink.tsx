@@ -24,7 +24,7 @@ const ProfileLink: React.FC<ProfileLinkProps> = ({
           onClick={() => closeMenus()}
         >
           <img
-            className="w-10 rounded-full p-1 text-gray-900 hover:text-gray-700 fill-current"
+            className="w-10 h-10 rounded-full p-1 text-gray-900 hover:text-gray-700 fill-current"
             src={profileImageUrl ? profileImageUrl : PROFILE}
           />
         </a>

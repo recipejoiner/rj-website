@@ -6,6 +6,8 @@ import { GetServerSideProps } from 'next'
 import { ParsedUrlQuery } from 'querystring'
 import Skeleton from 'react-loading-skeleton'
 import Collapse from '@kunukn/react-collapse'
+import Lightbox from 'react-image-lightbox'
+import 'react-image-lightbox/style.css'
 
 import {
   RecipeType,
@@ -74,6 +76,12 @@ const Step: React.FC<StepProps> = ({ step, recipeImg, updateActiveStep }) => {
 
   return (
     <React.Fragment>
+      {imageOpen && (
+        <Lightbox
+          mainSrc={image}
+          onCloseRequest={() => setImageOpen(!imageOpen)}
+        />
+      )}
       <div className=" grid grid-cols-4 mr-8 ">
         <div className="m-auto rounded">
           <img
@@ -86,29 +94,18 @@ const Step: React.FC<StepProps> = ({ step, recipeImg, updateActiveStep }) => {
           {stepTitle}
         </span>
       </div>
-      {!imageOpen && ingredients.length > 0 ? (
-        <div className="my-2 self-end mr-8 ">
-          <div
-            className={`${
-              ingredients.length <= 0 ? 'border-none' : 'border'
-            }  rounded overflow-hidden border-black border rounded-l-none border-l-0 m-l-0`}
-            onClick={() => setImageOpen(!imageOpen)}
-          >
-            {ingredients.map((ing) => (
-              <Ingredient ingredient={ing} />
-            ))}
-          </div>
-        </div>
-      ) : (
+      <div className="my-2 self-end mr-8 ">
         <div
-          className=" bg-cover rounded mr-8 mt-8"
-          style={{
-            backgroundImage: `url(${image}
-          )`,
-          }}
-          onClick={() => setImageOpen(!imageOpen)}
-        ></div>
-      )}
+          className={`${
+            ingredients.length <= 0 ? 'border-none' : 'border'
+          }  rounded overflow-hidden border-black border rounded-l-none border-l-0 m-l-0`}
+        >
+          {ingredients.map((ing) => (
+            <Ingredient ingredient={ing} />
+          ))}
+        </div>
+      </div>
+
       <div className="relative w-full overflow-hidden text-xl md:text-3xl mb-2">
         <div className="absolute grid grid-cols-2 left-0 right-0 h-full">
           <div
@@ -242,33 +239,8 @@ const RecipePage: NextPage<RecipeProps> = ({ recipe }) => {
                   {description}
                 </div>
               </div>
-              <div className="grid grid-cols-2 w-10/12 m-auto">
-                <div className="grid grid-rows-2 p-2  rounded text-center text-xs ">
-                  <img src={TIME} className="h-6 m-auto rounded" />
-                  <div className="w-full m-auto text-center grid grid-cols-2 justify-center rounded">
-                    <div className="text-xl w-full m-auto border border-black text-center col-span-2 grid p-2 grid-cols-2 rounded">
-                      <span className="text-right">
-                        {minutesToTime(recipeTime).hours || '0'}:
-                      </span>
-                      <span className="text-left">
-                        {minutesToTime(recipeTime).minutes || '0'}
-                      </span>
-                    </div>
-                    {/* <span className="text-xs">Hour</span>
-                    <span className="text-xs">Minutes</span> */}
-                  </div>
-                </div>
-                <div className="grid  grid-rows-2 p-2 rounded text-center text-xs ">
-                  <img src={SERVINGS} className="h-6 m-auto rounded" />
-                  <div className="w-full m-auto text-center justify-center rounded ">
-                    <div className="text-xl w-full m-auto border border-black text-center p-2 rounded">
-                      {servings}
-                    </div>
-                    {/* Servings */}
-                  </div>
-                </div>
-              </div>
-              <img src={INGREDIENTS} className="h-6 m-auto rounded mt-6" />
+
+              {/* <img src={INGREDIENTS} className="h-6 m-auto rounded mt-6" /> */}
 
               <div
                 className={`${
@@ -282,12 +254,37 @@ const RecipePage: NextPage<RecipeProps> = ({ recipe }) => {
                   />
                 ))}
               </div>
+              <div className="grid grid-cols-2 w-10/12 m-auto">
+                <div className=" p-2  rounded text-center text-xs ">
+                  {/* <img src={TIME} className="h-6 m-auto rounded" /> */}
+                  <div className="w-full m-auto text-center grid grid-cols-2 justify-center rounded">
+                    <div className="text-xl w-full m-auto border border-black text-center col-span-2 grid p-2 grid-cols-2 rounded">
+                      <span className="text-right">
+                        {minutesToTime(recipeTime).hours || '0'}:
+                      </span>
+                      <span className="text-left">
+                        {minutesToTime(recipeTime).minutes || '0'}
+                      </span>
+                    </div>
+                    <span className="text-xs col-span-2">Time</span>
+                  </div>
+                </div>
+                <div className=" p-2 rounded text-center text-xs ">
+                  {/* <img src={SERVINGS} className="h-6 m-auto rounded" /> */}
+                  <div className="w-full m-auto text-center justify-center rounded ">
+                    <div className="text-xl w-full m-auto border border-black text-center p-2 rounded">
+                      {servings}
+                    </div>
+                    Servings
+                  </div>
+                </div>
+              </div>
             </div>
             <div className="m-2">
               {steps.map((step) => (
                 <div>
                   <div
-                    className="hover:scale-95 transform ease-in duration-200 w-full my-2 cursor-pointer "
+                    className="hover:scale-95 transform ease-in duration-200 w-full my-4 cursor-pointer "
                     onClick={() => updateActiveStep(step.stepNum)}
                   >
                     <div className="grid grid-cols-12  border-b-2 text-l rounded  ">
@@ -301,26 +298,10 @@ const RecipePage: NextPage<RecipeProps> = ({ recipe }) => {
                   </div>
                 </div>
               ))}
-              <button
-                className="relative hover:scale-105 transform ease-in duration-200 border-b-2 w-full focus:outline-none text-xl text-gray-800 font-bold p-2  border border-black rounded"
-                onClick={() => updateActiveStep(0)}
-              >
-                Start
-              </button>
             </div>
 
-            <div className="grid grid-cols-2 m-2 items-center">
-              <img
-                className="h-8 m-2 cursor-pointer"
-                src={!!commentsOpen ? COMMENTS_BW : COMMENTS_WB}
-                onClick={() => setCommentsOpen(!commentsOpen)}
-              />
-              <div className="flex justify-end  ">
-                <img
-                  className="h-8 m-2 cursor-pointer"
-                  src={!!saved ? SAVE_COLOR : SAVE_BW}
-                  onClick={handleSave}
-                />
+            <div className="grid grid-cols-6 m-2 items-center">
+              <div className="col-span-3 flex justify-start  ">
                 <img
                   className="h-8 m-2 cursor-pointer"
                   src={recipeReaction != null ? YUM_COLOR : YUM_BW}
@@ -333,7 +314,24 @@ const RecipePage: NextPage<RecipeProps> = ({ recipe }) => {
                     )
                   }
                 />
+                <img
+                  className="h-8 m-2 cursor-pointer"
+                  src={!!saved ? SAVE_COLOR : SAVE_BW}
+                  onClick={handleSave}
+                />
+
+                <img
+                  className="h-8 m-2 cursor-pointer"
+                  src={!!commentsOpen ? COMMENTS_BW : COMMENTS_WB}
+                  onClick={() => setCommentsOpen(!commentsOpen)}
+                />
               </div>
+              <button
+                className="col-span-3 my-4  hover:scale-105 transform ease-in duration-200 border-b-2 w-full focus:outline-none text-xl text-gray-800 font-bold p-2  border border-black rounded"
+                onClick={() => updateActiveStep(0)}
+              >
+                Cook
+              </button>
             </div>
             <Collapse
               isOpen={commentsOpen}

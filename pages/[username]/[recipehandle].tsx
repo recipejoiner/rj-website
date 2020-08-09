@@ -205,7 +205,7 @@ const RecipePage: NextPage<RecipeProps> = ({ recipe }) => {
                   <a className="flex align-middle w-full">
                     <img
                       src={profileImageUrl ? profileImageUrl : PROFILE}
-                      className="h-6 cursor-pointer rounded-full"
+                      className="h-6 w-6 cursor-pointer rounded-full"
                     />
                     <span className="self-center ml-2 text-xs">
                       {username || <Skeleton width={40} />}

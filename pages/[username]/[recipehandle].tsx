@@ -15,7 +15,7 @@ import {
   RECIPE_BY_USERNAME_AND_HANDLE,
   IngredientType,
 } from 'requests/recipes'
-import { toMixedNumber } from 'helpers/methods'
+import { toMixedNumber, minutesToTime } from 'helpers/methods'
 import client from 'requests/client'
 import RecipeComments from 'components/comments/RecipeComments'
 import { getToken } from 'helpers/auth'
@@ -36,10 +36,6 @@ const COMMENTS_BW = require('images/icons/comment_bw.svg')
 const COMMENTS_WB = require('images/icons/comment_wb.svg')
 const RIGHT_ARROW = require('images/icons/right-arrow.svg')
 const CLOSE = require('images/icons/cancel.svg')
-
-const minutesToTime = (totalMinutes: number) => {
-  return { hours: Math.floor(totalMinutes / 60), minutes: totalMinutes % 60 }
-}
 
 interface RecipeProps {
   recipe: RecipeType

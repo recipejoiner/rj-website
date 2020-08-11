@@ -7,14 +7,15 @@ export interface ShortRecipeNodeType {
   id: string
   by: {
     username: string
+    profileImageUrl: string | null
   }
   title: string
   handle: string
   description: string
-  servings: number
+  recipeTime: number
   reactionCount: number
   commentCount: number
-  haveISaved: boolean | null
+  stepCount: number
   myReaction: ReactionType
   imageUrl: string | null
 }
@@ -23,14 +24,15 @@ export const recipeConnectionNodeInit: ShortRecipeNodeType = {
   id: '',
   by: {
     username: '',
+    profileImageUrl: null,
   },
   title: '',
   handle: '',
   description: '',
-  servings: 0,
+  recipeTime: 0,
   reactionCount: 0,
   commentCount: 0,
-  haveISaved: null,
+  stepCount: 0,
   myReaction: null,
   imageUrl: null,
 }
@@ -40,14 +42,15 @@ export const RECIPE_SHORT_FRAGMENT = gql`
     id
     by {
       username
+      profileImageUrl
     }
     title
     handle
     description
-    servings
+    recipeTime
     reactionCount
     commentCount
-    haveISaved
+    stepCount
     myReaction
     imageUrl
   }

@@ -1,4 +1,6 @@
-const { colors } = require('tailwindcss/defaultTheme')
+const {
+  colors
+} = require('tailwindcss/defaultTheme')
 
 module.exports = {
   purge: ['./pages/**/*.tsx', './components/**/*.tsx', './styles/tailwind.css'],
@@ -9,7 +11,7 @@ module.exports = {
       },
       height: {
         '1/2': '50%',
-      },
+      }
     },
     filter: {
       // defaults to {}
@@ -86,6 +88,7 @@ module.exports = {
       '240': '62rem',
       '248': '64rem',
       '256': '66rem',
+      'full': '100%',
     },
     maxWidth: {
       xs: '20rem',

@@ -179,3 +179,17 @@ export function ensureVarIsSet(variable: any) {
     })()
   })
 }
+
+export function minutesToTime(totalMinutes: number) {
+  const hours = Math.floor(totalMinutes / 60)
+  const minutes = totalMinutes % 60
+
+  let time = {
+    hours: hours.toString(),
+    minutes: minutes < 10 ? '0' + minutes : minutes + '',
+    message:
+      hours > 1 ? 'hours' : hours ? 'hour' : minutes > 1 ? 'minutes' : 'minute',
+  }
+
+  return time
+}

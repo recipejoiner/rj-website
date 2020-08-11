@@ -18,7 +18,7 @@ import {
   TwitterIcon,
   WhatsappIcon,
 } from 'react-share'
-import { CopyToClipboard } from 'react-copy-to-clipboard'
+import CopyToClipboard from 'react-copy-to-clipboard'
 
 import { EdgeType } from 'components/InfiniteScroll'
 import { ShortRecipeNodeType } from 'requests/recipes'

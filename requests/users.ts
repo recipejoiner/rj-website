@@ -187,16 +187,16 @@ export const UPDATE_USER = gql`
   }
 `
 
-interface NotificationNodeType {
+export interface NotificationNodeType {
   createdAt: String
   notifiable:
-    | CommentNoficiationType
+    | CommentNotificationType
     | ReactionNotificationType
     | SavedNotificationType
     | UserRelationshipNotificationType
 }
 
-interface CommentNoficiationType {
+interface CommentNotificationType {
   __typename: 'Comment'
   by: {
     username: string
@@ -247,15 +247,21 @@ interface UserRelationshipNotificationType {
   }
 }
 
-export const NOTIFICATION_FRAGMENT = gql`
+const USER_INFO_FOR_NOTIFICATION_FRAGMENT = gql`
+  fragment userInfo on User {
+    username
+    profileImageUrl
+  }
+`
+
+const NOTIFICATION_FRAGMENT = gql`
   fragment notificationAttributes on Notification {
     createdAt
     notifiable {
       __typename
       ... on Comment {
         by {
-          username
-          profileImageUrl
+          ...userInfo
         }
         commentable {
           __typename
@@ -270,8 +276,7 @@ export const NOTIFICATION_FRAGMENT = gql`
       }
       ... on Reaction {
         by {
-          username
-          profileImageUrl
+          ...userInfo
         }
         reactable {
           __typename
@@ -286,8 +291,7 @@ export const NOTIFICATION_FRAGMENT = gql`
       }
       ... on Saved {
         by {
-          username
-          profileImageUrl
+          ...userInfo
         }
         saveable {
           ... on Recipe {
@@ -297,10 +301,36 @@ export const NOTIFICATION_FRAGMENT = gql`
       }
       ... on UserRelationship {
         follower {
-          username
-          profileImageUrl
+          ...userInfo
         }
       }
     }
   }
+  ${USER_INFO_FOR_NOTIFICATION_FRAGMENT}
+`
+
+const NOTIFICATION_CONNECTION_FRAGMENT = gql`
+  fragment notificationConnectionFragment on NotificationConnection {
+    pageInfo {
+      hasNextPage
+    }
+    edges {
+      cursor
+      node {
+        ...notificationAttributes
+      }
+    }
+  }
+  ${NOTIFICATION_FRAGMENT}
+`
+
+export const USER_NOTIFICATIONS = gql`
+  query UserNotifications($cursor: String) {
+    result: me {
+      connection: notifications(first: 20, after: $cursor) {
+        ...notificationConnectionFragment
+      }
+    }
+  }
+  ${NOTIFICATION_CONNECTION_FRAGMENT}
 `

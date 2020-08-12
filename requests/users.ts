@@ -186,3 +186,151 @@ export const UPDATE_USER = gql`
     }
   }
 `
+
+export interface NotificationNodeType {
+  createdAt: String
+  notifiable:
+    | CommentNotificationType
+    | ReactionNotificationType
+    | SavedNotificationType
+    | UserRelationshipNotificationType
+}
+
+interface CommentNotificationType {
+  __typename: 'Comment'
+  by: {
+    username: string
+    profileImageUrl: string
+  }
+  commentable: RecipeCommentNotificationType | CommentCommentNotificationType
+}
+interface RecipeCommentNotificationType {
+  __typename: 'Recipe'
+  title: string
+  imageUrl: string
+}
+interface CommentCommentNotificationType {
+  __typename: 'Comment'
+  content: string
+}
+
+interface ReactionNotificationType {
+  by: {
+    username: string
+    profileImageUrl: string
+  }
+  reactable: RecipeReactionNotificationType | CommentReactionNotificationType
+}
+interface RecipeReactionNotificationType {
+  title: string
+  imageUrl: string
+}
+interface CommentReactionNotificationType {
+  content: string
+}
+
+interface SavedNotificationType {
+  by: {
+    username: string
+    profileImageUrl: string
+  }
+  saveable: SavedRecipeNotificationType
+}
+interface SavedRecipeNotificationType {
+  title: string
+}
+
+interface UserRelationshipNotificationType {
+  follower: {
+    username: string
+    profileImageUrl: string
+  }
+}
+
+const USER_INFO_FOR_NOTIFICATION_FRAGMENT = gql`
+  fragment userInfo on User {
+    username
+    profileImageUrl
+  }
+`
+
+const NOTIFICATION_FRAGMENT = gql`
+  fragment notificationAttributes on Notification {
+    createdAt
+    notifiable {
+      __typename
+      ... on Comment {
+        by {
+          ...userInfo
+        }
+        commentable {
+          __typename
+          ... on Recipe {
+            title
+            imageUrl
+          }
+          ... on Comment {
+            content
+          }
+        }
+      }
+      ... on Reaction {
+        by {
+          ...userInfo
+        }
+        reactable {
+          __typename
+          ... on Recipe {
+            title
+            imageUrl
+          }
+          ... on Comment {
+            content
+          }
+        }
+      }
+      ... on Saved {
+        by {
+          ...userInfo
+        }
+        saveable {
+          ... on Recipe {
+            title
+          }
+        }
+      }
+      ... on UserRelationship {
+        follower {
+          ...userInfo
+        }
+      }
+    }
+  }
+  ${USER_INFO_FOR_NOTIFICATION_FRAGMENT}
+`
+
+const NOTIFICATION_CONNECTION_FRAGMENT = gql`
+  fragment notificationConnectionFragment on NotificationConnection {
+    pageInfo {
+      hasNextPage
+    }
+    edges {
+      cursor
+      node {
+        ...notificationAttributes
+      }
+    }
+  }
+  ${NOTIFICATION_FRAGMENT}
+`
+
+export const USER_NOTIFICATIONS = gql`
+  query UserNotifications($cursor: String) {
+    result: me {
+      connection: notifications(first: 20, after: $cursor) {
+        ...notificationConnectionFragment
+      }
+    }
+  }
+  ${NOTIFICATION_CONNECTION_FRAGMENT}
+`

@@ -186,3 +186,121 @@ export const UPDATE_USER = gql`
     }
   }
 `
+
+interface NotificationNodeType {
+  createdAt: String
+  notifiable:
+    | CommentNoficiationType
+    | ReactionNotificationType
+    | SavedNotificationType
+    | UserRelationshipNotificationType
+}
+
+interface CommentNoficiationType {
+  __typename: 'Comment'
+  by: {
+    username: string
+    profileImageUrl: string
+  }
+  commentable: RecipeCommentNotificationType | CommentCommentNotificationType
+}
+interface RecipeCommentNotificationType {
+  __typename: 'Recipe'
+  title: string
+  imageUrl: string
+}
+interface CommentCommentNotificationType {
+  __typename: 'Comment'
+  content: string
+}
+
+interface ReactionNotificationType {
+  by: {
+    username: string
+    profileImageUrl: string
+  }
+  reactable: RecipeReactionNotificationType | CommentReactionNotificationType
+}
+interface RecipeReactionNotificationType {
+  title: string
+  imageUrl: string
+}
+interface CommentReactionNotificationType {
+  content: string
+}
+
+interface SavedNotificationType {
+  by: {
+    username: string
+    profileImageUrl: string
+  }
+  saveable: SavedRecipeNotificationType
+}
+interface SavedRecipeNotificationType {
+  title: string
+}
+
+interface UserRelationshipNotificationType {
+  follower: {
+    username: string
+    profileImageUrl: string
+  }
+}
+
+export const NOTIFICATION_FRAGMENT = gql`
+  fragment notificationAttributes on Notification {
+    createdAt
+    notifiable {
+      __typename
+      ... on Comment {
+        by {
+          username
+          profileImageUrl
+        }
+        commentable {
+          __typename
+          ... on Recipe {
+            title
+            imageUrl
+          }
+          ... on Comment {
+            content
+          }
+        }
+      }
+      ... on Reaction {
+        by {
+          username
+          profileImageUrl
+        }
+        reactable {
+          __typename
+          ... on Recipe {
+            title
+            imageUrl
+          }
+          ... on Comment {
+            content
+          }
+        }
+      }
+      ... on Saved {
+        by {
+          username
+          profileImageUrl
+        }
+        saveable {
+          ... on Recipe {
+            title
+          }
+        }
+      }
+      ... on UserRelationship {
+        follower {
+          username
+          profileImageUrl
+        }
+      }
+    }
+  }
+`

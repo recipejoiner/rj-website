@@ -350,3 +350,14 @@ export const USER_NOTIFICATIONS = gql`
   }
   ${NOTIFICATION_CONNECTION_FRAGMENT}
 `
+
+export const NEW_USER_NOTIFICATION_SUBSCRIPTIONS = gql`
+  subscription getNewNotifications {
+    newNotification {
+      newNotification {
+        ...notificationAttributes
+      }
+    }
+  }
+  ${NOTIFICATION_FRAGMENT}
+`

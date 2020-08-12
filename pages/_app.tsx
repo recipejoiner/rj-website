@@ -14,6 +14,8 @@ import 'styles/tailwind.css'
 import { detect } from 'detect-browser'
 
 import UserContext from 'helpers/UserContext'
+import ScreenContext from 'helpers/ScreenContext'
+
 import client from 'requests/client'
 import {
   CurrentUserLoginCheckType,
@@ -43,6 +45,7 @@ if (typeof window === 'undefined') {
 }
 
 interface AppState {
+  scrollFreeze: boolean
   menuOpen: boolean
   modalOpen: boolean
   modalTitle: string
@@ -61,6 +64,7 @@ class MyApp extends App<UserProps, {}, AppState> {
     super(AppProps)
     this.props
     this.state = {
+      scrollFreeze: false,
       modalOpen: false,
       menuOpen: false,
       currentUserInfo: undefined,
@@ -68,6 +72,7 @@ class MyApp extends App<UserProps, {}, AppState> {
       modalChildren: <></>,
       yPos: 0,
     }
+    this.setScrollFreezeState = this.setScrollFreezeState.bind(this)
     this.setModalState = this.setModalState.bind(this)
     this.setCurrentUser = this.setCurrentUser.bind(this)
     this.setMenuOpen = this.setMenuOpen.bind(this)
@@ -89,6 +94,24 @@ class MyApp extends App<UserProps, {}, AppState> {
       }
     }
     return null
+  }
+
+  setScrollFreezeState(scrollFreeze: boolean) {
+    if (scrollFreeze === true) {
+      this.setState({
+        scrollFreeze: scrollFreeze,
+        yPos: window.pageYOffset,
+      })
+    }
+    // Closing: set the previous scroll position
+    else {
+      this.setState(
+        {
+          scrollFreeze: scrollFreeze,
+        },
+        () => window.scrollTo(0, this.state.yPos)
+      )
+    }
   }
 
   setModalState(
@@ -138,7 +161,7 @@ class MyApp extends App<UserProps, {}, AppState> {
 
   fullSite() {
     const { Component, pageProps } = this.props
-    const { menuOpen, modalOpen } = this.state
+    const { menuOpen, modalOpen, scrollFreeze } = this.state
     return (
       // 'min-h-screen flex flex-col' are for making it easier to make the footer (if we add one) sticky
       <div className="min-h-screen flex flex-col font-sans">
@@ -186,27 +209,34 @@ class MyApp extends App<UserProps, {}, AppState> {
             setModalState: this.setModalState,
           }}
         >
-          {/* Flex col to allow for putting a header and footer above and below the page */}
-          <div
-            className={`min-h-screen flex flex-col ${
-              menuOpen || modalOpen
-                ? 'overflow-hidden max-h-screen fixed lg:overflow-auto lg:static lg:max-h-full'
-                : ''
-            }`}
+          <ScreenContext.Provider
+            value={{ setScrollFreezeState: this.setScrollFreezeState }}
           >
-            <AppModal
-              modalOpen={this.state.modalOpen}
-              modalTitle={this.state.modalTitle}
-              setModalState={this.setModalState}
+            {/* Flex col to allow for putting a header and footer above and below the page */}
+            <div
+              className={`min-h-screen flex flex-col ${
+                menuOpen || modalOpen || scrollFreeze
+                  ? 'overflow-hidden max-h-screen fixed lg:overflow-auto lg:static lg:max-h-full'
+                  : ''
+              }`}
             >
-              {this.state.modalChildren}
-            </AppModal>
-            <Header setMenuOpen={this.setMenuOpen} />
-            {/* This div exists solely for applying styles, eg giving the page padding */}
-            <div className="pt-14 md:pt-16 flex-grow antialiased bg-white text-gray-900 w-screen relative mx-auto max-w-12xl">
-              <Component {...pageProps} />
+              <AppModal
+                modalOpen={this.state.modalOpen}
+                modalTitle={this.state.modalTitle}
+                setModalState={this.setModalState}
+              >
+                {this.state.modalChildren}
+              </AppModal>
+              <Header
+                setMenuOpen={this.setMenuOpen}
+                setScrollFreeze={this.setScrollFreezeState}
+              />
+              {/* This div exists solely for applying styles, eg giving the page padding */}
+              <div className="pt-14 md:pt-16 flex-grow antialiased bg-white text-gray-900 w-screen relative mx-auto max-w-12xl">
+                <Component {...pageProps} />
+              </div>
             </div>
-          </div>
+          </ScreenContext.Provider>
         </UserContext.Provider>
       </div>
     )

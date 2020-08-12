@@ -1,25 +1,37 @@
 import * as React from 'react'
 import Link from 'next/link'
 
+import AppOverlay from 'components/AppOverlay'
 import UserContext from 'helpers/UserContext'
 import Logo from 'components/layout/header/Logo'
 import NewRecipeLink from 'components/layout/header/NewRecipeLink'
 import ProfileLink from 'components/layout/header/ProfileLink'
+import NotificationCenter from 'components/layout/header/NotificationCenter'
 import HamburgerMenu from 'components/layout/header/HamburgerMenu'
 import NavMenuMobile from 'components/layout/header/NavMenuMobile'
 import NavMenuDesktop from 'components/layout/header/NavMenuDesktop'
 import { CurrentUserLoginCheckType } from 'requests/auth'
-import { SearchBar } from 'components/layout/searchBar'
+import SearchOverlay from 'components/layout/header/Search'
+
+const NOTIFICATION_ACTIVE = require('images/icons/new-notification.svg')
+const NOTIFICATION = require('images/icons/notification.svg')
+
 interface LoggedInHeaderProps {
   setMenuOpen(menuOpenStatus: boolean): void
+  setScrollFreeze(scrollFreeze: boolean): void
   currentUserInfo: CurrentUserLoginCheckType
 }
 const LoggedInHeader: React.FC<LoggedInHeaderProps> = ({
   setMenuOpen,
+  setScrollFreeze,
   currentUserInfo,
 }) => {
   // Partial because the full one also calls setMenuOpen
   const [drawerOpen, setDrawerOpenPartial] = React.useState(false)
+  const [searchOpen, setSearchOpen] = React.useState(false)
+  const [notificationsOpen, setNotificationsOpen] = React.useState(false)
+  const [newNotifications, setNewNotifications] = React.useState(false)
+
   const setDrawerOpen = (status: boolean) => {
     setDrawerOpenPartial(status)
     setMenuOpen(status)
@@ -28,6 +40,26 @@ const LoggedInHeader: React.FC<LoggedInHeaderProps> = ({
   const closeMenus = () => {
     setDrawerOpen(false)
     setTestDropdownOpen(false)
+  }
+
+  const openSearch = () => {
+    setSearchOpen(true)
+    setScrollFreeze(true)
+  }
+
+  const closeSearch = () => {
+    setSearchOpen(false)
+    setScrollFreeze(false)
+  }
+
+  const openNotifications = () => {
+    setNotificationsOpen(true)
+    setScrollFreeze(true)
+  }
+
+  const closeNotifications = () => {
+    setNotificationsOpen(false)
+    setScrollFreeze(false)
   }
 
   return (
@@ -42,25 +74,57 @@ const LoggedInHeader: React.FC<LoggedInHeaderProps> = ({
             />
           </div> */}
           <Logo closeMenus={closeMenus} className="col-span-2 m-auto" />
-          <SearchBar className="col-span-6 md:col-span-8 p-2 m-auto w-full outline-none border rounded" />
+          <input
+            className="col-span-5 md:col-span-8 p-2 m-auto w-full outline-none border rounded"
+            type="search"
+            placeholder="Search"
+            onFocus={openSearch}
+          ></input>
+          {!!searchOpen ? (
+            <AppOverlay
+              onExit={closeSearch}
+              children={<SearchOverlay />}
+              header={
+                <input
+                  className="col-span-5 md:col-span-8 p-2 m-auto w-full outline-none border rounded"
+                  type="search"
+                  placeholder="Search"
+                ></input>
+              }
+            />
+          ) : null}
           {/* <NavMenuDesktop
             closeMenus={closeMenus}
             testDropdownOpen={testDropdownOpen}
             setTestDropdownOpen={setTestDropdownOpen}
             currentUserInfo={currentUserInfo}
           /> */}
-          <div className="grid grid-cols-2 col-span-4 md:col-span-2 md:gap-4 m-auto">
+          <div className="grid grid-cols-3 col-span-5 md:col-span-2 md:gap-4 m-auto">
             <div className="">
               <ProfileLink
                 closeMenus={closeMenus}
                 currentUserInfo={currentUserInfo}
               />
             </div>
+            <div>
+              <a onClick={openNotifications}>
+                <img
+                  className="w-10 p-1 text-gray-900 hover:text-gray-700 fill-current"
+                  src={newNotifications ? NOTIFICATION_ACTIVE : NOTIFICATION}
+                />
+              </a>
+              {!!notificationsOpen && (
+                <AppOverlay
+                  onExit={closeNotifications}
+                  children={<NotificationCenter />}
+                  header={<h1 className="text-2xl">Notifications</h1>}
+                />
+              )}
+            </div>
             <NewRecipeLink closeMenus={closeMenus} />
           </div>
-        </div>
-        {/* The mobile navigation menu */}
-        {/* <div className={`${drawerOpen ? 'block' : 'hidden'}`}>
+          {/* The mobile navigation menu */}
+          {/* <div className={`${drawerOpen ? 'block' : 'hidden'}`}>
           <NavMenuMobile
             closeMenus={closeMenus}
             testDropdownOpen={testDropdownOpen}
@@ -68,6 +132,7 @@ const LoggedInHeader: React.FC<LoggedInHeaderProps> = ({
             currentUserInfo={currentUserInfo}
           />
         </div> */}
+        </div>
       </header>
     </div>
   )
@@ -92,15 +157,17 @@ const NoUserHeader: React.FC<NoUserHeaderProps> = ({}) => {
 
 interface HeaderProps {
   setMenuOpen(menuOpenStatus: boolean): void
+  setScrollFreeze(scrollFreeze: boolean): void
 }
 
-const Header: React.FC<HeaderProps> = ({ setMenuOpen }) => {
+const Header: React.FC<HeaderProps> = ({ setMenuOpen, setScrollFreeze }) => {
   const { currentUserInfo } = React.useContext(UserContext)
   // console.log('in header')
   // console.log('React.useContext(UserContext)', React.useContext(UserContext))
   if (currentUserInfo) {
     return (
       <LoggedInHeader
+        setScrollFreeze={setScrollFreeze}
         setMenuOpen={setMenuOpen}
         currentUserInfo={currentUserInfo}
       />

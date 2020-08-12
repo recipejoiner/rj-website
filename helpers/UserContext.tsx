@@ -1,7 +1,7 @@
 import { createContext } from 'react'
 import { CurrentUserLoginCheckType } from 'requests/auth'
 
-interface ContextProps {
+interface UserContextProps {
   setCurrentUser: (
     currentUserInfo: CurrentUserLoginCheckType | undefined
   ) => void
@@ -13,6 +13,7 @@ interface ContextProps {
     modalChildren?: React.ReactNode
   ) => void
 }
-const UserContext = createContext<Partial<ContextProps>>({})
+
+const UserContext = createContext<Partial<UserContextProps>>({})
 
 export default UserContext

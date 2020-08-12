@@ -195,8 +195,18 @@ export interface NotificationNodeType {
     | SavedNotificationType
     | UserRelationshipNotificationType
 }
+export const notificationConnectionNodeInit: NotificationNodeType = {
+  createdAt: '',
+  notifiable: {
+    __typename: 'UserRelationship',
+    follower: {
+      username: '',
+      profileImageUrl: '',
+    },
+  },
+}
 
-interface CommentNotificationType {
+export interface CommentNotificationType {
   __typename: 'Comment'
   by: {
     username: string
@@ -214,7 +224,8 @@ interface CommentCommentNotificationType {
   content: string
 }
 
-interface ReactionNotificationType {
+export interface ReactionNotificationType {
+  __typename: 'Reaction'
   by: {
     username: string
     profileImageUrl: string
@@ -229,7 +240,8 @@ interface CommentReactionNotificationType {
   content: string
 }
 
-interface SavedNotificationType {
+export interface SavedNotificationType {
+  __typename: 'Saved'
   by: {
     username: string
     profileImageUrl: string
@@ -240,7 +252,8 @@ interface SavedRecipeNotificationType {
   title: string
 }
 
-interface UserRelationshipNotificationType {
+export interface UserRelationshipNotificationType {
+  __typename: 'UserRelationship'
   follower: {
     username: string
     profileImageUrl: string
@@ -324,6 +337,9 @@ const NOTIFICATION_CONNECTION_FRAGMENT = gql`
   ${NOTIFICATION_FRAGMENT}
 `
 
+export interface UserNotificationsVarsType {
+  cursor: string | null
+}
 export const USER_NOTIFICATIONS = gql`
   query UserNotifications($cursor: String) {
     result: me {

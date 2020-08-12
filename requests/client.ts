@@ -1,11 +1,12 @@
-import ApolloClient from 'apollo-client'
 import { createUploadLink } from 'apollo-upload-client'
-import { InMemoryCache } from 'apollo-cache-inmemory'
+import { ApolloClient, InMemoryCache, ApolloLink } from '@apollo/client'
+
+const link = createUploadLink({
+  uri: process.env.NEXT_PUBLIC_RECIPEJOINER_API,
+})
 
 const client = new ApolloClient({
-  link: createUploadLink({
-    uri: process.env.NEXT_PUBLIC_RECIPEJOINER_API,
-  }),
+  link: (link as unknown) as ApolloLink, // see: https://github.com/jaydenseric/apollo-upload-client/issues/213#issuecomment-670089925
   cache: new InMemoryCache(),
   defaultOptions: {
     watchQuery: {

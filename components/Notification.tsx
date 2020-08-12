@@ -19,7 +19,11 @@ const Notification: React.FC<NotificationProps> = ({ notificationNode }) => {
   } else if (notificationNode.notifiable.__typename == 'Saved') {
     return <span className="block py-2">is a saved</span>
   } else {
-    return <BlankComment />
+    return (
+      <span className="block py-2 text-red-500">
+        is an unhandled notification
+      </span>
+    )
   }
 }
 

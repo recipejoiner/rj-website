@@ -8,7 +8,6 @@ interface NotificationProps {
 }
 
 const Notification: React.FC<NotificationProps> = ({ notificationNode }) => {
-  console.log('notificationNode', notificationNode)
   if (notificationNode && notificationNode.notifiable) {
     if (notificationNode.notifiable.__typename == 'Comment') {
       return (

@@ -8,14 +8,30 @@ import Skeleton from 'react-loading-skeleton'
 import Collapse from '@kunukn/react-collapse'
 import Lightbox from 'react-image-lightbox'
 import 'react-image-lightbox/style.css'
-
+import {
+  EmailShareButton,
+  FacebookShareButton,
+  PinterestShareButton,
+  RedditShareButton,
+  TwitterShareButton,
+  WhatsappShareButton,
+} from 'react-share'
+import {
+  EmailIcon,
+  FacebookIcon,
+  PinterestIcon,
+  RedditIcon,
+  TwitterIcon,
+  WhatsappIcon,
+} from 'react-share'
+import CopyToClipboard from 'react-copy-to-clipboard'
 import {
   RecipeType,
   RecipeStepType,
   RECIPE_BY_USERNAME_AND_HANDLE,
   IngredientType,
 } from 'requests/recipes'
-import { toMixedNumber, minutesToTime } from 'helpers/methods'
+import { toMixedNumber, minutesToTime, redirectTo } from 'helpers/methods'
 import client from 'requests/client'
 import RecipeComments from 'components/comments/RecipeComments'
 import { getToken } from 'helpers/auth'
@@ -27,15 +43,17 @@ const IMAGE_PLACEHOLDER = require('images/icons/picture.svg')
 const TIME = require('images/icons/alarm-clock.svg')
 const SERVINGS = require('images/icons/hot-food.svg')
 const PROFILE = require('images/chef-rj.svg')
-const YUM_BW = require('images/icons/yummy_bw.svg')
+const LIKE_BW = require('images/icons/yummy_bw.svg')
 const SAVE_BW = require('images/icons/cookbook_bw.svg')
-const YUM_COLOR = require('images/icons/yummy_color.svg')
+const LIKE_COLOR = require('images/icons/yummy_color.svg')
 const SAVE_COLOR = require('images/icons/cookbook_color.svg')
 const INGREDIENTS = require('images/icons/basket.svg')
 const COMMENTS_BW = require('images/icons/comment_bw.svg')
 const COMMENTS_WB = require('images/icons/comment_wb.svg')
 const RIGHT_ARROW = require('images/icons/right-arrow.svg')
 const CLOSE = require('images/icons/cancel.svg')
+const LINK = require('images/icons/link.svg')
+const SHARE = require('images/icons/share.svg')
 
 interface RecipeProps {
   recipe: RecipeType
@@ -52,7 +70,7 @@ const Ingredient: React.FC<{ ingredient: IngredientType }> = ({
 }) => {
   return (
     <div className=" h-auto items-center text-center  grid grid-cols-2 ">
-      <span className=" font-black text-lg capitalize text-left">
+      <span className="capitalize text-left">
         {ingredient.ingredientInfo.name}
       </span>
       <div className="grid grid-rows-2 text-center ">
@@ -133,13 +151,16 @@ const RecipePage: NextPage<RecipeProps> = ({ recipe }) => {
     imageUrl,
   } = recipe.result || {}
   const { username, profileImageUrl } = by || {}
-
+  const [reactionCountUpdatable, setReactionCountUpdatable] = React.useState(
+    reactionCount
+  )
   const [onOwnRecipe, setOnOwnRecipe] = React.useState(false)
   const [activeStep, setActiveStep] = React.useState(-1)
   const { currentUserInfo, modalOpen, setModalState } = React.useContext(
     UserContext
   )
   const [commentsOpen, setCommentsOpen] = React.useState(false)
+  const [shareOpen, setshareOpen] = React.useState(false)
   const [recipeReaction, setRecipeReaction] = React.useState(myReaction)
   const [saved, setSaved] = React.useState(haveISaved)
   if (
@@ -163,6 +184,7 @@ const RecipePage: NextPage<RecipeProps> = ({ recipe }) => {
     by ? by.username : 'rj'
   } - RecipeJoiner`
   const pageDescription = description
+  const time = minutesToTime(recipeTime)
   return (
     <React.Fragment>
       {recipe && (
@@ -187,27 +209,39 @@ const RecipePage: NextPage<RecipeProps> = ({ recipe }) => {
         </Head>
       )}
       {activeStep < 0 ? (
-        <div className="max-w-3xl lg:my-8 mx-auto font-mono">
+        <div className="max-w-3xl lg:my-8 mx-auto ">
           <div className=" mx-auto mt-6 bg-white rounded-lg shadow-xl ">
             <div className="m-2 ">
-              <div
+              <h1
                 className=" bg-transparent cursor-pointer w-full text-3xl lg:text-5xl  leading-tight focus:outline-none font-bold"
                 onClick={() => updateActiveStep()}
               >
                 {title}
-              </div>
-              <div className=" w-full flex align-middle">
+              </h1>
+              <div className=" w-full flex align-middle text-xs">
                 <Link href="/[username]" as={`/${username}`}>
-                  <a className="flex align-middle w-full">
+                  <a className="flex align-middle">
                     <img
                       src={profileImageUrl ? profileImageUrl : PROFILE}
                       className="h-6 w-6 cursor-pointer rounded-full"
                     />
-                    <span className="self-center ml-2 text-xs">
+                    <span className="self-center ml-2">
                       {username || <Skeleton width={40} />}
                     </span>
                   </a>
                 </Link>
+                <span className="my-auto px-2 ">•</span>
+
+                <div className="inline my-auto">
+                  <span className="text-right">{time.hours || '0'}:</span>
+                  <span className="text-left">{time.minutes || '0'}</span>
+                  {/* <span> {time.message}</span> */}
+                </div>
+                <span className="my-auto px-2 ">•</span>
+                <div className="inline my-auto">
+                  <span>{servings}</span>
+                  <span> Servings</span>
+                </div>
                 {onOwnRecipe ? (
                   <div className="">
                     <Link
@@ -222,11 +256,10 @@ const RecipePage: NextPage<RecipeProps> = ({ recipe }) => {
                 ) : null}
               </div>
             </div>
-
             <div key="overview">
-              <div className=" grid items-center  w-full h-full  m-auto">
+              <div className=" grid items-center  w-full h-64  m-auto">
                 <img
-                  className="m-auto"
+                  className="m-auto object-cover w-full h-64"
                   src={imageUrl ? imageUrl : IMAGE_PLACEHOLDER}
                 />
               </div>
@@ -235,13 +268,11 @@ const RecipePage: NextPage<RecipeProps> = ({ recipe }) => {
                   {description}
                 </div>
               </div>
-
-              {/* <img src={INGREDIENTS} className="h-6 m-auto rounded mt-6" /> */}
-
+              <div className="w-full text-center font-black">Ingredients</div>
               <div
                 className={`${
                   ingredients.length <= 0 ? 'border-none' : 'border'
-                } rounded w-11/12 m-auto my-4 border-black  p-2`}
+                } rounded mx-2  m-auto my-2  p-2`}
               >
                 {ingredients.map((ing: IngredientType) => (
                   <Ingredient
@@ -250,41 +281,17 @@ const RecipePage: NextPage<RecipeProps> = ({ recipe }) => {
                   />
                 ))}
               </div>
-              <div className="grid grid-cols-2 w-10/12 m-auto">
-                <div className=" p-2  rounded text-center text-xs ">
-                  {/* <img src={TIME} className="h-6 m-auto rounded" /> */}
-                  <div className="w-full m-auto text-center grid grid-cols-2 justify-center rounded">
-                    <div className="text-xl w-full m-auto border border-black text-center col-span-2 grid p-2 grid-cols-2 rounded">
-                      <span className="text-right">
-                        {minutesToTime(recipeTime).hours || '0'}:
-                      </span>
-                      <span className="text-left">
-                        {minutesToTime(recipeTime).minutes || '0'}
-                      </span>
-                    </div>
-                    <span className="text-xs col-span-2">Time</span>
-                  </div>
-                </div>
-                <div className=" p-2 rounded text-center text-xs ">
-                  {/* <img src={SERVINGS} className="h-6 m-auto rounded" /> */}
-                  <div className="w-full m-auto text-center justify-center rounded ">
-                    <div className="text-xl w-full m-auto border border-black text-center p-2 rounded">
-                      {servings}
-                    </div>
-                    Servings
-                  </div>
-                </div>
-              </div>
             </div>
-            <div className="m-2">
+            <div className="w-full text-center font-black">Steps</div>
+            <div className="m-2 border rounded">
               {steps.map((step) => (
                 <div>
                   <div
-                    className="hover:scale-95 transform ease-in duration-200 w-full my-4 cursor-pointer "
+                    className=" w-full p-2 cursor-pointer "
                     onClick={() => updateActiveStep(step.stepNum)}
                   >
-                    <div className="grid grid-cols-12  border-b-2 text-l rounded  ">
-                      <span className="bg-black  flex col-span-2 text-2xl h-full w-full text-white m-auto rounded rounded-r-none border-black border-b-2  ">
+                    <div className="grid grid-cols-12">
+                      <span className=" flex col-span-2 h-full w-full m-auto border-gray-300 border-b-2  ">
                         <span className="m-auto">{step.stepNum + 1}</span>
                       </span>
                       <span className="col-span-10 bg-white my-auto p-4 rounded m-1">
@@ -295,39 +302,134 @@ const RecipePage: NextPage<RecipeProps> = ({ recipe }) => {
                 </div>
               ))}
             </div>
-
-            <div className="grid grid-cols-6 m-2 items-center">
-              <div className="col-span-3 flex justify-start  ">
-                <img
-                  className="h-8 m-2 cursor-pointer"
-                  src={recipeReaction != null ? YUM_COLOR : YUM_BW}
-                  onClick={() =>
-                    setYumHandler(
-                      currentUserInfo,
-                      id,
-                      recipeReaction,
-                      setRecipeReaction
-                    )
-                  }
-                />
-                <img
-                  className="h-8 m-2 cursor-pointer"
-                  src={!!saved ? SAVE_COLOR : SAVE_BW}
-                  onClick={handleSave}
-                />
-
-                <img
-                  className="h-8 m-2 cursor-pointer"
-                  src={!!commentsOpen ? COMMENTS_BW : COMMENTS_WB}
-                  onClick={() => setCommentsOpen(!commentsOpen)}
-                />
-              </div>
+            <div className="w-full text-center">
               <button
-                className="col-span-3 my-4  hover:scale-105 transform ease-in duration-200 border-b-2 w-full focus:outline-none text-xl text-gray-800 font-bold p-2  border border-black rounded"
+                className=" bg-white border-b-2 w-11/12 m-2 focus:outline-none text-xl text-gray-800 font-bold p-2  border border-black rounded  "
                 onClick={() => updateActiveStep(0)}
               >
-                Cook
+                Begin Recipe
               </button>
+            </div>
+            <Collapse
+              isOpen={shareOpen}
+              transition={`height 500ms cubic-bezier(.4, 0, .2, 1)`}
+              className=""
+            >
+              <div className="p-2 text-center">
+                <span className="mx-2">
+                  <FacebookShareButton
+                    url={`https://www.recipejoiner.com/${username || '#'}/${
+                      handle || '#'
+                    }`}
+                    children={
+                      <FacebookIcon className=" h-8 w-8 rounded-full" />
+                    }
+                  />
+                </span>
+                <span className="mx-2">
+                  <TwitterShareButton
+                    url={`https://www.recipejoiner.com/${
+                      username || '#'
+                    }/${handle}`}
+                    children={<TwitterIcon className=" h-8 w-8 rounded-full" />}
+                  />
+                </span>
+                <span className="mx-2">
+                  <WhatsappShareButton
+                    url={`https://www.recipejoiner.com/${
+                      username || '#'
+                    }/${handle}`}
+                    children={
+                      <WhatsappIcon className=" h-8 w-8 rounded-full" />
+                    }
+                  />
+                </span>
+                <span className="mx-2">
+                  <RedditShareButton
+                    url={`https://www.recipejoiner.com/${
+                      username || '#'
+                    }/${handle}`}
+                    children={<RedditIcon className=" h-8 w-8 rounded-full" />}
+                  />
+                </span>
+                <span className="mx-2">
+                  <EmailShareButton
+                    url={`https://www.recipejoiner.com/${
+                      username || '#'
+                    }/${handle}`}
+                    children={<EmailIcon className=" h-8 w-8 rounded-full" />}
+                  />
+                </span>
+                <span className="mx-2">
+                  <CopyToClipboard
+                    text={`https://www.recipejoiner.com/${
+                      username || '#'
+                    }/${handle}`}
+                  >
+                    <button>
+                      <img
+                        className="h-8 w-8 rounded-full cursor-pointer"
+                        src={LINK}
+                      />
+                    </button>
+                  </CopyToClipboard>
+                </span>
+                <span className="mx-2">
+                  <button className="h-8 w-8">
+                    <img
+                      className="h-6 w-6 cursor-pointer my-auto"
+                      src={CLOSE}
+                      onClick={() => setshareOpen(!shareOpen)}
+                    />
+                  </button>
+                </span>
+              </div>
+            </Collapse>
+            <div className="flex justify-between self-end m-4">
+              <div className="mx-4 flex">
+                <img
+                  className="h-6 cursor-pointer"
+                  src={recipeReaction === 0 ? LIKE_COLOR : LIKE_BW}
+                  onClick={() => {
+                    if (currentUserInfo) {
+                      setYumHandler(
+                        currentUserInfo,
+                        id,
+                        recipeReaction,
+                        setRecipeReaction
+                      )
+                      setReactionCountUpdatable(
+                        reactionCountUpdatable + (recipeReaction === 0 ? -1 : 1)
+                      )
+                    } else {
+                      redirectTo('/signup')
+                    }
+                  }}
+                />
+                <span className="m-auto text-xs ml-2">
+                  {reactionCountUpdatable || ''}
+                </span>
+              </div>
+              <div className="mx-4 flex">
+                <img
+                  className="h-6 cursor-pointer"
+                  src={!commentsOpen ? COMMENTS_WB : COMMENTS_BW}
+                  onClick={() => setCommentsOpen(!commentsOpen)}
+                />
+                <span className="m-auto text-xs ml-2">
+                  {commentCount || ''}
+                </span>
+              </div>
+              <div className="mx-4 flex">
+                <img className="h-6 cursor-pointer" src={SAVE_BW} />
+              </div>
+              <div className="mx-4 flex">
+                <img
+                  className="h-6 cursor-pointer"
+                  src={SHARE}
+                  onClick={() => setshareOpen(!shareOpen)}
+                />
+              </div>
             </div>
             <Collapse
               isOpen={commentsOpen}
@@ -345,7 +447,7 @@ const RecipePage: NextPage<RecipeProps> = ({ recipe }) => {
           </div>
         </div>
       ) : (
-        <div className="fixed top-0 bottom-0 z-100 bg-white font-mono whitespace-normal w-screen">
+        <div className="fixed top-0 bottom-0 z-100 bg-white  whitespace-normal w-screen">
           <div
             className="absolute h-full w-full opacity-25 bg-cover "
             style={{

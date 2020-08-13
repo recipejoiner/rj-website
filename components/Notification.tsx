@@ -1,4 +1,5 @@
 import * as React from 'react'
+import Skeleton from 'react-loading-skeleton'
 
 import { NotificationNodeType, CommentNotificationType } from 'requests/users'
 
@@ -8,22 +9,28 @@ interface NotificationProps {
 
 const Notification: React.FC<NotificationProps> = ({ notificationNode }) => {
   console.log('notificationNode', notificationNode)
-  if (notificationNode.notifiable.__typename == 'Comment') {
-    return (
-      <CommentNotification commentNotification={notificationNode.notifiable} />
-    )
-  } else if (notificationNode.notifiable.__typename == 'Reaction') {
-    return <span className="block py-2">is a reaction</span>
-  } else if (notificationNode.notifiable.__typename == 'UserRelationship') {
-    return <span className="block py-2">is a relationship</span>
-  } else if (notificationNode.notifiable.__typename == 'Saved') {
-    return <span className="block py-2">is a saved</span>
+  if (notificationNode && notificationNode.notifiable) {
+    if (notificationNode.notifiable.__typename == 'Comment') {
+      return (
+        <CommentNotification
+          commentNotification={notificationNode.notifiable}
+        />
+      )
+    } else if (notificationNode.notifiable.__typename == 'Reaction') {
+      return <span className="block py-2">is a reaction</span>
+    } else if (notificationNode.notifiable.__typename == 'UserRelationship') {
+      return <span className="block py-2">is a relationship</span>
+    } else if (notificationNode.notifiable.__typename == 'Saved') {
+      return <span className="block py-2">is a saved</span>
+    } else {
+      return (
+        <span className="block py-2 text-red-500">
+          is an unhandled notification
+        </span>
+      )
+    }
   } else {
-    return (
-      <span className="block py-2 text-red-500">
-        is an unhandled notification
-      </span>
-    )
+    return <Skeleton />
   }
 }
 

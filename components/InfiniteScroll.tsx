@@ -84,6 +84,8 @@ interface InfiniteScrollProps<NodeType, QueryVarsType> {
   QueryVars: QueryVarsType
   children: (edges: Array<EdgeType<NodeType>>) => React.ReactNode
   inModal?: boolean
+  hasSubscription?: boolean
+  subscriptionRequest?: DocumentNode
 }
 
 const InfiniteScroll: React.FC<InfiniteScrollProps<any, any>> = ({
@@ -93,12 +95,18 @@ const InfiniteScroll: React.FC<InfiniteScrollProps<any, any>> = ({
   QueryVars,
   children,
   inModal,
+  hasSubscription,
+  subscriptionRequest,
 }) => {
   const QueryData = getQueryDataInit(hasJustConnection, nodeInit)
-  const { loading, data, error, variables, fetchMore } = useQuery<
-    typeof QueryData,
-    typeof QueryVars
-  >(QUERY, {
+  const {
+    loading,
+    data,
+    error,
+    variables,
+    fetchMore,
+    subscribeToMore,
+  } = useQuery<typeof QueryData, typeof QueryVars>(QUERY, {
     client: client,
     errorPolicy: 'all',
     variables: QueryVars,
@@ -174,6 +182,18 @@ const InfiniteScroll: React.FC<InfiniteScrollProps<any, any>> = ({
       },
     })
     setActivelyFetching(false)
+  }
+
+  if (hasSubscription && subscriptionRequest) {
+    subscribeToMore({
+      document: subscriptionRequest,
+      updateQuery: (prev, { subscriptionData }) => {
+        if (!subscriptionData.data) return prev
+        console.log('subscriptionData', subscriptionData)
+        // const newFeedItem = subscriptionData.data
+        return prev
+      },
+    })
   }
 
   const handleScroll = () => {

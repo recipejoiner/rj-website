@@ -9,6 +9,7 @@ import {
   USER_NOTIFICATIONS,
   NotificationNodeType,
   notificationConnectionNodeInit,
+  NEW_USER_NOTIFICATION_SUBSCRIPTIONS,
 } from 'requests/users'
 import InfiniteScroll, { EdgeType } from 'components/InfiniteScroll'
 
@@ -30,6 +31,8 @@ const NotificationCenter: React.FC<NotificationCenter> = () => {
         }
         return queryVars
       })()}
+      hasSubscription={true}
+      subscriptionRequest={NEW_USER_NOTIFICATION_SUBSCRIPTIONS}
     >
       {(edges: Array<EdgeType<NotificationNodeType>>) => (
         <ul>

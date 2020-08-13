@@ -825,7 +825,7 @@ const RecipeForm: React.FC<RecipeFormProps> = ({
   React.useEffect(() => setLoaded(true), [])
 
   return (
-    <div className="max-w-3xl lg:my-8 mx-auto font-mono">
+    <div className="max-w-3xl lg:my-8 mx-auto ">
       <div className=" mx-auto mt-1 p-6 bg-white rounded-lg shadow-xl border-black ">
         {loaded && !reviewMode ? (
           <React.Fragment>

@@ -117,15 +117,21 @@ const LoginPage: NextPage<LoginPageProps> = ({}) => {
               })}
             </ul>
             <div className="flex items-center justify-between">
-              <button className="form-submit-btn w-1/2" type="submit">
+              <button className="form-submit-btn w-full" type="submit">
                 Sign In
               </button>
-              <Link href="/login/forgotpassword">
-                <a className="inline-block align-baseline font-bold text-sm text-blue-500 hover:text-blue-800">
-                  Forgot Password?
-                </a>
-              </Link>
             </div>
+            <Link href="/login/forgotpassword">
+              <a className="inline-block align-baseline font-bold text-sm text-blue-500 hover:text-blue-800">
+                Forgot Password?
+              </a>
+            </Link>
+            <a
+              className="inline-block align-baseline font-bold text-sm text-blue-500 hover:text-blue-800"
+              href="/signup"
+            >
+              Or create new account
+            </a>
           </form>
           <p className="text-center text-gray-500 text-xs">
             &copy;2020 RecipeJoiner. All rights reserved.

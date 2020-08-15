@@ -113,13 +113,13 @@ const LoggedInHeader: React.FC<LoggedInHeaderProps> = ({
                   src={newNotifications ? NOTIFICATION_ACTIVE : NOTIFICATION}
                 />
               </a>
-              {!!notificationsOpen && (
+              <div className={`${notificationsOpen ? 'visible' : 'invisible'}`}>
                 <AppOverlay
                   onExit={closeNotifications}
                   children={<NotificationCenter />}
                   header={<h1 className="text-2xl">Notifications</h1>}
                 />
-              )}
+              </div>
             </div>
             <NewRecipeLink closeMenus={closeMenus} />
           </div>

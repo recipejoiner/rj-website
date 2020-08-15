@@ -126,6 +126,8 @@ const InfiniteScroll: React.FC<InfiniteScrollProps<any, any>> = ({
 
   const [activelyFetching, setActivelyFetching] = React.useState(false)
 
+  const [isSubscribed, setIsSubscribed] = React.useState(false)
+
   const [infiniteScrollData, setInfiniteScrollData] = React.useState<
     typeof QueryData
   >(QueryData)
@@ -184,13 +186,18 @@ const InfiniteScroll: React.FC<InfiniteScrollProps<any, any>> = ({
     setActivelyFetching(false)
   }
 
-  if (hasSubscription && subscriptionRequest) {
+  if (hasSubscription && subscriptionRequest && !isSubscribed) {
+    setIsSubscribed(true)
     subscribeToMore({
       document: subscriptionRequest,
+      variables: {
+        userToken: getToken() || '',
+      },
       updateQuery: (prev, { subscriptionData }) => {
         if (!subscriptionData.data) return prev
         console.log('subscriptionData', subscriptionData)
-        // const newFeedItem = subscriptionData.data
+        // take 'subscriptionData' and append it to the beginning of
+        // const newFeedItem = subscriptionData.data.newNotfication
         return prev
       },
     })

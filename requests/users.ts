@@ -359,3 +359,12 @@ export const NEW_USER_NOTIFICATION_SUBSCRIPTIONS = gql`
   }
   ${NOTIFICATION_FRAGMENT}
 `
+
+// export const NEW_USER_NOTIFICATION_SUBSCRIPTIONS = gql`
+//   subscription getNewNotifications($userToken: String!) {
+//     newNotification(userToken: $userToken) {
+//       ...notificationAttributes
+//     }
+//   }
+//   ${NOTIFICATION_FRAGMENT}
+// `

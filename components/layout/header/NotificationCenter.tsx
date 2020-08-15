@@ -37,7 +37,9 @@ const NotificationCenter: React.FC<NotificationCenter> = () => {
       {(edges: Array<EdgeType<NotificationNodeType>>) => (
         <ul>
           {edges.map((edge) => {
-            return <Notification notificationNode={edge.node} />
+            return (
+              <Notification key={edge.cursor} notificationNode={edge.node} />
+            )
           })}
         </ul>
       )}

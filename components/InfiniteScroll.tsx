@@ -46,6 +46,12 @@ export interface QueryResultRes<NodeType> {
   __typename: string
 }
 
+export interface SubscriptionRes<NodeType> {
+  data: {
+    result: NodeType
+  }
+}
+
 function getQueryDataInit(hasJustConnection: boolean, nodeInit: any) {
   const connectionDataInit: QueryConnectionRes<typeof nodeInit> = {
     connection: {
@@ -186,23 +192,6 @@ const InfiniteScroll: React.FC<InfiniteScrollProps<any, any>> = ({
     setActivelyFetching(false)
   }
 
-  if (hasSubscription && subscriptionRequest && !isSubscribed) {
-    setIsSubscribed(true)
-    subscribeToMore({
-      document: subscriptionRequest,
-      variables: {
-        userToken: getToken() || '',
-      },
-      updateQuery: (prev, { subscriptionData }) => {
-        if (!subscriptionData.data) return prev
-        console.log('subscriptionData', subscriptionData)
-        // take 'subscriptionData' and append it to the beginning of
-        // const newFeedItem = subscriptionData.data.newNotfication
-        return prev
-      },
-    })
-  }
-
   const handleScroll = () => {
     if (
       !activelyFetching &&
@@ -250,6 +239,81 @@ const InfiniteScroll: React.FC<InfiniteScrollProps<any, any>> = ({
       setInfiniteScrollData(data)
     }
   }
+
+  // for subscriptions, if applicable
+  if (loaded && hasSubscription && subscriptionRequest && !isSubscribed) {
+    setIsSubscribed(true)
+    subscribeToMore({
+      document: subscriptionRequest,
+      variables: {
+        userToken: getToken(),
+      },
+      updateQuery: (
+        prev,
+        { subscriptionData }: { subscriptionData: SubscriptionRes<any> }
+      ) => {
+        if (!subscriptionData.data) return prev
+        console.log('subscriptionData', subscriptionData)
+        // take 'subscriptionData' and append it to the beginning of the edges array
+        if (subscriptionData.data.result) {
+          let newEdge = {
+            cursor: Math.random().toString(36).substring(7),
+            node: subscriptionData.data.result,
+            __typename: '',
+          }
+          if ('result' in infiniteScrollData) {
+            console.log('infiniteScrollData', infiniteScrollData)
+            console.log(
+              'old edges:',
+              infiniteScrollData.result.connection.edges
+            )
+            newEdge.__typename =
+              infiniteScrollData.result.connection.edges[0].__typename
+            const newEdges = [
+              newEdge,
+              ...infiniteScrollData.result.connection.edges,
+            ]
+            console.log('new edges:', newEdges)
+
+            let combinedData: QueryResultRes<any> = {
+              result: {
+                connection: {
+                  pageInfo: infiniteScrollData.result.connection.pageInfo,
+                  edges: newEdges,
+                  __typename: infiniteScrollData.result.connection.__typename,
+                },
+                __typename: infiniteScrollData.result.__typename,
+              },
+              __typename: infiniteScrollData.__typename,
+            }
+            setInfiniteScrollData(combinedData)
+          } else if ('connection' in infiniteScrollData) {
+            console.log('old edges:', infiniteScrollData.connection.edges)
+            newEdge.__typename =
+              infiniteScrollData.connection.edges[0].__typename
+            const newEdges = [newEdge, ...infiniteScrollData.connection.edges]
+            console.log('new edges:', newEdges)
+
+            let combinedData: QueryConnectionRes<any> = {
+              connection: {
+                pageInfo: infiniteScrollData.connection.pageInfo,
+                edges: newEdges,
+                __typename: infiniteScrollData.connection.__typename,
+              },
+              __typename: infiniteScrollData.__typename,
+            }
+            setInfiniteScrollData(combinedData)
+          } else {
+            throw "There's something wrong with the return types."
+          }
+          return infiniteScrollData
+        } else {
+          return prev
+        }
+      },
+    })
+  }
+
   const { result } = (infiniteScrollData as QueryResultRes<any>) || {}
   const { connection } = result || infiniteScrollData
   const { edges, pageInfo } = connection

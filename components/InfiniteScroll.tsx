@@ -47,8 +47,9 @@ export interface QueryResultRes<NodeType> {
 }
 
 export interface SubscriptionRes<NodeType> {
-  data: {
-    result: NodeType
+  result: {
+    node: NodeType
+    operation: 'CREATE' | 'DELETE'
   }
 }
 
@@ -243,66 +244,67 @@ const InfiniteScroll: React.FC<InfiniteScrollProps<any, any>> = ({
   // for subscriptions, if applicable
   if (loaded && hasSubscription && subscriptionRequest && !isSubscribed) {
     setIsSubscribed(true)
-    subscribeToMore({
+    subscribeToMore<SubscriptionRes<typeof nodeInit>>({
       document: subscriptionRequest,
       variables: {
         userToken: getToken(),
       },
-      updateQuery: (
-        prev,
-        { subscriptionData }: { subscriptionData: SubscriptionRes<any> }
-      ) => {
+      updateQuery: (prev, { subscriptionData }) => {
         if (!subscriptionData.data) return prev
         console.log('subscriptionData', subscriptionData)
         // take 'subscriptionData' and append it to the beginning of the edges array
         if (subscriptionData.data.result) {
-          let newEdge = {
-            cursor: Math.random().toString(36).substring(7),
-            node: subscriptionData.data.result,
-            __typename: '',
-          }
-          if ('result' in infiniteScrollData) {
-            console.log('infiniteScrollData', infiniteScrollData)
-            console.log(
-              'old edges:',
-              infiniteScrollData.result.connection.edges
-            )
-            newEdge.__typename =
-              infiniteScrollData.result.connection.edges[0].__typename
-            const newEdges = [
-              newEdge,
-              ...infiniteScrollData.result.connection.edges,
-            ]
-            console.log('new edges:', newEdges)
+          if (subscriptionData.data.result.operation == 'CREATE') {
+            let newEdge = {
+              cursor: Math.random().toString(36).substring(7),
+              node: subscriptionData.data.result,
+              __typename: '',
+            }
+            if ('result' in infiniteScrollData) {
+              console.log('infiniteScrollData', infiniteScrollData)
+              console.log(
+                'old edges:',
+                infiniteScrollData.result.connection.edges
+              )
+              newEdge.__typename =
+                infiniteScrollData.result.connection.edges[0].__typename
+              const newEdges = [
+                newEdge,
+                ...infiniteScrollData.result.connection.edges,
+              ]
+              console.log('new edges:', newEdges)
 
-            let combinedData: QueryResultRes<any> = {
-              result: {
-                connection: {
-                  pageInfo: infiniteScrollData.result.connection.pageInfo,
-                  edges: newEdges,
-                  __typename: infiniteScrollData.result.connection.__typename,
+              let combinedData: QueryResultRes<any> = {
+                result: {
+                  connection: {
+                    pageInfo: infiniteScrollData.result.connection.pageInfo,
+                    edges: newEdges,
+                    __typename: infiniteScrollData.result.connection.__typename,
+                  },
+                  __typename: infiniteScrollData.result.__typename,
                 },
-                __typename: infiniteScrollData.result.__typename,
-              },
-              __typename: infiniteScrollData.__typename,
-            }
-            setInfiniteScrollData(combinedData)
-          } else if ('connection' in infiniteScrollData) {
-            console.log('old edges:', infiniteScrollData.connection.edges)
-            newEdge.__typename =
-              infiniteScrollData.connection.edges[0].__typename
-            const newEdges = [newEdge, ...infiniteScrollData.connection.edges]
-            console.log('new edges:', newEdges)
+                __typename: infiniteScrollData.__typename,
+              }
+              setInfiniteScrollData(combinedData)
+            } else if ('connection' in infiniteScrollData) {
+              console.log('old edges:', infiniteScrollData.connection.edges)
+              newEdge.__typename =
+                infiniteScrollData.connection.edges[0].__typename
+              const newEdges = [newEdge, ...infiniteScrollData.connection.edges]
+              console.log('new edges:', newEdges)
 
-            let combinedData: QueryConnectionRes<any> = {
-              connection: {
-                pageInfo: infiniteScrollData.connection.pageInfo,
-                edges: newEdges,
-                __typename: infiniteScrollData.connection.__typename,
-              },
-              __typename: infiniteScrollData.__typename,
+              let combinedData: QueryConnectionRes<any> = {
+                connection: {
+                  pageInfo: infiniteScrollData.connection.pageInfo,
+                  edges: newEdges,
+                  __typename: infiniteScrollData.connection.__typename,
+                },
+                __typename: infiniteScrollData.__typename,
+              }
+              setInfiniteScrollData(combinedData)
             }
-            setInfiniteScrollData(combinedData)
+          } else if (subscriptionData.data.result.operation == 'DELETE') {
+            console.log('delete the node:', subscriptionData.data.result.node)
           } else {
             throw "There's something wrong with the return types."
           }

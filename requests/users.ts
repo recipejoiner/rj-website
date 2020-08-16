@@ -351,20 +351,20 @@ export const USER_NOTIFICATIONS = gql`
   ${NOTIFICATION_CONNECTION_FRAGMENT}
 `
 
+export interface UserNotificationSubscriptionType {
+  result: {
+    node: NotificationNodeType
+    operation: 'CREATE' | 'DELETE'
+  }
+}
 export const NEW_USER_NOTIFICATION_SUBSCRIPTIONS = gql`
   subscription getNewNotifications {
     result: newNotification {
-      ...notificationAttributes
+      node: notification {
+        ...notificationAttributes
+      }
+      operation
     }
   }
   ${NOTIFICATION_FRAGMENT}
 `
-
-// export const NEW_USER_NOTIFICATION_SUBSCRIPTIONS = gql`
-//   subscription getNewNotifications($userToken: String!) {
-//     newNotification(userToken: $userToken) {
-//       ...notificationAttributes
-//     }
-//   }
-//   ${NOTIFICATION_FRAGMENT}
-// `

@@ -270,7 +270,6 @@ const InfiniteScroll: React.FC<InfiniteScrollProps<any, any>> = ({
         // take 'subscriptionData' and append it to the beginning of the edges array
         if (subscriptionData.data.result) {
           if (subscriptionData.data.result.operation == 'CREATE') {
-            debugger
             let newEdge = {
               cursor: Math.random().toString(36).substring(7),
               node: subscriptionData.data.result.node,

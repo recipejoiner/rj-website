@@ -1,4 +1,5 @@
 import * as React from 'react'
+import { cloneDeep } from 'lodash'
 
 import client from 'requests/client'
 import { getToken } from 'helpers/auth'
@@ -153,6 +154,7 @@ const InfiniteScroll: React.FC<InfiniteScrollProps<any, any>> = ({
         __typename: infiniteScrollData.__typename,
       }
       setInfiniteScrollData(combinedData)
+      return combinedData
     } else if ('connection' in infiniteScrollData) {
       let combinedData: QueryConnectionRes<any> = {
         connection: {
@@ -163,6 +165,7 @@ const InfiniteScroll: React.FC<InfiniteScrollProps<any, any>> = ({
         __typename: infiniteScrollData.__typename,
       }
       setInfiniteScrollData(combinedData)
+      return combinedData
     } else {
       throw "There's something wrong with the return types."
     }
@@ -267,9 +270,10 @@ const InfiniteScroll: React.FC<InfiniteScrollProps<any, any>> = ({
         // take 'subscriptionData' and append it to the beginning of the edges array
         if (subscriptionData.data.result) {
           if (subscriptionData.data.result.operation == 'CREATE') {
+            debugger
             let newEdge = {
               cursor: Math.random().toString(36).substring(7),
-              node: subscriptionData.data.result,
+              node: subscriptionData.data.result.node,
               __typename: '',
             }
             if ('result' in infiniteScrollData) {
@@ -280,22 +284,34 @@ const InfiniteScroll: React.FC<InfiniteScrollProps<any, any>> = ({
               )
               newEdge.__typename =
                 infiniteScrollData.result.connection.edges[0].__typename
+              const edgeToAdd = cloneDeep(newEdge)
               const newEdges = [
-                newEdge,
+                edgeToAdd,
                 ...infiniteScrollData.result.connection.edges,
               ]
               console.log('new edges:', newEdges)
-              updateEdges(
+              const newInfiniteScrollData = updateEdges(
                 newEdges,
                 infiniteScrollData.result.connection.pageInfo
               )
+              setInfiniteScrollData(newInfiniteScrollData)
+              return newInfiniteScrollData
             } else if ('connection' in infiniteScrollData) {
               console.log('old edges:', infiniteScrollData.connection.edges)
               newEdge.__typename =
                 infiniteScrollData.connection.edges[0].__typename
-              const newEdges = [newEdge, ...infiniteScrollData.connection.edges]
+              const edgeToAdd = cloneDeep(newEdge)
+              const newEdges = [
+                edgeToAdd,
+                ...infiniteScrollData.connection.edges,
+              ]
               console.log('new edges:', newEdges)
-              updateEdges(newEdges, infiniteScrollData.connection.pageInfo)
+              const newInfiniteScrollData = updateEdges(
+                newEdges,
+                infiniteScrollData.connection.pageInfo
+              )
+              setInfiniteScrollData(newInfiniteScrollData)
+              return newInfiniteScrollData
             }
           } else if (subscriptionData.data.result.operation == 'DELETE') {
             console.log('delete the node:', subscriptionData.data.result.node)
@@ -311,6 +327,7 @@ const InfiniteScroll: React.FC<InfiniteScrollProps<any, any>> = ({
   }
 
   const { result } = (infiniteScrollData as QueryResultRes<any>) || {}
+  console.log('infiniteScrollData:', infiniteScrollData)
   const { connection } = result || infiniteScrollData
   const { edges, pageInfo } = connection
   const { hasNextPage } = pageInfo

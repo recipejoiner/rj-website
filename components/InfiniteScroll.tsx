@@ -285,35 +285,17 @@ const InfiniteScroll: React.FC<InfiniteScrollProps<any, any>> = ({
                 ...infiniteScrollData.result.connection.edges,
               ]
               console.log('new edges:', newEdges)
-
-              let combinedData: QueryResultRes<any> = {
-                result: {
-                  connection: {
-                    pageInfo: infiniteScrollData.result.connection.pageInfo,
-                    edges: newEdges,
-                    __typename: infiniteScrollData.result.connection.__typename,
-                  },
-                  __typename: infiniteScrollData.result.__typename,
-                },
-                __typename: infiniteScrollData.__typename,
-              }
-              setInfiniteScrollData(combinedData)
+              updateEdges(
+                newEdges,
+                infiniteScrollData.result.connection.pageInfo
+              )
             } else if ('connection' in infiniteScrollData) {
               console.log('old edges:', infiniteScrollData.connection.edges)
               newEdge.__typename =
                 infiniteScrollData.connection.edges[0].__typename
               const newEdges = [newEdge, ...infiniteScrollData.connection.edges]
               console.log('new edges:', newEdges)
-
-              let combinedData: QueryConnectionRes<any> = {
-                connection: {
-                  pageInfo: infiniteScrollData.connection.pageInfo,
-                  edges: newEdges,
-                  __typename: infiniteScrollData.connection.__typename,
-                },
-                __typename: infiniteScrollData.__typename,
-              }
-              setInfiniteScrollData(combinedData)
+              updateEdges(newEdges, infiniteScrollData.connection.pageInfo)
             }
           } else if (subscriptionData.data.result.operation == 'DELETE') {
             console.log('delete the node:', subscriptionData.data.result.node)

@@ -114,6 +114,7 @@ const LoggedInHeader: React.FC<LoggedInHeaderProps> = ({
                 />
               </a>
               <div className={`${notificationsOpen ? 'visible' : 'invisible'}`}>
+                {/* <div> */}
                 <AppOverlay
                   onExit={closeNotifications}
                   children={<NotificationCenter />}

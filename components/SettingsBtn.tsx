@@ -1,13 +1,13 @@
 import * as React from 'react'
 import Link from 'next/link'
 
-import UserContext from 'helpers/UserContext'
 import UserSettings from 'components/modalviews/UserSettings'
+import ScreenContext from 'helpers/ScreenContext'
 
 type SettingsBtnProps = {}
 
 const SettingsBtn: React.FC<SettingsBtnProps> = ({}) => {
-  const { modalOpen, setModalState } = React.useContext(UserContext)
+  const { modalOpen, setModalState } = React.useContext(ScreenContext)
   const openSettings = () => {
     setModalState && setModalState(true, 'Settings', <UserSettings />)
   }

@@ -22,6 +22,7 @@ import { getToken } from 'helpers/auth'
 import { setYumHandler, setRecipeSavedHandler } from 'helpers/user-interactions'
 import UserContext from 'helpers/UserContext'
 import { act } from 'react-dom/test-utils'
+import ScreenContext from 'helpers/ScreenContext'
 
 const IMAGE_PLACEHOLDER = require('images/icons/picture.svg')
 const TIME = require('images/icons/alarm-clock.svg')
@@ -136,9 +137,8 @@ const RecipePage: NextPage<RecipeProps> = ({ recipe }) => {
 
   const [onOwnRecipe, setOnOwnRecipe] = React.useState(false)
   const [activeStep, setActiveStep] = React.useState(-1)
-  const { currentUserInfo, modalOpen, setModalState } = React.useContext(
-    UserContext
-  )
+  const { currentUserInfo } = React.useContext(UserContext)
+  const { modalOpen, setModalState } = React.useContext(ScreenContext)
   const [commentsOpen, setCommentsOpen] = React.useState(false)
   const [recipeReaction, setRecipeReaction] = React.useState(myReaction)
   const [saved, setSaved] = React.useState(haveISaved)

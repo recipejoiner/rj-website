@@ -15,7 +15,9 @@ import InfiniteScroll, { EdgeType } from 'components/InfiniteScroll'
 
 type NotificationCenter = {}
 
-const NotificationCenter: React.FC<NotificationCenter> = () => {
+const NotificationCenter: React.FC<NotificationCenter> = (
+  closeNotifications
+) => {
   const [isOpen, setIsOpen] = React.useState(false)
   const [newNotifications, setNewNotifications] = React.useState(false)
 

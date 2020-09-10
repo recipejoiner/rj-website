@@ -188,6 +188,7 @@ export const UPDATE_USER = gql`
 `
 
 export interface NotificationNodeType {
+  id: string
   createdAt: String
   notifiable:
     | CommentNotificationType
@@ -196,6 +197,7 @@ export interface NotificationNodeType {
     | UserRelationshipNotificationType
 }
 export const notificationConnectionNodeInit: NotificationNodeType = {
+  id: '',
   createdAt: '',
   notifiable: {
     __typename: 'UserRelationship',
@@ -218,6 +220,10 @@ interface RecipeCommentNotificationType {
   __typename: 'Recipe'
   title: string
   imageUrl: string
+  by: {
+    username: string
+  }
+  handle: string
 }
 interface CommentCommentNotificationType {
   __typename: 'Comment'
@@ -230,13 +236,20 @@ export interface ReactionNotificationType {
     username: string
     profileImageUrl: string
   }
+  reactionType: '0' | '1'
   reactable: RecipeReactionNotificationType | CommentReactionNotificationType
 }
 interface RecipeReactionNotificationType {
+  __typename: 'Recipe'
   title: string
   imageUrl: string
+  by: {
+    username: string
+  }
+  handle: string
 }
 interface CommentReactionNotificationType {
+  __typename: 'Comment'
   content: string
 }
 
@@ -250,6 +263,10 @@ export interface SavedNotificationType {
 }
 interface SavedRecipeNotificationType {
   title: string
+  by: {
+    username: string
+  }
+  handle: string
 }
 
 export interface UserRelationshipNotificationType {
@@ -281,6 +298,10 @@ const NOTIFICATION_FRAGMENT = gql`
           ... on Recipe {
             title
             imageUrl
+            by {
+              username
+            }
+            handle
           }
           ... on Comment {
             content
@@ -291,11 +312,16 @@ const NOTIFICATION_FRAGMENT = gql`
         by {
           ...userInfo
         }
+        reactionType
         reactable {
           __typename
           ... on Recipe {
             title
             imageUrl
+            by {
+              username
+            }
+            handle
           }
           ... on Comment {
             content
@@ -309,6 +335,10 @@ const NOTIFICATION_FRAGMENT = gql`
         saveable {
           ... on Recipe {
             title
+            by {
+              username
+            }
+            handle
           }
         }
       }

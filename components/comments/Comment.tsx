@@ -8,6 +8,7 @@ import NewCommentForm from 'components/comments/NewCommentForm'
 
 import { setCommentLikeHandler } from 'helpers/user-interactions'
 import UserContext from 'helpers/UserContext'
+import ScreenContext from 'helpers/ScreenContext'
 
 interface CommentProps {
   commentNode: CommentNodeType
@@ -24,9 +25,8 @@ const Comment: React.FC<CommentProps> = ({ commentNode, isNewComment }) => {
     content,
   } = commentNode
 
-  const { currentUserInfo, modalOpen, setModalState } = React.useContext(
-    UserContext
-  )
+  const { currentUserInfo } = React.useContext(UserContext)
+  const { modalOpen, setModalState } = React.useContext(ScreenContext)
 
   const [commentReaction, setCommentReaction] = React.useState(myReaction)
 

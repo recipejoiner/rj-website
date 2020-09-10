@@ -30,6 +30,7 @@ import {
   setReaction,
 } from 'helpers/user-interactions'
 import UserContext from 'helpers/UserContext'
+import ScreenContext from 'helpers/ScreenContext'
 
 const IMAGE_PLACEHOLDER = require('images/icons/picture.svg')
 const LIKE_BW = require('images/icons/yummy_bw.svg')
@@ -59,9 +60,8 @@ const ShortRecipe: React.FC<ShortRecipeProps> = ({ node }) => {
     myReaction,
   } = node || {}
 
-  const { currentUserInfo, modalOpen, setModalState } = React.useContext(
-    UserContext
-  )
+  const { currentUserInfo } = React.useContext(UserContext)
+  const { modalOpen, setModalState } = React.useContext(ScreenContext)
 
   const [recipeReaction, setRecipeReaction] = React.useState(myReaction)
   const [reactionCountUpdatable, setReactionCountUpdatable] = React.useState(

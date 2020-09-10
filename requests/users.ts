@@ -186,3 +186,215 @@ export const UPDATE_USER = gql`
     }
   }
 `
+
+export interface NotificationNodeType {
+  id: string
+  createdAt: String
+  notifiable:
+    | CommentNotificationType
+    | ReactionNotificationType
+    | SavedNotificationType
+    | UserRelationshipNotificationType
+}
+export const notificationConnectionNodeInit: NotificationNodeType = {
+  id: '',
+  createdAt: '',
+  notifiable: {
+    __typename: 'UserRelationship',
+    follower: {
+      username: '',
+      profileImageUrl: '',
+    },
+  },
+}
+
+export interface CommentNotificationType {
+  __typename: 'Comment'
+  by: {
+    username: string
+    profileImageUrl: string
+  }
+  commentable: RecipeCommentNotificationType | CommentCommentNotificationType
+}
+interface RecipeCommentNotificationType {
+  __typename: 'Recipe'
+  title: string
+  imageUrl: string
+  by: {
+    username: string
+  }
+  handle: string
+}
+interface CommentCommentNotificationType {
+  __typename: 'Comment'
+  content: string
+}
+
+export interface ReactionNotificationType {
+  __typename: 'Reaction'
+  by: {
+    username: string
+    profileImageUrl: string
+  }
+  reactionType: '0' | '1'
+  reactable: RecipeReactionNotificationType | CommentReactionNotificationType
+}
+interface RecipeReactionNotificationType {
+  __typename: 'Recipe'
+  title: string
+  imageUrl: string
+  by: {
+    username: string
+  }
+  handle: string
+}
+interface CommentReactionNotificationType {
+  __typename: 'Comment'
+  content: string
+}
+
+export interface SavedNotificationType {
+  __typename: 'Saved'
+  by: {
+    username: string
+    profileImageUrl: string
+  }
+  saveable: SavedRecipeNotificationType
+}
+interface SavedRecipeNotificationType {
+  title: string
+  by: {
+    username: string
+  }
+  handle: string
+}
+
+export interface UserRelationshipNotificationType {
+  __typename: 'UserRelationship'
+  follower: {
+    username: string
+    profileImageUrl: string
+  }
+}
+
+const USER_INFO_FOR_NOTIFICATION_FRAGMENT = gql`
+  fragment userInfo on User {
+    username
+    profileImageUrl
+  }
+`
+
+const NOTIFICATION_FRAGMENT = gql`
+  fragment notificationAttributes on Notification {
+    createdAt
+    notifiable {
+      __typename
+      ... on Comment {
+        by {
+          ...userInfo
+        }
+        commentable {
+          __typename
+          ... on Recipe {
+            title
+            imageUrl
+            by {
+              username
+            }
+            handle
+          }
+          ... on Comment {
+            content
+          }
+        }
+      }
+      ... on Reaction {
+        by {
+          ...userInfo
+        }
+        reactionType
+        reactable {
+          __typename
+          ... on Recipe {
+            title
+            imageUrl
+            by {
+              username
+            }
+            handle
+          }
+          ... on Comment {
+            content
+          }
+        }
+      }
+      ... on Saved {
+        by {
+          ...userInfo
+        }
+        saveable {
+          ... on Recipe {
+            title
+            by {
+              username
+            }
+            handle
+          }
+        }
+      }
+      ... on UserRelationship {
+        follower {
+          ...userInfo
+        }
+      }
+    }
+  }
+  ${USER_INFO_FOR_NOTIFICATION_FRAGMENT}
+`
+
+const NOTIFICATION_CONNECTION_FRAGMENT = gql`
+  fragment notificationConnectionFragment on NotificationConnection {
+    pageInfo {
+      hasNextPage
+    }
+    edges {
+      cursor
+      node {
+        ...notificationAttributes
+      }
+    }
+  }
+  ${NOTIFICATION_FRAGMENT}
+`
+
+export interface UserNotificationsVarsType {
+  cursor: string | null
+}
+export const USER_NOTIFICATIONS = gql`
+  query UserNotifications($cursor: String) {
+    result: me {
+      connection: notifications(first: 20, after: $cursor) {
+        ...notificationConnectionFragment
+      }
+    }
+  }
+  ${NOTIFICATION_CONNECTION_FRAGMENT}
+`
+
+export interface UserNotificationSubscriptionType {
+  result: {
+    node: NotificationNodeType
+    operation: 'CREATE' | 'DELETE'
+  }
+}
+export const NEW_USER_NOTIFICATION_SUBSCRIPTIONS = gql`
+  subscription getNewNotifications {
+    result: newNotification {
+      node: notification {
+        ...notificationAttributes
+      }
+      operation
+    }
+  }
+  ${NOTIFICATION_FRAGMENT}
+`

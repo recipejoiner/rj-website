@@ -14,6 +14,8 @@ import 'styles/tailwind.css'
 import { detect } from 'detect-browser'
 
 import UserContext from 'helpers/UserContext'
+import ScreenContext from 'helpers/ScreenContext'
+
 import client from 'requests/client'
 import {
   CurrentUserLoginCheckType,
@@ -43,7 +45,8 @@ if (typeof window === 'undefined') {
 }
 
 interface AppState {
-  menuOpen: boolean
+  scrollFreeze: boolean
+  notificationsOpen: boolean
   modalOpen: boolean
   modalTitle: string
   modalChildren: React.ReactNode
@@ -61,16 +64,18 @@ class MyApp extends App<UserProps, {}, AppState> {
     super(AppProps)
     this.props
     this.state = {
+      scrollFreeze: false,
+      notificationsOpen: false,
       modalOpen: false,
-      menuOpen: false,
       currentUserInfo: undefined,
       modalTitle: '',
       modalChildren: <></>,
       yPos: 0,
     }
+    this.setScrollFreezeState = this.setScrollFreezeState.bind(this)
+    this.setNotificationsState = this.setNotificationsState.bind(this)
     this.setModalState = this.setModalState.bind(this)
     this.setCurrentUser = this.setCurrentUser.bind(this)
-    this.setMenuOpen = this.setMenuOpen.bind(this)
   }
 
   static getDerivedStateFromProps(
@@ -89,6 +94,29 @@ class MyApp extends App<UserProps, {}, AppState> {
       }
     }
     return null
+  }
+
+  setScrollFreezeState(scrollFreeze: boolean) {
+    if (scrollFreeze === true) {
+      this.setState({
+        scrollFreeze: scrollFreeze,
+        yPos: window.pageYOffset,
+      })
+    }
+    // Closing: set the previous scroll position
+    else {
+      this.setState(
+        {
+          scrollFreeze: scrollFreeze,
+        },
+        () => window.scrollTo(0, this.state.yPos)
+      )
+    }
+  }
+
+  setNotificationsState(open: boolean) {
+    this.setState({ notificationsOpen: open })
+    this.setScrollFreezeState(open)
   }
 
   setModalState(
@@ -117,28 +145,9 @@ class MyApp extends App<UserProps, {}, AppState> {
     })
   }
 
-  setMenuOpen(menuOpenStatus: boolean) {
-    // Opening the menu: save the current scroll position
-    if (menuOpenStatus === true) {
-      this.setState({
-        menuOpen: menuOpenStatus,
-        yPos: window.pageYOffset,
-      })
-    }
-    // Closing the menu: set the previous scroll position
-    else {
-      this.setState(
-        {
-          menuOpen: menuOpenStatus,
-        },
-        () => window.scrollTo(0, this.state.yPos)
-      )
-    }
-  }
-
   fullSite() {
     const { Component, pageProps } = this.props
-    const { menuOpen, modalOpen } = this.state
+    const { modalOpen, scrollFreeze } = this.state
     return (
       // 'min-h-screen flex flex-col' are for making it easier to make the footer (if we add one) sticky
       <div className="min-h-screen flex flex-col font-sans">
@@ -182,31 +191,38 @@ class MyApp extends App<UserProps, {}, AppState> {
           value={{
             setCurrentUser: this.setCurrentUser,
             currentUserInfo: this.state.currentUserInfo,
-            modalOpen: this.state.modalOpen,
-            setModalState: this.setModalState,
           }}
         >
-          {/* Flex col to allow for putting a header and footer above and below the page */}
-          <div
-            className={`min-h-screen flex flex-col ${
-              menuOpen || modalOpen
-                ? 'overflow-hidden max-h-screen fixed lg:overflow-auto lg:static lg:max-h-full'
-                : ''
-            }`}
+          <ScreenContext.Provider
+            value={{
+              setNotificationsState: this.setNotificationsState,
+              notificationsOpen: this.state.notificationsOpen,
+              modalOpen: this.state.modalOpen,
+              setModalState: this.setModalState,
+            }}
           >
-            <AppModal
-              modalOpen={this.state.modalOpen}
-              modalTitle={this.state.modalTitle}
-              setModalState={this.setModalState}
+            {/* Flex col to allow for putting a header and footer above and below the page */}
+            <div
+              className={`min-h-screen flex flex-col ${
+                modalOpen || scrollFreeze
+                  ? 'overflow-hidden max-h-screen fixed lg:overflow-auto lg:static lg:max-h-full'
+                  : ''
+              }`}
             >
-              {this.state.modalChildren}
-            </AppModal>
-            <Header setMenuOpen={this.setMenuOpen} />
-            {/* This div exists solely for applying styles, eg giving the page padding */}
-            <div className="pt-14 md:pt-16 flex-grow antialiased bg-white text-gray-900 w-screen relative mx-auto max-w-12xl">
-              <Component {...pageProps} />
+              <AppModal
+                modalOpen={this.state.modalOpen}
+                modalTitle={this.state.modalTitle}
+                setModalState={this.setModalState}
+              >
+                {this.state.modalChildren}
+              </AppModal>
+              <Header />
+              {/* This div exists solely for applying styles, eg giving the page padding */}
+              <div className="pt-14 md:pt-16 flex-grow antialiased bg-white text-gray-900 w-screen relative mx-auto max-w-12xl">
+                <Component {...pageProps} />
+              </div>
             </div>
-          </div>
+          </ScreenContext.Provider>
         </UserContext.Provider>
       </div>
     )

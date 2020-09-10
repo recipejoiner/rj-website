@@ -1,4 +1,5 @@
 import * as React from 'react'
+import { cloneDeep } from 'lodash'
 
 import client from 'requests/client'
 import { getToken } from 'helpers/auth'
@@ -46,6 +47,13 @@ export interface QueryResultRes<NodeType> {
   __typename: string
 }
 
+export interface SubscriptionRes<NodeType> {
+  result: {
+    node: NodeType
+    operation: 'CREATE' | 'DELETE'
+  }
+}
+
 function getQueryDataInit(hasJustConnection: boolean, nodeInit: any) {
   const connectionDataInit: QueryConnectionRes<typeof nodeInit> = {
     connection: {
@@ -84,6 +92,8 @@ interface InfiniteScrollProps<NodeType, QueryVarsType> {
   QueryVars: QueryVarsType
   children: (edges: Array<EdgeType<NodeType>>) => React.ReactNode
   inModal?: boolean
+  hasSubscription?: boolean
+  subscriptionRequest?: DocumentNode
 }
 
 const InfiniteScroll: React.FC<InfiniteScrollProps<any, any>> = ({
@@ -93,12 +103,18 @@ const InfiniteScroll: React.FC<InfiniteScrollProps<any, any>> = ({
   QueryVars,
   children,
   inModal,
+  hasSubscription,
+  subscriptionRequest,
 }) => {
   const QueryData = getQueryDataInit(hasJustConnection, nodeInit)
-  const { loading, data, error, variables, fetchMore } = useQuery<
-    typeof QueryData,
-    typeof QueryVars
-  >(QUERY, {
+  const {
+    loading,
+    data,
+    error,
+    variables,
+    fetchMore,
+    subscribeToMore,
+  } = useQuery<typeof QueryData, typeof QueryVars>(QUERY, {
     client: client,
     errorPolicy: 'all',
     variables: QueryVars,
@@ -118,9 +134,46 @@ const InfiniteScroll: React.FC<InfiniteScrollProps<any, any>> = ({
 
   const [activelyFetching, setActivelyFetching] = React.useState(false)
 
+  const [isSubscribed, setIsSubscribed] = React.useState(false)
+
   const [infiniteScrollData, setInfiniteScrollData] = React.useState<
     typeof QueryData
   >(QueryData)
+
+  const [subscriptionEdges, setSubscriptionEdges] = React.useState<
+    EdgeType<any>[]
+  >([])
+
+  const updateEdges = (newEdges: EdgeType<any>[]) => {
+    if ('result' in infiniteScrollData) {
+      let combinedData: QueryResultRes<any> = {
+        result: {
+          connection: {
+            pageInfo: infiniteScrollData.result.connection.pageInfo,
+            edges: newEdges,
+            __typename: infiniteScrollData.result.connection.__typename,
+          },
+          __typename: infiniteScrollData.result.__typename,
+        },
+        __typename: infiniteScrollData.__typename,
+      }
+      setInfiniteScrollData(combinedData)
+      return combinedData
+    } else if ('connection' in infiniteScrollData) {
+      let combinedData: QueryConnectionRes<any> = {
+        connection: {
+          pageInfo: infiniteScrollData.connection.pageInfo,
+          edges: newEdges,
+          __typename: infiniteScrollData.connection.__typename,
+        },
+        __typename: infiniteScrollData.__typename,
+      }
+      setInfiniteScrollData(combinedData)
+      return combinedData
+    } else {
+      throw "There's something wrong with the return types."
+    }
+  }
 
   const onLoadMore = () => {
     setActivelyFetching(true)
@@ -135,37 +188,20 @@ const InfiniteScroll: React.FC<InfiniteScrollProps<any, any>> = ({
       updateQuery: (prev, { fetchMoreResult }) => {
         if (fetchMoreResult) {
           if ('result' in fetchMoreResult && 'result' in infiniteScrollData) {
-            let combinedData: QueryResultRes<any> = {
-              result: {
-                connection: {
-                  pageInfo: fetchMoreResult.result.connection.pageInfo,
-                  edges: [
-                    ...infiniteScrollData.result.connection.edges,
-                    ...fetchMoreResult.result.connection.edges,
-                  ],
-                  __typename: fetchMoreResult.result.connection.__typename,
-                },
-                __typename: fetchMoreResult.result.__typename,
-              },
-              __typename: fetchMoreResult.__typename,
-            }
-            setInfiniteScrollData(combinedData)
+            const newEdges = [
+              ...infiniteScrollData.result.connection.edges,
+              ...fetchMoreResult.result.connection.edges,
+            ]
+            updateEdges(newEdges)
           } else if (
             'connection' in fetchMoreResult &&
             'connection' in infiniteScrollData
           ) {
-            let combinedData: QueryConnectionRes<any> = {
-              connection: {
-                pageInfo: fetchMoreResult.connection.pageInfo,
-                edges: [
-                  ...infiniteScrollData.connection.edges,
-                  ...fetchMoreResult.connection.edges,
-                ],
-                __typename: fetchMoreResult.connection.__typename,
-              },
-              __typename: fetchMoreResult.__typename,
-            }
-            setInfiniteScrollData(combinedData)
+            const newEdges = [
+              ...infiniteScrollData.connection.edges,
+              ...fetchMoreResult.connection.edges,
+            ]
+            updateEdges(newEdges)
           } else {
             throw "There's something wrong with the return types."
           }
@@ -174,6 +210,48 @@ const InfiniteScroll: React.FC<InfiniteScrollProps<any, any>> = ({
       },
     })
     setActivelyFetching(false)
+  }
+
+  const subscribeToNewData = (subscriptionRequest: DocumentNode) => {
+    subscribeToMore<SubscriptionRes<typeof nodeInit>>({
+      document: subscriptionRequest,
+      variables: {
+        userToken: getToken(),
+      },
+      updateQuery: (prev, { subscriptionData }) => {
+        if (!subscriptionData.data) return prev
+        // take 'subscriptionData' and append it to the beginning of the edges array
+        if (subscriptionData.data.result) {
+          if (subscriptionData.data.result.operation == 'CREATE') {
+            let newEdge = {
+              cursor: Math.random().toString(36).substring(7),
+              node: subscriptionData.data.result.node,
+              __typename: '',
+            }
+            if ('result' in prev) {
+              newEdge.__typename = prev.result.connection.edges[0].__typename
+              const newEdges = [newEdge, ...prev.result.connection.edges]
+              const combinedData = updateEdges(newEdges)
+              return combinedData
+            } else if ('connection' in prev) {
+              newEdge.__typename = prev.connection.edges[0].__typename
+              const newEdges = [newEdge, ...prev.connection.edges]
+              const combinedData = updateEdges(newEdges)
+              return combinedData
+            } else {
+              return prev
+            }
+          } else if (subscriptionData.data.result.operation == 'DELETE') {
+            console.log('delete the node:', subscriptionData.data.result.node)
+            return prev
+          } else {
+            throw "There's something wrong with the return types."
+          }
+        } else {
+          return infiniteScrollData // initializer - ie, if there is no actual subscription data
+        }
+      },
+    })
   }
 
   const handleScroll = () => {
@@ -223,7 +301,15 @@ const InfiniteScroll: React.FC<InfiniteScrollProps<any, any>> = ({
       setInfiniteScrollData(data)
     }
   }
+
+  // for subscriptions, if applicable
+  if (loaded && hasSubscription && subscriptionRequest && !isSubscribed) {
+    setIsSubscribed(true)
+    subscribeToNewData(subscriptionRequest)
+  }
+
   const { result } = (infiniteScrollData as QueryResultRes<any>) || {}
+  console.log('infiniteScrollData:', infiniteScrollData)
   const { connection } = result || infiniteScrollData
   const { edges, pageInfo } = connection
   const { hasNextPage } = pageInfo

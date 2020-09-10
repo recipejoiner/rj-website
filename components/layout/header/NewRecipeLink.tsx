@@ -2,20 +2,14 @@ import Link from 'next/link'
 
 const PLUS = require('images/icons/plus.svg')
 
-type LogoProps = {
-  closeMenus(): void
-}
+type LogoProps = {}
 
-const Logo: React.FC<LogoProps> = ({ closeMenus }) => {
+const Logo: React.FC<LogoProps> = () => {
   return (
     // Logo, wrapped in an h2 tag
     <h2>
       <Link href="/recipes/new">
-        {/* Need to close any open menus when navigating to another page, hence the onClick */}
-        <a
-          aria-label="RecipeJoiner create new recipe page"
-          onClick={() => closeMenus()}
-        >
+        <a aria-label="RecipeJoiner create new recipe page">
           <img
             className="w-10 p-1 text-gray-900 hover:text-gray-700 fill-current"
             src={PLUS}

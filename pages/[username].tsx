@@ -25,6 +25,7 @@ import FollowChangeBtn from 'components/FollowChangeBtn'
 import UserRelList from 'components/modalviews/UserRelList'
 import UpdateProfileImage from 'components/modalviews/UpdateProfileImage'
 import { profile } from 'console'
+import ScreenContext from 'helpers/ScreenContext'
 
 interface UserPageProps {
   userInfo: UserInfoType
@@ -41,9 +42,8 @@ const UserPage: NextPage<UserPageProps> = ({ userInfo }) => {
     followingCount,
     areFollowing,
   } = result || {}
-  const { currentUserInfo, modalOpen, setModalState } = React.useContext(
-    UserContext
-  )
+  const { currentUserInfo } = React.useContext(UserContext)
+  const { modalOpen, setModalState } = React.useContext(ScreenContext)
 
   const openFollowers = () => {
     setModalState &&

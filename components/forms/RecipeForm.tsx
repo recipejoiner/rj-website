@@ -163,24 +163,16 @@ const StepMiniView = ({
       className="hover:scale-95 transform ease-in duration-200 w-10/12 my-2 cursor-pointer "
       onClick={onClick}
     >
-      <div className="grid grid-cols-5 border-black border border-b-2 text-xl p-4 rounded-lg ">
-        <span className=" text-2xl rounded-full text-center m-auto">
-          {stepIndex + 1}
-        </span>
+      <div className="grid border-gray-400 text-gray-700 border border-b-2 text-xl rounded-full ">
         {/* {recipe.steps[stepIndex].image ? (
           <img src={} />
         ) : null} */}
-        <span className="col-span-2 bg-white text-center rounded m-1">
-          {recipe.steps[stepIndex].stepTitle}{' '}
-        </span>
-
-        <span className="col-span-2 bg-white text-center rounded  m-1">
-          {recipe.steps[stepIndex].ingredients.map(
-            (ing) =>
-              (recipe.steps[stepIndex].ingredients.indexOf(ing) > 0
-                ? ', '
-                : '') + ing.name
-          )}
+        <span className=" m-1 truncate">
+          <span className=" text-2xl border-black  mr-2 px-3 text-center">
+            {stepIndex + 1}
+          </span>
+          {recipe.steps[stepIndex].stepTitle ||
+            recipe.steps[stepIndex].additionalInfo}
         </span>
       </div>
     </div>
@@ -304,59 +296,43 @@ const RecipeStepMode: React.FC<RecipeStepProps> = ({
   }
 
   return (
-    <React.Fragment>
-      <div className="">
-        <div className="grid grid-rows-2">
-          <span className="text-4xl">Step {currentStep + 1}:</span>
-          <input
-            className="bg-transparent w-full text-4xl text-gray-700 leading-tight focus:outline-none"
-            type="text"
-            placeholder="Title"
-            name="stepTitle"
-            value={recipe.steps[currentStep].stepTitle || ''}
+    <div className="border border-black rounded">
+      <div className="flex">
+        <span className="text-4xl  mr-2 px-3 text-center">
+          {currentStep + 1}
+        </span>
+        <input
+          className="bg-transparent w-full text-3xl text-gray-700 leading-tight focus:outline-none"
+          type="text"
+          placeholder="Title"
+          name="stepTitle"
+          value={recipe.steps[currentStep].stepTitle || ''}
+          onChange={handleChange}
+        ></input>
+      </div>
+      <div className="text-center ">
+        <div className=" w-full p-2 h-56 rounded ">
+          <textarea
+            className={`${
+              getError('additionalInfo').length >= 1
+                ? 'border border-red-600'
+                : 'border border-gray-300'
+            } resize-none  w-full h-full text-xl outline-none  border  p-2 rounded shadow-md`}
+            placeholder="Describe the step in detail!"
+            name="additionalInfo"
+            value={recipe.steps[currentStep].additionalInfo || ''}
             onChange={handleChange}
-          ></input>
-        </div>
-        <div className="text-center rounded mt-4 mx-auto w-full h-auto bg-gray-500">
-          <div className="w-full h-auto lg:w-32 lg:h-32 m-auto">
-            <label className="cursor-pointer w-full block">
-              <img
-                className="object-cover w-full h-auto"
-                src={preview ? preview : createImage()}
-              />
-              <div className="mb-1">
-                {imageErrs.map((err) => {
-                  return (
-                    <span
-                      key={err.message}
-                      className="text-center text-sm text-red-600 left-0 w-full mt-2"
-                    >
-                      {err.message}
-                    </span>
-                  )
-                })}
-              </div>
-              <input
-                className="hidden"
-                name="files"
-                type="file"
-                multiple={false}
-                accept="image/*"
-                onChange={imagePicker.onSelectFile}
-              />
-            </label>
-          </div>
+          ></textarea>
         </div>
       </div>
-
-      <div className="text-center mt-4">
-        <div className="text-center p-2 rounded">
+      <div className="text-center">
+        <div className="text-center rounded">
           {recipe.steps[currentStep].ingredients.map((ing) => (
-            <div className="grid grid-cols-2 mt-2 p-2  rounded bg-white h-full">
+            <div className="grid grid-rows-2 md:grid-rows-1 md:grid-cols-2 mt-2 shadow-md border-gray-200 border  m-2 my-3  rounded h-full">
               <div className="rounded text-center grid ">
                 <Autocomplete
                   id={ing.id + '-name'}
-                  className="bg-white md:text-4xl  text-2xl md:w-1/2 m-auto text-center focus:outline-none p-2 rounded "
+                  className=" md:text-4xl  md:w-1/2 m-auto text-center focus:outline-none p-2 rounded "
                   style={{ width: '100%' }}
                   options={ingredients}
                   getOptionLabel={(option) => option.name}
@@ -402,11 +378,11 @@ const RecipeStepMode: React.FC<RecipeStepProps> = ({
                     (getError(ing.id + '-quantity').length
                       ? 'border border-red-600'
                       : '') +
-                    ' w-full text-xl border border-black p-3 focus:outline-none rounded text-center m-auto col-span-2'
+                    ' w-full   p-3 focus:outline-none rounded text-center m-auto col-span-2'
                   }
                   value={ing.quantity || ''}
                   name="quantity"
-                  placeholder="#"
+                  placeholder="Amount"
                   type="text"
                   onChange={handleChange}
                 ></input>
@@ -447,9 +423,9 @@ const RecipeStepMode: React.FC<RecipeStepProps> = ({
               </div>
             </div>
           ))}
-          <div className="flex justify-center">
+          <div className="flex justify-center mt-2">
             <button
-              className="hover:scale-105 transform ease-in duration-200 border-b-2 w-full focus:outline-none text-xl text-gray-800 font-bold p-4 my-4 border border-black rounded"
+              className="-mb-5 border border-black rounded  bg-white focus:outline-none text-xl  border-b-2 text-gray-800  p-1 "
               onClick={createIngredient}
             >
               Add Ingredient
@@ -457,23 +433,37 @@ const RecipeStepMode: React.FC<RecipeStepProps> = ({
           </div>
         </div>
       </div>
-      <div className="text-center mt-4">
-        <div
-          className={
-            (getError('additionalInfo').length ? 'border border-red-600' : '') +
-            ' w-full border-black border p-2 h-56 rounded '
-          }
-        >
-          <textarea
-            className="resize-none  w-full h-full text-xl bg-white text-gray-800 p-2 outline-none rounded"
-            placeholder="Describe the step in concise detail!"
-            name="additionalInfo"
-            value={recipe.steps[currentStep].additionalInfo || ''}
-            onChange={handleChange}
-          ></textarea>
+      {/* <div className="text-center rounded mx-auto w-1/2 h-auto">
+        <div className="w-full h-auto lg:w-32 lg:h-32 m-auto">
+          <label className="cursor-pointer w-full block">
+            <img
+              className="object-cover w-full h-auto"
+              src={preview ? preview : createImage()}
+            />
+            <div className="mb-1">
+              {imageErrs.map((err) => {
+                return (
+                  <span
+                    key={err.message}
+                    className="text-center text-sm text-red-600 left-0 w-full mt-2"
+                  >
+                    {err.message}
+                  </span>
+                )
+              })}
+            </div>
+            <input
+              className="hidden"
+              name="files"
+              type="file"
+              multiple={false}
+              accept="image/*"
+              onChange={imagePicker.onSelectFile}
+            />
+          </label>
         </div>
-      </div>
-    </React.Fragment>
+      </div> */}
+    </div>
   )
 }
 
@@ -548,122 +538,144 @@ const RecipeReviewMode: React.FC<RecipeReviewProps> = ({
     return IMAGE
   }
   return (
-    <React.Fragment>
-      <div className="m-2 mb-8">
-        <input
-          className={
-            (getError('title').length ? 'border-b-2 border-red-600' : '') +
-            ' bg-transparent w-full text-5xl text-gray-700  py-1 leading-tight focus:outline-none  border-b-2 border-black '
-          }
-          type="text"
-          placeholder="Recipe Title"
-          name="title"
-          value={recipe.title || ''}
-          onChange={handleChange}
-        ></input>
-      </div>
-      {recipe.steps.map((step) => {
-        return (
-          <StepMiniView
-            recipe={recipe}
-            stepIndex={step.stepNum}
-            onClick={() => {
-              goToStep(step.stepNum)
-            }}
-          />
-        )
-      })}
-      <div className="text-center rounded mt-4 mx-auto w-full h-auto bg-gray-500">
-        <div className="w-full h-auto lg:w-32 lg:h-32 m-auto">
-          <label className="cursor-pointer w-full block">
-            <img
-              className="object-cover w-full h-auto"
-              src={preview ? preview : createImage()}
-            />
-            <div className="mb-1">
-              {imageErrs.map((err) => {
-                return (
-                  <span
-                    key={err.message}
-                    className="text-center text-sm text-red-600 left-0 w-full mt-2"
-                  >
-                    {err.message}
-                  </span>
-                )
-              })}
-            </div>
-            <input
-              className="hidden"
-              name="files"
-              type="file"
-              multiple={false}
-              accept="image/*"
-              onChange={imagePicker.onSelectFile}
-            />
-          </label>
-        </div>
-      </div>
-      <div className="grid  grid-cols-2 border border-black p-2 gap-4  rounded ">
-        <div className="grid  grid-rows-2 p-2 rounded ">
-          <img src={TIME} className="h-8 m-auto cursor-pointer rounded" />
-          <div className=" grid grid-cols-2 text-center gap-4 text-xs">
-            <div className="w-full rounded">
+    <div className="max-w-3xl lg:my-8 mx-auto ">
+      <div className=" mx-auto mt-6 bg-white rounded-lg ">
+        <div className="m-2 ">
+          <input
+            className={
+              (getError('title').length ? 'border-b-2 border-red-600' : '') +
+              ' bg-transparent cursor-pointer w-full text-3xl lg:text-5xl  leading-tight focus:outline-none font-bold'
+            }
+            type="text"
+            placeholder="Recipe Title"
+            name="title"
+            value={recipe.title || ''}
+            onChange={handleChange}
+          ></input>
+          <div className="w-full grid grid-cols-2  align-middle my-4  ">
+            <div className="col-span-1">
               <input
-                className="text-xl w-full pl-3 m-auto border border-black text-center focus:outline-none rounded appearance-none"
+                className="w-1/3 text-center border border-gray-300 focus:outline-none rounded "
                 type="number"
                 min="00"
                 max="48"
                 step="1"
-                placeholder="H"
+                placeholder="00"
                 name="hours"
                 value={minutesToTime(recipe.recipeTime).hours || ''}
                 onChange={handleChange}
               ></input>
-              Hours
-            </div>
-            <div className="w-full rounded">
+              <span> : </span>
               <input
-                className="text-xl w-full pl-3 m-auto border border-black text-center focus:outline-none rounded appearance-none"
+                className="w-1/3 text-center border border-gray-300 focus:outline-none rounded "
                 type="number"
                 min="00"
                 max="60"
                 step="1"
-                placeholder="M"
+                placeholder="00"
                 name="minutes"
                 value={minutesToTime(recipe.recipeTime).minutes || ''}
                 onChange={handleChange}
               ></input>
-              Minutes
+              <span> Time</span>
+            </div>
+
+            <div className="col-span-1">
+              <input
+                className="w-1/3 text-center border border-gray-300 focus:outline-none rounded "
+                type="number"
+                min="1"
+                step="1"
+                placeholder="#"
+                name="servings"
+                value={recipe.servings || ''}
+                onChange={handleChange}
+              ></input>
+              <span> Servings</span>
             </div>
           </div>
         </div>
-        <div className="grid  grid-rows-2 p-2 rounded text-center text-xs ">
-          <img src={SERVINGS} className="h-8 m-auto cursor-pointer rounded" />
-          <div className="w-full grid grid-rows-2 text-center justify-center rounded">
-            <input
-              className="text-xl w-8/12 pl-3 m-auto border border-black text-center focus:outline-none rounded appearance-none"
-              type="number"
-              min="1"
-              step="1"
-              placeholder="Servings"
-              name="servings"
-              value={recipe.servings || ''}
-              onChange={handleChange}
-            ></input>
-            Servings
+
+        <div key="overview">
+          <div className=" grid items-center  w-full h-64  m-auto border-gray-300 border bg-gray-100">
+            <label className="cursor-pointer w-full block">
+              <img
+                className="m-auto object-cover w-1/2"
+                src={preview ? preview : createImage()}
+              />
+              <div className="mb-1">
+                {imageErrs.map((err) => {
+                  return (
+                    <span
+                      key={err.message}
+                      className="text-center text-sm text-red-600 left-0 w-full mt-2"
+                    >
+                      {err.message}
+                    </span>
+                  )
+                })}
+              </div>
+              <input
+                className="hidden"
+                name="files"
+                type="file"
+                multiple={false}
+                accept="image/*"
+                onChange={imagePicker.onSelectFile}
+              />
+            </label>
           </div>
+          <div className=" w-full h-full rounded ">
+            <div className="h-full text-xl text-gray-700 mt-4 ">
+              <textarea
+                placeholder="Description and tags"
+                className={`${
+                  getError('description').length >= 1
+                    ? 'border border-red-600'
+                    : 'border border-gray-300'
+                } resize-none  w-full h-full text-xl outline-none  border  p-2 rounded shadow-md`}
+                name="description"
+                value={recipe.description || ''}
+                onChange={handleChange}
+              ></textarea>
+            </div>
+          </div>
+          {/* <div className="w-full text-center font-black">Ingredients</div>
+          <div
+            className={`${
+              ingredients.length <= 0 ? 'border-none' : 'border'
+            } rounded mx-2  m-auto my-2  p-2`}
+          >
+            {ingredients.map((ing: IngredientType) => (
+              <Ingredient
+                key={`${ing.ingredientInfo.name}${ing.quantity}`}
+                ingredient={ing}
+              />
+            ))}
+          </div> */}
+        </div>
+        <div className="w-full text-center font-black">Steps</div>
+        <div className="m-2 border rounded">
+          {recipe.steps.map((step) => (
+            <div>
+              <div
+                className=" w-full p-2 cursor-pointer "
+                onClick={() => goToStep(step.stepNum)}
+              >
+                <div className="grid grid-cols-12">
+                  <span className=" flex col-span-2 h-full w-full m-auto border-gray-300 border-b-2  ">
+                    <span className="m-auto">{step.stepNum + 1}</span>
+                  </span>
+                  <span className="col-span-10 bg-white my-auto p-4 rounded m-1 truncate">
+                    {step.stepTitle || step.additionalInfo}
+                  </span>
+                </div>
+              </div>
+            </div>
+          ))}
         </div>
       </div>
-      <div className=" w-full   my-4 h-40 rounded ">
-        <textarea
-          placeholder="Description and tags"
-          className="resize-none h-full w-full text-xl mt-4 text-gray-700 border-black border rounded p-4 outline-none"
-          name="description"
-          value={recipe.description || ''}
-          onChange={handleChange}
-        ></textarea>
-      </div>
-    </React.Fragment>
+    </div>
   )
 }
 //end HELPER COMPONENTS
@@ -826,9 +838,12 @@ const RecipeForm: React.FC<RecipeFormProps> = ({
 
   return (
     <div className="max-w-3xl lg:my-8 mx-auto ">
-      <div className=" mx-auto mt-1 p-6 bg-white rounded-lg shadow-xl border-black ">
+      <div className=" mx-auto mt-1 p-2 bg-white border-black ">
         {loaded && !reviewMode ? (
           <React.Fragment>
+            <h1 className="text-center text-2xl mb-2">
+              {recipe.title || 'New Recipe'}&nbsp;Steps
+            </h1>
             {recipe.steps.map((step) => {
               if (currentStep !== step.stepNum) {
                 return (
@@ -841,10 +856,16 @@ const RecipeForm: React.FC<RecipeFormProps> = ({
               } else {
                 return (
                   <React.Fragment>
-                    <DeleteX
-                      className="-mx-6 -my-2 float-left"
+                    {/* <DeleteX
+                      className="-mx-1 -my- float-left"
                       onClick={() => deleteStep(currentStep)}
-                    />
+                    /> */}
+                    <span
+                      className="text-xs float-right p-1"
+                      onClick={() => deleteStep(currentStep)}
+                    >
+                      X
+                    </span>
                     <RecipeStepMode
                       recipe={recipe}
                       updateRecipe={updateRecipe}
@@ -853,16 +874,17 @@ const RecipeForm: React.FC<RecipeFormProps> = ({
                       updateError={updateError}
                       deleteError={deleteError}
                     />
+
                     <div className="w-full mt-8">
                       <div className="grid col-gap-4 grid-cols-2">
                         <button
-                          className="hover:scale-105 transform ease-in duration-200 border-b-2 w-full focus:outline-none text-xl text-gray-800 font-bold p-4 my-4 border border-black rounded"
+                          className="hover:scale-105 transform ease-in duration-200 border-b-2 w-full focus:outline-none text-xl bg-yellow-200 text-gray-800  p-2 my-4 border border-gray-300 rounded"
                           onClick={goToReview}
                         >
                           Finish
                         </button>
                         <button
-                          className="hover:scale-105 transform ease-in duration-200 border-b-2 w-full focus:outline-none text-xl text-gray-800 font-bold p-4 my-4 border border-black rounded"
+                          className="hover:scale-105 transform ease-in duration-200 border-b-2 w-full focus:outline-none text-xl bg-green-200 text-gray-800  p-2 my-4 border border-gray-300 rounded"
                           onClick={() => submitStep(currentStep + 1)}
                         >
                           Next Step
@@ -885,7 +907,7 @@ const RecipeForm: React.FC<RecipeFormProps> = ({
               deleteError={deleteError}
             />
             <button
-              className="hover:scale-105 transform ease-in duration-200 border-b-2 w-full focus:outline-none text-xl text-gray-800 font-bold p-4 my-4 border border-black rounded"
+              className=" border-b-2 w-full bg-green-200 focus:outline-none text-xl text-gray-800  p-4 my-4 border border-black rounded"
               onClick={submitRecipe}
             >
               Post Recipe

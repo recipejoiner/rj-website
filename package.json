@@ -53,7 +53,7 @@
     "next": "^9.5.2",
     "next-compose-plugins": "^2.2.0",
     "next-optimized-images": "^2.6.2",
-    "node-fetch": "^2.6.0",
+    "node-fetch": "^2.6.1",
     "react": "16.13.1",
     "react-apollo": "^3.1.5",
     "react-copy-to-clipboard": "^5.0.2",

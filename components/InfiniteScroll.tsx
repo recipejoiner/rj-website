@@ -1,5 +1,5 @@
 import * as React from 'react'
-import { cloneDeep } from 'lodash'
+import { isEqual, cloneDeep } from 'lodash'
 
 import client from 'requests/client'
 import { getToken } from 'helpers/auth'
@@ -212,6 +212,19 @@ const InfiniteScroll: React.FC<InfiniteScrollProps<any, any>> = ({
     setActivelyFetching(false)
   }
 
+  const deleteNodeFromEdges = (edges: EdgeType<any>[], node: any) => {
+    console.log('searching for node', node)
+    var edgesCopy = cloneDeep(edges)
+    for (var i = 0; i < edges.length; i++) {
+      console.log('checking node', edges[i].node)
+      if (isEqual(edges[i].node, node)) {
+        edgesCopy.splice(i, 1)
+        return edgesCopy
+      }
+    }
+    return edges // return unchanged edges if node isn't found
+  }
+
   const subscribeToNewData = (subscriptionRequest: DocumentNode) => {
     subscribeToMore<SubscriptionRes<typeof nodeInit>>({
       document: subscriptionRequest,
@@ -243,7 +256,23 @@ const InfiniteScroll: React.FC<InfiniteScrollProps<any, any>> = ({
             }
           } else if (subscriptionData.data.result.operation == 'DELETE') {
             console.log('delete the node:', subscriptionData.data.result.node)
-            return prev
+            const { node: nodeToDelete } = subscriptionData.data.result
+            if ('result' in prev) {
+              const { result } = prev
+              const { connection } = result
+              const { edges } = connection
+              const newEdges = deleteNodeFromEdges(edges, nodeToDelete)
+              const newData = updateEdges(newEdges)
+              return newData
+            } else if ('connection' in prev) {
+              const { connection } = prev
+              const { edges } = connection
+              const newEdges = deleteNodeFromEdges(edges, nodeToDelete)
+              const newData = updateEdges(newEdges)
+              return newData
+            } else {
+              return prev
+            }
           } else {
             throw "There's something wrong with the return types."
           }

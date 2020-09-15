@@ -305,7 +305,10 @@ export interface RecipeInputType {
   image: Array<File>
   description: string
   servings: number
-  recipeTime: number
+  recipeTime: {
+    minutes: number
+    hours: number
+  }
   steps: Array<RecipeStepInputType>
 }
 

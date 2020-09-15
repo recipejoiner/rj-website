@@ -32,6 +32,10 @@ import {
 
 import RecipeForm from 'components/forms/RecipeForm'
 
+const minutesToTime = (totalMinutes: number) => {
+  return { hours: Math.floor(totalMinutes / 60), minutes: totalMinutes % 60 }
+}
+
 interface GetExistingRecipeAttributesReturnType {
   existingRecipeId: string
   oldAttributes: RecipeInputType
@@ -111,7 +115,7 @@ const getExistingRecipeAttributes = async (
     image: [image],
     description: description,
     servings: servings,
-    recipeTime: recipeTime,
+    recipeTime: minutesToTime(recipeTime),
     steps: formatSteps(steps),
   }
 

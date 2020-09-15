@@ -57,17 +57,6 @@ interface RecipeFormProps {
 
 //start HELPER FUNCTIONS
 
-const minutesToTime = (totalMinutes: number) => {
-  return { hours: Math.floor(totalMinutes / 60), minutes: totalMinutes % 60 }
-}
-function diff(num1: number, num2: number) {
-  if (num1 > num2) {
-    return num1 - num2
-  } else {
-    return num2 - num1
-  }
-}
-
 const NewIngredient = () => ({
   id: (Date.now() * Math.random()).toFixed(0).toString(),
   name: '',
@@ -88,7 +77,10 @@ const NewRecipe: () => RecipeInputType = () => ({
   image: [],
   description: '',
   servings: 1,
-  recipeTime: 0,
+  recipeTime: {
+    minutes: 0,
+    hours: 0,
+  },
   steps: [NewStep(0)],
 })
 
@@ -491,12 +483,16 @@ const RecipeReviewMode: React.FC<RecipeReviewProps> = ({
     let index = -1
     switch (name) {
       case 'hours':
+        let hours =
+          typeof value == 'string' ? value.match(/^(([0-9]){0,3})$/) : null
+        if (!value || (hours && hours[0]))
+          recipeCopy.recipeTime.hours = Number(value)
+        break
       case 'minutes':
-        let recipeTimeExpanded = minutesToTime(recipeCopy.recipeTime)
-        recipeCopy.recipeTime +=
-          name === 'hours'
-            ? diff(recipeTimeExpanded.hours, Number(value)) * 60
-            : diff(recipeTimeExpanded.hours, Number(value))
+        let minutes =
+          typeof value == 'string' ? value.match(/^(([0-9]){0,3})$/) : null
+        if (!value || (minutes && minutes[0]))
+          recipeCopy.recipeTime.minutes = Number(value)
         break
       case 'servings':
         recipeCopy[name] = Number(value)
@@ -562,7 +558,7 @@ const RecipeReviewMode: React.FC<RecipeReviewProps> = ({
                 step="1"
                 placeholder="00"
                 name="hours"
-                value={minutesToTime(recipe.recipeTime).hours || ''}
+                value={recipe.recipeTime.hours || ''}
                 onChange={handleChange}
               ></input>
               <span> : </span>
@@ -574,7 +570,7 @@ const RecipeReviewMode: React.FC<RecipeReviewProps> = ({
                 step="1"
                 placeholder="00"
                 name="minutes"
-                value={minutesToTime(recipe.recipeTime).minutes || ''}
+                value={recipe.recipeTime.minutes || ''}
                 onChange={handleChange}
               ></input>
               <span> Time</span>
@@ -598,9 +594,9 @@ const RecipeReviewMode: React.FC<RecipeReviewProps> = ({
 
         <div key="overview">
           <div className=" grid items-center  w-full h-64  m-auto border-gray-300 border bg-gray-100">
-            <label className="cursor-pointer w-full block">
+            <label className="cursor-pointer w-full h-64 block">
               <img
-                className="m-auto object-cover w-1/2"
+                className="object-cover w-full h-64"
                 src={preview ? preview : createImage()}
               />
               <div className="mb-1">
@@ -772,6 +768,7 @@ const RecipeForm: React.FC<RecipeFormProps> = ({
 
   const validateValue = (errorKey: string, value: any, validation: string) => {
     let ret = true
+
     switch (validation) {
       case 'required':
         if (!value) {
@@ -817,13 +814,15 @@ const RecipeForm: React.FC<RecipeFormProps> = ({
 
   const convertValuesForDB = () => {
     let recipeCopy = cloneDeep<any>(recipe)
-
+    recipeCopy.recipeTime =
+      recipeCopy.recipeTime.hours * 60 + recipeCopy.recipeTime.minutes
     recipeCopy.steps.map((step: { ingredients: { quantity: string }[] }) => {
       step.ingredients.map((ing: { quantity: string }) => {
         ing.quantity = convertFractionToDecimal(ing.quantity)
         removeFieldsByKey(ing, ['id'])
       })
     })
+    console.log(recipeCopy)
     return recipeCopy
   }
 

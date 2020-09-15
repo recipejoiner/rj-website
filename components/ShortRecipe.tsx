@@ -31,6 +31,7 @@ import {
 } from 'helpers/user-interactions'
 import UserContext from 'helpers/UserContext'
 import ScreenContext from 'helpers/ScreenContext'
+import { ReactionType } from 'requests/reactions'
 
 const IMAGE_PLACEHOLDER = require('images/icons/picture.svg')
 const LIKE_BW = require('images/icons/yummy_bw.svg')
@@ -64,11 +65,20 @@ const ShortRecipe: React.FC<ShortRecipeProps> = ({ node }) => {
   const { modalOpen, setModalState } = React.useContext(ScreenContext)
 
   const [recipeReaction, setRecipeReaction] = React.useState(myReaction)
+  const [freezeReaction, setFreezeReaction] = React.useState(false)
   const [reactionCountUpdatable, setReactionCountUpdatable] = React.useState(
     reactionCount
   )
   let { username, profileImageUrl } = by || {}
   let time = minutesToTime(recipeTime)
+
+  const updateRecipeReaction = (reaction: ReactionType) => {
+    setRecipeReaction(reaction)
+    setReactionCountUpdatable(
+      reactionCountUpdatable + (recipeReaction === 0 ? -1 : 1)
+    )
+    setFreezeReaction(false)
+  }
   return (
     <div className="max-w-3xl mx-auto  overflow-hidden border-gray-500 border-b">
       <div className="mx-auto p-4 bg-white   ">
@@ -137,22 +147,18 @@ const ShortRecipe: React.FC<ShortRecipeProps> = ({ node }) => {
             <div className="flex justify-start self-end ml-2">
               <div className="mx-4 flex">
                 <img
-                  className="h-6 cursor-pointer"
+                  className={`${
+                    freezeReaction ? 'pointer-events-none' : 'cursor-pointer'
+                  } h-6`}
                   src={recipeReaction === 0 ? LIKE_COLOR : LIKE_BW}
                   onClick={() => {
-                    if (currentUserInfo) {
-                      setYumHandler(
-                        currentUserInfo,
-                        id,
-                        recipeReaction,
-                        setRecipeReaction
-                      )
-                      setReactionCountUpdatable(
-                        reactionCountUpdatable + (recipeReaction === 0 ? -1 : 1)
-                      )
-                    } else {
-                      redirectTo('/signup')
-                    }
+                    setFreezeReaction(true)
+                    setYumHandler(
+                      currentUserInfo,
+                      id,
+                      recipeReaction,
+                      updateRecipeReaction
+                    )
                   }}
                 />
                 <span className="m-auto text-xs ml-2">

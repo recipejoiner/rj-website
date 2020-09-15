@@ -39,6 +39,7 @@ import { setYumHandler, setRecipeSavedHandler } from 'helpers/user-interactions'
 import UserContext from 'helpers/UserContext'
 import { act } from 'react-dom/test-utils'
 import ScreenContext from 'helpers/ScreenContext'
+import { ReactionType } from 'requests/reactions'
 
 const IMAGE_PLACEHOLDER = require('images/icons/picture.svg')
 const TIME = require('images/icons/alarm-clock.svg')
@@ -162,6 +163,7 @@ const RecipePage: NextPage<RecipeProps> = ({ recipe }) => {
   const [commentsOpen, setCommentsOpen] = React.useState(false)
   const [shareOpen, setshareOpen] = React.useState(false)
   const [recipeReaction, setRecipeReaction] = React.useState(myReaction)
+  const [freezeReaction, setFreezeReaction] = React.useState(false)
   const [saved, setSaved] = React.useState(haveISaved)
   if (
     currentUserInfo &&
@@ -178,6 +180,14 @@ const RecipePage: NextPage<RecipeProps> = ({ recipe }) => {
 
   const handleSave = () => {
     setRecipeSavedHandler(id, saved, setSaved)
+  }
+
+  const updateRecipeReaction = (reaction: ReactionType) => {
+    setRecipeReaction(reaction)
+    setReactionCountUpdatable(
+      reactionCountUpdatable + (recipeReaction === 0 ? -1 : 1)
+    )
+    setFreezeReaction(false)
   }
 
   const pageTitle = `${title || 'a recipe'}, by ${
@@ -388,22 +398,18 @@ const RecipePage: NextPage<RecipeProps> = ({ recipe }) => {
             <div className="flex justify-between self-end m-4">
               <div className="mx-4 flex">
                 <img
-                  className="h-6 cursor-pointer"
+                  className={`${
+                    freezeReaction ? 'pointer-events-none' : 'cursor-pointer'
+                  } h-6`}
                   src={recipeReaction === 0 ? LIKE_COLOR : LIKE_BW}
                   onClick={() => {
-                    if (currentUserInfo) {
-                      setYumHandler(
-                        currentUserInfo,
-                        id,
-                        recipeReaction,
-                        setRecipeReaction
-                      )
-                      setReactionCountUpdatable(
-                        reactionCountUpdatable + (recipeReaction === 0 ? -1 : 1)
-                      )
-                    } else {
-                      redirectTo('/signup')
-                    }
+                    setFreezeReaction(true)
+                    setYumHandler(
+                      currentUserInfo,
+                      id,
+                      recipeReaction,
+                      updateRecipeReaction
+                    )
                   }}
                 />
                 <span className="m-auto text-xs ml-2">

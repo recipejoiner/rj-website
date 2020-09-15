@@ -15,6 +15,7 @@ import {
   SetSavedVarsType,
 } from 'requests/saves'
 import { CurrentUserLoginCheckType } from 'requests/auth'
+import { redirectTo } from './methods'
 
 export const setReaction = (
   reactionParams: SetReactionVarsType,
@@ -31,7 +32,6 @@ export const setReaction = (
       },
     })
     .then((res) => {
-      console.log('res', res)
       if (res.errors) {
         callback(res.errors)
       }
@@ -39,6 +39,9 @@ export const setReaction = (
       if (data?.result) {
         callback(data)
       }
+    })
+    .catch(() => {
+      console.log('error setting reaction')
     })
 }
 
@@ -72,7 +75,7 @@ export const setYumHandler = (
   currentUserInfo: CurrentUserLoginCheckType | undefined,
   recipeId: string,
   currentRecipeReaction: ReactionType,
-  setRecipeReaction: (value: React.SetStateAction<ReactionType>) => void
+  setRecipeReaction: (reaction: ReactionType) => void
 ) => {
   if (currentUserInfo) {
     setReaction(
@@ -91,6 +94,7 @@ export const setYumHandler = (
     )
   } else {
     console.log('You need to log in or sign up!')
+    redirectTo('/signup')
   }
 }
 

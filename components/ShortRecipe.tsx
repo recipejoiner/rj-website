@@ -88,7 +88,7 @@ const ShortRecipe: React.FC<ShortRecipeProps> = ({ node }) => {
             as={`/${username || '#'}/${handle || '#'}`}
           >
             <a>
-              <h1 className=" bg-transparent cursor-pointer w-full text-3xl lg:text-5xl  leading-tight focus:outline-none font-bold">
+              <h1 className=" cursor-pointer w-full text-3xl lg:text-5xl  leading-tight focus:outline-none font-bold">
                 {title}
               </h1>
               <div className="w-full h-full">

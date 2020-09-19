@@ -67,11 +67,16 @@ interface StepProps {
   updateActiveStep: (stepNum?: number) => void
 }
 
-const Ingredient: React.FC<{ ingredient: IngredientType }> = ({
-  ingredient,
-}) => {
+const Ingredient: React.FC<{
+  ingredient: IngredientType
+  border?: boolean
+}> = ({ ingredient, border }) => {
   return (
-    <div className=" h-auto items-center text-center  grid grid-cols-2 ">
+    <div
+      className={`${
+        border ? 'border-b' : ''
+      } h-auto items-center text-center text-sm  grid grid-cols-2 border-gray-700`}
+    >
       <span className="capitalize text-left">
         {ingredient.ingredientInfo.name}
       </span>
@@ -98,7 +103,7 @@ const Step: React.FC<StepProps> = ({ step, recipeImg, updateActiveStep }) => {
           onCloseRequest={() => setImageOpen(!imageOpen)}
         />
       )}
-      <div className=" grid grid-cols-4 mr-8 ">
+      <div className=" grid grid-cols-6">
         <div className="m-auto rounded">
           <img
             className="m-auto rounded w-full  "
@@ -106,23 +111,12 @@ const Step: React.FC<StepProps> = ({ step, recipeImg, updateActiveStep }) => {
             onClick={() => setImageOpen(!imageOpen)}
           />
         </div>
-        <span className="text-2xl md:text-5xl leading-tight focus:outline-none font-bold col-span-3 ml-2 my-auto">
+        <span className="text-xl md:text-5xl leading-tight focus:outline-none font-bold col-span-5 ml-2 my-auto">
           {stepTitle}
         </span>
       </div>
-      <div className="my-2 self-end mr-8 ">
-        <div
-          className={`${
-            ingredients.length <= 0 ? 'border-none' : 'border'
-          }  rounded overflow-hidden border-black border rounded-l-none border-l-0 m-l-0`}
-        >
-          {ingredients.map((ing) => (
-            <Ingredient ingredient={ing} />
-          ))}
-        </div>
-      </div>
 
-      <div className="relative w-full overflow-hidden text-xl md:text-3xl mb-2">
+      <div className="relative w-full overflow-hidden text-md md:text-xl mb-2">
         <div className="absolute grid grid-cols-2 left-0 right-0 h-full">
           <div
             onClick={() => updateActiveStep(stepNum > 0 ? stepNum - 1 : 0)}
@@ -130,6 +124,17 @@ const Step: React.FC<StepProps> = ({ step, recipeImg, updateActiveStep }) => {
           <div onClick={() => updateActiveStep(stepNum + 1)}></div>
         </div>
         {additionalInfo}
+      </div>
+      <div className="my-2 self-start">
+        <div
+          className={`${
+            ingredients.length <= 0 ? 'border-none' : 'border'
+          }  rounded overflow-scroll border-gray-700 border-b-0 rounded-l-none border-l-0 m-l-0`}
+        >
+          {ingredients.map((ing) => (
+            <Ingredient ingredient={ing} border />
+          ))}
+        </div>
       </div>
     </React.Fragment>
   )
@@ -223,7 +228,7 @@ const RecipePage: NextPage<RecipeProps> = ({ recipe }) => {
           <div className=" mx-auto mt-6 bg-white rounded-lg shadow-xl ">
             <div className="m-2 ">
               <h1
-                className=" bg-transparent cursor-pointer w-full text-3xl lg:text-5xl  leading-tight focus:outline-none font-bold"
+                className=" cursor-pointer w-full text-3xl lg:text-5xl  leading-tight focus:outline-none font-bold"
                 onClick={() => updateActiveStep()}
               >
                 {title}
@@ -456,19 +461,37 @@ const RecipePage: NextPage<RecipeProps> = ({ recipe }) => {
         <div className="fixed top-0 bottom-0 z-100 bg-white  whitespace-normal w-screen">
           <div
             className="absolute h-full w-full opacity-25 bg-cover "
-            style={{
-              backgroundImage: `url(${
-                steps[activeStep].imageUrl !== null
-                  ? steps[activeStep].imageUrl
-                  : imageUrl
-              })`,
-            }}
+            // style={{
+            //   backgroundImage: `url(${
+            //     steps[activeStep].imageUrl !== null
+            //       ? steps[activeStep].imageUrl
+            //       : imageUrl
+            //   })`,
+            // }}
           >
             <div className="w-full h-full backdrop-blurMax"></div>
           </div>
 
           <div className="absolute left-0 top-0 bottom-0 right-0 max-w-3xl m-auto h-full shadow-lg ">
-            <div className="z-100 absolute top-0 right-0 h-1/2 ">
+            <div
+              className={` z-100 mx-2 items-center grid grid-cols-${
+                steps.length + 1
+              }`}
+            >
+              {steps.map((step) => {
+                return (
+                  <div
+                    className={`${
+                      step.stepNum === activeStep
+                        ? 'text-2xl lg:text-3xl'
+                        : 'opacity-25'
+                    }   justify-start rounded  lg:text-2xl`}
+                    onClick={() => updateActiveStep(step.stepNum)}
+                  >
+                    {step.stepNum + 1}
+                  </div>
+                )
+              })}
               <div className="grid  justify-end">
                 <img
                   className=" p-2 w-10 "
@@ -476,18 +499,6 @@ const RecipePage: NextPage<RecipeProps> = ({ recipe }) => {
                   onClick={() => updateActiveStep()}
                   src={CLOSE}
                 ></img>
-                {steps.map((step) => {
-                  return (
-                    <div
-                      className={`${
-                        step.stepNum === activeStep ? '' : 'opacity-25'
-                      }   rounded text-center lg:text-2xl`}
-                      onClick={() => updateActiveStep(step.stepNum)}
-                    >
-                      {step.stepNum + 1}
-                    </div>
-                  )
-                })}
               </div>
             </div>
             <div className="grid grid-rows-cook h-full overflow-hidden p-2 absolute">

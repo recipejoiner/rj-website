@@ -294,7 +294,7 @@ const RecipeStepMode: React.FC<RecipeStepProps> = ({
           {currentStep + 1}
         </span>
         <input
-          className="bg-transparent w-full text-3xl text-gray-700 leading-tight focus:outline-none"
+          className="w-full text-3xl text-gray-700 leading-tight focus:outline-none"
           type="text"
           placeholder="Title"
           name="stepTitle"
@@ -540,7 +540,7 @@ const RecipeReviewMode: React.FC<RecipeReviewProps> = ({
           <input
             className={
               (getError('title').length ? 'border-b-2 border-red-600' : '') +
-              ' bg-transparent cursor-pointer w-full text-3xl lg:text-5xl  leading-tight focus:outline-none font-bold'
+              ' cursor-pointer w-full text-3xl lg:text-5xl  leading-tight focus:outline-none font-bold'
             }
             type="text"
             placeholder="Recipe Title"

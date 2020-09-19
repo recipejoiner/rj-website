@@ -20,10 +20,7 @@ class AppOverlay extends Component<AppOverlayProps> {
   }
   render() {
     return (
-      <div
-        id="app-modal"
-        className="absolute left-0 z-100 overflow-scroll top-14  md:top-16  w-screen h-screen pb-12  mx-auto bg-white p-4 top-0 mt-0 pt-0"
-      >
+      <div className="absolute left-0 z-100 overflow-scroll top-14  md:top-16  w-screen h-screen pb-12  mx-auto bg-white p-4 top-0 mt-0 pt-0">
         <div className="flex sticky top-0 pt-4 pb-2 bg-white">
           <span className="m-auto w-full">{this.props.header}</span>
 

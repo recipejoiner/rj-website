@@ -199,7 +199,11 @@ const RecipeStepMode: React.FC<RecipeStepProps> = ({
         : ''
     return match?.length ? match[0] : ''
   }
-  const updateValue = (name: string, value: string | Object, id?: string) => {
+  const updateValue = (
+    name: string,
+    value: string | Object | null,
+    id?: string
+  ) => {
     let recipeCopy = cloneDeep<any>(recipe)
     let index = -1
     if (typeof value === 'string') {
@@ -228,7 +232,8 @@ const RecipeStepMode: React.FC<RecipeStepProps> = ({
       }
     } else {
       if (name === 'image') {
-        recipeCopy.steps[currentStep].image[0] = value
+        if (!value) recipeCopy.steps[currentStep].image = []
+        else recipeCopy.steps[currentStep].image[0] = value
         updateRecipe(recipeCopy)
         return
       }
@@ -301,6 +306,60 @@ const RecipeStepMode: React.FC<RecipeStepProps> = ({
           value={recipe.steps[currentStep].stepTitle || ''}
           onChange={handleChange}
         ></input>
+      </div>
+      <div className="text-center rounded mx-auto  h-auto">
+        <div
+          className={`${
+            !recipe.steps[currentStep].image?.length
+              ? 'h-48 w-48'
+              : 'h-64 w-full'
+          } m-auto`}
+        >
+          <span
+            className={`${
+              !recipe.steps[currentStep].image?.length
+                ? 'hidden'
+                : 'float-right text-xs'
+            }`}
+            onClick={() => {
+              updateValue('image', null)
+              setPreview('')
+            }}
+          >
+            Remove
+          </span>
+          <label className="cursor-pointer w-full block">
+            <img
+              className={`${
+                !recipe.steps[currentStep].image?.length
+                  ? 'h-48 w-48'
+                  : 'h-64 w-full'
+              }  m-auto object-cover`}
+              src={preview ? preview : createImage()}
+            />
+
+            <div className="mb-1">
+              {imageErrs.map((err) => {
+                return (
+                  <span
+                    key={err.message}
+                    className="text-center text-sm text-red-600 left-0 w-full mt-2"
+                  >
+                    {err.message}
+                  </span>
+                )
+              })}
+            </div>
+            <input
+              className="hidden"
+              name="files"
+              type="file"
+              multiple={false}
+              accept="image/*"
+              onChange={imagePicker.onSelectFile}
+            />
+          </label>
+        </div>
       </div>
       <div className="text-center ">
         <div className=" w-full p-2 h-56 rounded ">
@@ -425,36 +484,6 @@ const RecipeStepMode: React.FC<RecipeStepProps> = ({
           </div>
         </div>
       </div>
-      {/* <div className="text-center rounded mx-auto w-1/2 h-auto">
-        <div className="w-full h-auto lg:w-32 lg:h-32 m-auto">
-          <label className="cursor-pointer w-full block">
-            <img
-              className="object-cover w-full h-auto"
-              src={preview ? preview : createImage()}
-            />
-            <div className="mb-1">
-              {imageErrs.map((err) => {
-                return (
-                  <span
-                    key={err.message}
-                    className="text-center text-sm text-red-600 left-0 w-full mt-2"
-                  >
-                    {err.message}
-                  </span>
-                )
-              })}
-            </div>
-            <input
-              className="hidden"
-              name="files"
-              type="file"
-              multiple={false}
-              accept="image/*"
-              onChange={imagePicker.onSelectFile}
-            />
-          </label>
-        </div>
-      </div> */}
     </div>
   )
 }

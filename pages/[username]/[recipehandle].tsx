@@ -103,10 +103,10 @@ const Step: React.FC<StepProps> = ({ step, recipeImg, updateActiveStep }) => {
           onCloseRequest={() => setImageOpen(!imageOpen)}
         />
       )}
-      <div className=" grid grid-cols-6">
+      <div className="flex justify-self-start">
         <div className="m-auto rounded">
           <img
-            className="m-auto rounded w-full  "
+            className="m-auto rounded h-16 w-16  "
             src={image}
             onClick={() => setImageOpen(!imageOpen)}
           />
@@ -263,7 +263,7 @@ const RecipePage: NextPage<RecipeProps> = ({ recipe }) => {
                       href="/[username]/[recipehandle]/edit"
                       as={`/${username}/${handle}/edit`}
                     >
-                      <a className="w-28 m-auto btn text-sm font-normal">
+                      <a className="mx-2 m-auto btn text-sm font-normal">
                         Edit
                       </a>
                     </Link>
@@ -473,11 +473,7 @@ const RecipePage: NextPage<RecipeProps> = ({ recipe }) => {
           </div>
 
           <div className="absolute left-0 top-0 bottom-0 right-0 max-w-3xl m-auto h-full shadow-lg ">
-            <div
-              className={` z-100 mx-2 items-center grid grid-cols-${
-                steps.length + 1
-              }`}
-            >
+            <div className="z-100 mx-2 items-center flex content-between justify-between">
               {steps.map((step) => {
                 return (
                   <div

@@ -9,85 +9,76 @@ import NewRecipeLink from 'components/layout/header/NewRecipeLink'
 import ProfileLink from 'components/layout/header/ProfileLink'
 import NotificationCenter from 'components/layout/header/NotificationCenter'
 import { CurrentUserLoginCheckType } from 'requests/auth'
-import SearchOverlay from 'components/layout/header/Search'
+import SearchCenter from 'components/layout/header/SearchCenter'
 
 const NOTIFICATION_ACTIVE = require('images/icons/new-notification.svg')
 const NOTIFICATION = require('images/icons/notification.svg')
+const SEARCH = require('images/icons/search.svg')
 
 interface LoggedInHeaderProps {
   currentUserInfo: CurrentUserLoginCheckType
 }
 const LoggedInHeader: React.FC<LoggedInHeaderProps> = ({ currentUserInfo }) => {
-  const [searchOpen, setSearchOpen] = React.useState(false)
+  const { searchOpen, setSearchState } = React.useContext(ScreenContext)
   const [newNotifications, setNewNotifications] = React.useState(false)
   const { notificationsOpen, setNotificationsState } = React.useContext(
     ScreenContext
   )
 
-  const openSearch = () => {
-    setSearchOpen(true)
+  const toggleSearch = () => {
+    let state = searchOpen
+    resetPage()
+    setSearchState ? setSearchState(!state) : null
+  }
+  const toggleNotifications = () => {
+    let state = notificationsOpen
+    resetPage()
+    setNotificationsState ? setNotificationsState(!state) : null
   }
 
-  const closeSearch = () => {
-    setSearchOpen(false)
-  }
-
-  const openNotifications = () => {
-    console.log('opening notes')
-    setNotificationsState ? setNotificationsState(true) : console.log('ooops')
-  }
-
-  const closeNotifications = () => {
+  const resetPage = () => {
+    setSearchState ? setSearchState(false) : null
     setNotificationsState ? setNotificationsState(false) : null
   }
 
   return (
     <div>
       <header className="bg-white opacity-95 border-b border-gray-500 w-full fixed z-100 inset-x-0 top-0">
-        <div className="grid grid-cols-12  relative max-w-12xl z-100 mx-auto h-14 md:h-16">
-          <Logo className="col-span-2 m-auto" />
-          <input
-            className="col-span-5 md:col-span-8 p-2 m-auto w-full outline-none border rounded"
-            type="search"
-            placeholder="Search"
-            onFocus={openSearch}
-          ></input>
-          {!!searchOpen ? (
-            <AppOverlay
-              onExit={closeSearch}
-              children={<SearchOverlay />}
-              header={
-                <input
-                  className="col-span-5 md:col-span-8 p-2 m-auto w-full outline-none border rounded"
-                  type="search"
-                  placeholder="Search"
-                ></input>
-              }
-            />
-          ) : null}
-
-          <div className="grid grid-cols-3 col-span-5 md:col-span-2 md:gap-4 m-auto">
-            <div className="">
-              <ProfileLink currentUserInfo={currentUserInfo} />
-            </div>
-            <div>
-              <a onClick={openNotifications}>
-                <img
-                  className="w-10 p-1 text-gray-900 hover:text-gray-700 fill-current"
-                  src={newNotifications ? NOTIFICATION_ACTIVE : NOTIFICATION}
-                />
-              </a>
-              <div className={`${notificationsOpen ? 'visible' : 'invisible'}`}>
-                {/* <div> */}
-                <AppOverlay
-                  onExit={closeNotifications}
-                  children={<NotificationCenter />}
-                  header={<h1 className="text-2xl">Notifications Center</h1>}
-                />
-              </div>
-            </div>
-            <NewRecipeLink />
+        <div className="flex justify-between align-middle relative max-w-12xl z-100 mx-auto h-14 p-1">
+          <div onClick={resetPage}>
+            <Logo />
           </div>
+          <div>
+            <a onClick={toggleSearch}>
+              <img
+                className="h-12 p-2 text-gray-900 hover:text-gray-700 fill-current"
+                src={SEARCH}
+              />
+            </a>
+            {!!searchOpen ? (
+              <AppOverlay
+                children={<SearchCenter />}
+                header={<h1 className="text-2xl">Search</h1>}
+              />
+            ) : null}
+          </div>
+          <NewRecipeLink />
+          <div>
+            <a onClick={toggleNotifications}>
+              <img
+                className="h-12 p-2 text-gray-900 hover:text-gray-700 fill-current"
+                src={newNotifications ? NOTIFICATION_ACTIVE : NOTIFICATION}
+              />
+            </a>
+            <div className={`${notificationsOpen ? 'visible' : 'invisible'}`}>
+              {/* <div> */}
+              <AppOverlay
+                children={<NotificationCenter />}
+                header={<h1 className="text-2xl">Notifications</h1>}
+              />
+            </div>
+          </div>
+          <ProfileLink currentUserInfo={currentUserInfo} />
         </div>
       </header>
     </div>

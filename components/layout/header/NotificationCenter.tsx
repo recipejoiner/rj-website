@@ -1,9 +1,7 @@
 import * as React from 'react'
 
-import AppOverlay from 'components/AppOverlay'
 import Notification from 'components/Notification'
 
-import client from 'requests/client'
 import {
   UserNotificationsVarsType,
   USER_NOTIFICATIONS,
@@ -15,12 +13,7 @@ import InfiniteScroll, { EdgeType } from 'components/InfiniteScroll'
 
 type NotificationCenter = {}
 
-const NotificationCenter: React.FC<NotificationCenter> = (
-  closeNotifications
-) => {
-  const [isOpen, setIsOpen] = React.useState(false)
-  const [newNotifications, setNewNotifications] = React.useState(false)
-
+const NotificationCenter: React.FC<NotificationCenter> = () => {
   return (
     <InfiniteScroll
       inModal={true}

@@ -16,7 +16,7 @@ const ProfileLink: React.FC<ProfileLinkProps> = ({ currentUserInfo }) => {
       <Link href="/[username]" as={`/${username}`}>
         <a aria-label="RecipeJoiner create new recipe page">
           <img
-            className="w-10 h-10 rounded-full p-1 text-gray-900 hover:text-gray-700 fill-current"
+            className="h-12 p-2 rounded-full text-gray-900 hover:text-gray-700 fill-current"
             src={profileImageUrl ? profileImageUrl : PROFILE}
           />
         </a>

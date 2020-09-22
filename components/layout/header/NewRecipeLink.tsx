@@ -11,7 +11,7 @@ const Logo: React.FC<LogoProps> = () => {
       <Link href="/recipes/new">
         <a aria-label="RecipeJoiner create new recipe page">
           <img
-            className="w-10 p-1 text-gray-900 hover:text-gray-700 fill-current"
+            className="h-12 p-2 text-gray-900 hover:text-gray-700 fill-current"
             src={PLUS}
           />
         </a>

@@ -5,7 +5,6 @@ const BACK = require('images/icons/close.svg')
 const IMAGE = require('images/icons/picture.svg')
 
 type AppOverlayProps = {
-  onExit: () => void
   children: React.ReactNode
   header: React.ReactNode
 }
@@ -20,17 +19,13 @@ class AppOverlay extends Component<AppOverlayProps> {
   }
   render() {
     return (
-      <div className="absolute left-0 z-100 overflow-scroll top-14  md:top-16  w-screen h-screen pb-12  mx-auto bg-white p-4 top-0 mt-0 pt-0">
-        <div className="flex sticky top-0 pt-4 pb-2 bg-white">
-          <span className="m-auto w-full">{this.props.header}</span>
-
-          <img
-            src={BACK}
-            className="h-4 ml-4 my-auto"
-            onClick={this.props.onExit}
-          />
+      <div className="absolute left-0 z-90 overflow-scroll w-screen h-screen pb-12 mx-auto bg-white p-4 mt-0 pt-0 border-gray-400 border-t">
+        <div className=" opacity-100 bg-white bg-opacity-100">
+          <div className="flex sticky top-0   bg-white text-center w-full">
+            <span className="m-auto w-full">{this.props.header}</span>
+          </div>
+          {this.props.children}
         </div>
-        {this.props.children}
       </div>
     )
   }

@@ -48,6 +48,7 @@ interface AppState {
   scrollFreeze: boolean
   notificationsOpen: boolean
   modalOpen: boolean
+  searchOpen: boolean
   modalTitle: string
   modalChildren: React.ReactNode
   yPos: number
@@ -66,6 +67,7 @@ class MyApp extends App<UserProps, {}, AppState> {
     this.state = {
       scrollFreeze: false,
       notificationsOpen: false,
+      searchOpen: false,
       modalOpen: false,
       currentUserInfo: undefined,
       modalTitle: '',
@@ -74,6 +76,7 @@ class MyApp extends App<UserProps, {}, AppState> {
     }
     this.setScrollFreezeState = this.setScrollFreezeState.bind(this)
     this.setNotificationsState = this.setNotificationsState.bind(this)
+    this.setSearchState = this.setSearchState.bind(this)
     this.setModalState = this.setModalState.bind(this)
     this.setCurrentUser = this.setCurrentUser.bind(this)
   }
@@ -118,19 +121,25 @@ class MyApp extends App<UserProps, {}, AppState> {
     this.setState({ notificationsOpen: open })
     this.setScrollFreezeState(open)
   }
-
+  setSearchState(open: boolean) {
+    this.setState({ searchOpen: open })
+    this.setScrollFreezeState(open)
+  }
   setModalState(
     modalOpenStatus: boolean,
     modalTitle?: string,
     modalChildren?: React.ReactNode
   ) {
     if (modalOpenStatus === true && !!modalChildren && !!modalTitle) {
+      this.setScrollFreezeState(true)
       this.setState({
         modalOpen: modalOpenStatus,
         modalTitle: modalTitle,
         modalChildren: modalChildren,
       })
     } else {
+      this.setScrollFreezeState(false)
+
       this.setState({
         modalOpen: modalOpenStatus,
         modalTitle: '',
@@ -199,6 +208,8 @@ class MyApp extends App<UserProps, {}, AppState> {
               notificationsOpen: this.state.notificationsOpen,
               modalOpen: this.state.modalOpen,
               setModalState: this.setModalState,
+              setSearchState: this.setSearchState,
+              searchOpen: this.state.searchOpen,
             }}
           >
             {/* Flex col to allow for putting a header and footer above and below the page */}

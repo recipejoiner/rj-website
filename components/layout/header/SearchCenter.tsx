@@ -3,9 +3,11 @@ import * as React from 'react'
 import InfiniteScroll, { EdgeType } from 'components/InfiniteScroll'
 import {
   SEARCH,
-  SearchNodeType,
   searchNodeInit,
   SearchVarsType,
+  RecipeSearchType,
+  UserSearchType,
+  TagSearchType,
 } from 'requests/search'
 import SearchResult from 'components/SearchResult'
 
@@ -75,7 +77,11 @@ const SearchCenter: React.FC<SearchCenter> = () => {
         })()}
         hasSubscription={false}
       >
-        {(edges: Array<EdgeType<SearchNodeType>>) => (
+        {(
+          edges: Array<
+            EdgeType<RecipeSearchType | UserSearchType | TagSearchType>
+          >
+        ) => (
           <ul>
             {edges.map((edge) => {
               return <SearchResult key={edge.cursor} searchNode={edge.node} />

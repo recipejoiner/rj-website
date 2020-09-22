@@ -1,26 +1,28 @@
 import * as React from 'react'
 import Skeleton from 'react-loading-skeleton'
-import { SearchNodeType } from 'requests/search'
+import {
+  RecipeSearchType,
+  UserSearchType,
+  TagSearchType,
+} from 'requests/search'
 import Link from 'next/link'
 import ScreenContext from 'helpers/ScreenContext'
 
 const PROFILE = require('images/chef-rj.svg')
 
 interface SearchResultContext {
-  searchNode: SearchNodeType
+  searchNode: RecipeSearchType | UserSearchType | TagSearchType
 }
 
 const SearchResult: React.FC<SearchResultContext> = ({ searchNode }) => {
   const { setSearchState } = React.useContext(ScreenContext)
-
   if (searchNode) {
-    const { searchable: node } = searchNode
-    switch (node.__typename) {
+    switch (searchNode.__typename) {
       case 'User':
         return (
           <div className="p-3 rounded my-1">
             <div className="flex align-middle whitespace-no-wrap">
-              <Link href="/[username]" as={`/${node.username}`}>
+              <Link href="/[username]" as={`/${searchNode.username}`}>
                 <a
                   className="contents"
                   onClick={() =>
@@ -28,11 +30,11 @@ const SearchResult: React.FC<SearchResultContext> = ({ searchNode }) => {
                   }
                 >
                   <img
-                    src={node.profileImageUrl || PROFILE}
+                    src={searchNode.profileImageUrl || PROFILE}
                     className="h-12 w-12 cursor-pointer rounded-full"
                   />
                   <span className="text-xl m-auto ml-2">
-                    {node.username || <Skeleton width={40} />}
+                    {searchNode.username || <Skeleton width={40} />}
                   </span>
                 </a>
               </Link>
@@ -45,7 +47,9 @@ const SearchResult: React.FC<SearchResultContext> = ({ searchNode }) => {
             <div className="flex align-middle whitespace-no-wrap">
               <Link
                 href="/[username]/[recipehandle]"
-                as={`/${node.by.username || '#'}/${node.handle || '#'}`}
+                as={`/${searchNode.by.username || '#'}/${
+                  searchNode.handle || '#'
+                }`}
               >
                 <a
                   className="contents"
@@ -54,18 +58,18 @@ const SearchResult: React.FC<SearchResultContext> = ({ searchNode }) => {
                   }
                 >
                   <img
-                    src={node.imageUrl || PROFILE}
+                    src={searchNode.imageUrl || PROFILE}
                     className="h-12 w-12 cursor-pointer"
                   />
                   <div className="flex flex-col">
                     <span className="truncate ml-2 text-xl ">
                       <span className="">
-                        {node.title || <Skeleton width={40} />}
+                        {searchNode.title || <Skeleton width={40} />}
                       </span>
                     </span>
                     <span className="ml-2 text-xs">
                       <span className="">
-                        by {node.by.username || <Skeleton width={40} />}
+                        by {searchNode.by.username || <Skeleton width={40} />}
                       </span>
                     </span>
                   </div>

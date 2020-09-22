@@ -14,8 +14,8 @@ const SearchResult: React.FC<SearchResultContext> = ({ searchNode }) => {
   const { setSearchState } = React.useContext(ScreenContext)
 
   if (searchNode) {
-    let node = searchNode
-    switch (searchNode.__typename) {
+    const { searchable: node } = searchNode
+    switch (node.__typename) {
       case 'User':
         return (
           <div className="p-3 rounded my-1">
@@ -47,13 +47,15 @@ const SearchResult: React.FC<SearchResultContext> = ({ searchNode }) => {
                 href="/[username]/[recipehandle]"
                 as={`/${node.by.username || '#'}/${node.handle || '#'}`}
               >
-                <a className="contents">
+                <a
+                  className="contents"
+                  onClick={() =>
+                    setSearchState ? setSearchState(false) : null
+                  }
+                >
                   <img
                     src={node.imageUrl || PROFILE}
                     className="h-12 w-12 cursor-pointer"
-                    onClick={() =>
-                      setSearchState ? setSearchState(false) : null
-                    }
                   />
                   <div className="flex flex-col">
                     <span className="truncate ml-2 text-xl ">
@@ -61,20 +63,11 @@ const SearchResult: React.FC<SearchResultContext> = ({ searchNode }) => {
                         {node.title || <Skeleton width={40} />}
                       </span>
                     </span>
-                    <Link href="/[username]" as={`/${node.by.username}`}>
-                      <a
-                        className="contents"
-                        onClick={() =>
-                          setSearchState ? setSearchState(false) : null
-                        }
-                      >
-                        <span className="ml-2 text-xs">
-                          <span className="">
-                            by {node.by.username || <Skeleton width={40} />}
-                          </span>
-                        </span>
-                      </a>
-                    </Link>
+                    <span className="ml-2 text-xs">
+                      <span className="">
+                        by {node.by.username || <Skeleton width={40} />}
+                      </span>
+                    </span>
                   </div>
                 </a>
               </Link>

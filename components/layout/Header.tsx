@@ -43,7 +43,7 @@ const LoggedInHeader: React.FC<LoggedInHeaderProps> = ({ currentUserInfo }) => {
 
   return (
     <div>
-      <header className="bg-white opacity-95 border-b border-gray-500 w-full fixed z-100 inset-x-0 top-0">
+      <header className="bg-white border-b border-gray-500 w-full fixed z-100 inset-x-0 top-0">
         <div className="flex justify-between align-middle relative max-w-12xl z-100 mx-auto h-14 p-1">
           <div onClick={resetPage}>
             <Logo />

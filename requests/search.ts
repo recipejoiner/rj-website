@@ -80,7 +80,7 @@ export interface RecipeSearchType {
 export interface UserSearchType {
   __typename: 'User'
   username: string
-  profileImage: string
+  profileImageUrl: string
 }
 
 export interface TagSearchType {
@@ -98,7 +98,7 @@ export const searchNodeInit: SearchNodeType = {
   searchable: {
     __typename: 'User',
     username: '',
-    profileImage: '',
+    profileImageUrl: '',
   },
   __typename: '',
 }

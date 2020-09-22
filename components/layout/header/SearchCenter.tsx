@@ -17,7 +17,7 @@ const SearchCenter: React.FC<SearchCenter> = () => {
     USER = 'User',
     TAG = 'TagRef'
   const [searchIn, setSearchIn] = React.useState(ALL)
-  const [searchQuery, setSearchQuery] = React.useState('vegan')
+  const [searchQuery, setSearchQuery] = React.useState<string>()
 
   const handleChange = (data: {
     target: { name: any; value: any; id?: string }
@@ -38,7 +38,7 @@ const SearchCenter: React.FC<SearchCenter> = () => {
         value={searchQuery}
         onChange={handleChange}
       ></input>
-      <div className="grid grid-cols-4 text-center">
+      <div className="grid grid-cols-3 text-center">
         <span
           onClick={() => setSearchIn(ALL)}
           className={`${searchIn === ALL ? 'bg-gray-400 font-bold' : ''} p-4`}
@@ -59,12 +59,6 @@ const SearchCenter: React.FC<SearchCenter> = () => {
         >
           Recipes
         </span>
-        <span
-          onClick={() => setSearchIn(TAG)}
-          className={`${searchIn === TAG ? 'bg-gray-400 font-bold' : ''} p-4`}
-        >
-          Tags
-        </span>
       </div>
       <InfiniteScroll
         inModal={true}
@@ -74,7 +68,7 @@ const SearchCenter: React.FC<SearchCenter> = () => {
         QueryVars={(() => {
           const queryVars: SearchVarsType = {
             cursor: null,
-            query: searchQuery,
+            query: searchQuery || '',
             searchIn: searchIn,
           }
           return queryVars
@@ -84,8 +78,6 @@ const SearchCenter: React.FC<SearchCenter> = () => {
         {(edges: Array<EdgeType<SearchNodeType>>) => (
           <ul>
             {edges.map((edge) => {
-              console.log(edge.node.__typename)
-
               return <SearchResult key={edge.cursor} searchNode={edge.node} />
             })}
           </ul>

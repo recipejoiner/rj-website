@@ -24,6 +24,7 @@ const LoggedInHeader: React.FC<LoggedInHeaderProps> = ({ currentUserInfo }) => {
   const { notificationsOpen, setNotificationsState } = React.useContext(
     ScreenContext
   )
+  const { searchQuery } = React.useContext(ScreenContext)
 
   const toggleSearch = () => {
     let state = searchOpen
@@ -57,7 +58,7 @@ const LoggedInHeader: React.FC<LoggedInHeaderProps> = ({ currentUserInfo }) => {
             </a>
             {!!searchOpen ? (
               <AppOverlay
-                children={<SearchCenter />}
+                children={<SearchCenter query={searchQuery} />}
                 header={<h1 className="text-2xl">Search</h1>}
               />
             ) : null}

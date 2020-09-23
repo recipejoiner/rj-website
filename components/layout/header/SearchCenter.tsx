@@ -11,15 +11,17 @@ import {
 } from 'requests/search'
 import SearchResult from 'components/SearchResult'
 
-type SearchCenter = {}
+type SearchCenter = {
+  query?: string
+}
 
-const SearchCenter: React.FC<SearchCenter> = () => {
+const SearchCenter: React.FC<SearchCenter> = ({ query = '' }) => {
   const ALL = 'Recipe, User, TagRef',
     RECIPE = 'Recipe',
     USER = 'User',
     TAG = 'TagRef'
   const [searchIn, setSearchIn] = React.useState(ALL)
-  const [searchQuery, setSearchQuery] = React.useState<string>()
+  const [searchQuery, setSearchQuery] = React.useState<string>(query)
 
   const handleChange = (data: {
     target: { name: any; value: any; id?: string }

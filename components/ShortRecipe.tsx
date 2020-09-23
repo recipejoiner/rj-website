@@ -40,7 +40,7 @@ const LIKE_COLOR = require('images/icons/yummy_color.svg')
 const SHARE = require('images/icons/share.svg')
 const COMMENTS = require('images/icons/comment_wb.svg')
 const LINK = require('images/icons/link.svg')
-
+const PROFILE = require('images/chef-rj.svg')
 interface ShortRecipeProps {
   node: ShortRecipeNodeType
 }
@@ -59,16 +59,18 @@ const ShortRecipe: React.FC<ShortRecipeProps> = ({ node }) => {
     stepCount,
     handle,
     myReaction,
+    tags,
   } = node || {}
 
   const { currentUserInfo } = React.useContext(UserContext)
-  const { modalOpen, setModalState } = React.useContext(ScreenContext)
 
   const [recipeReaction, setRecipeReaction] = React.useState(myReaction)
   const [freezeReaction, setFreezeReaction] = React.useState(false)
   const [reactionCountUpdatable, setReactionCountUpdatable] = React.useState(
     reactionCount
   )
+  const { searchOpen, setSearchState } = React.useContext(ScreenContext)
+
   let { username, profileImageUrl } = by || {}
   let time = minutesToTime(recipeTime)
 
@@ -79,9 +81,13 @@ const ShortRecipe: React.FC<ShortRecipeProps> = ({ node }) => {
     )
     setFreezeReaction(false)
   }
+  const tagSearch = (tag: string) => {
+    let state = searchOpen
+    setSearchState ? setSearchState(!state, tag) : null
+  }
   return (
     <div className="max-w-3xl mx-auto  overflow-hidden border-gray-500 border-b">
-      <div className="mx-auto p-4 bg-white   ">
+      <div className="mx-auto p-4 bg-white">
         <div className="text-left  ">
           <Link
             href="/[username]/[recipehandle]"
@@ -98,54 +104,66 @@ const ShortRecipe: React.FC<ShortRecipeProps> = ({ node }) => {
           </Link>
         </div>
 
-        <div className="grid grid-cols-4 pt-1">
-          <div className="w-full pb-full relative">
+        <div className="flex pt-1">
+          <div className="w-32 h-32">
             <Link
               href="/[username]/[recipehandle]"
               as={`/${username || '#'}/${handle || '#'}`}
             >
               <a>
-                <div className=" grid items-center w-full h-full  m-auto">
+                <div className=" grid items-center w-32 h-32 m-auto">
                   <img
-                    className="m-auto absolute h-full w-full object-cover"
+                    className="m-auto  h-full w-full object-cover"
                     src={imageUrl ? imageUrl : IMAGE_PLACEHOLDER}
                   />
                 </div>
               </a>
             </Link>
           </div>
-          <div className="col-span-3 self-end h-full w-full grid grid-rows-2">
-            <div className="ml-6 w-full grid grid-rows-2  text-xs">
-              <Link href="/[username]" as={`/${username}`}>
-                <a className="flex align-middle ">
-                  {/* <img
-                    src={profileImageUrl ? profileImageUrl : PROFILE}
-                    className="h-10 w-10 cursor-pointer rounded-full"
-                  /> */}
-
-                  <div className=" self-center ">
-                    <span className="self-center  text-sm">
-                      {username || <Skeleton width={40} />}
-                    </span>
+          <div className=" h-32  grid grid-rows-3 ml-3">
+            <div className="w-full flex ">
+              <img
+                src={profileImageUrl ? profileImageUrl : PROFILE}
+                className="h-10 w-10 cursor-pointer rounded-full"
+              />
+              <div className="grid grid-rows-2 ml-2">
+                <Link href="/[username]" as={`/${username}`}>
+                  <a className="flex align-middle ">
+                    <div className=" self-center ">
+                      <span className="self-center  text-lg">
+                        {username || <Skeleton width={40} />}
+                      </span>
+                    </div>
+                  </a>
+                </Link>
+                <div className="text-sm">
+                  <div className="inline my-auto">
+                    <span className="text-right">{time.hours || '0'}:</span>
+                    <span className="text-left">{time.minutes || '0'}</span>
+                    {/* <span> {time.message}</span> */}
                   </div>
-                </a>
-              </Link>
-              <div>
-                <div className="inline my-auto">
-                  <span className="text-right">{time.hours || '0'}:</span>
-                  <span className="text-left">{time.minutes || '0'}</span>
-                  {/* <span> {time.message}</span> */}
-                </div>
-                <span className="my-auto "> • </span>
-                <div className="inline my-auto">
-                  <span>{stepCount}</span>
-                  <span> steps</span>
+                  <span className="my-auto "> • </span>
+                  <div className="inline my-auto">
+                    <span>{stepCount}</span>
+                    <span> steps</span>
+                  </div>
                 </div>
               </div>
             </div>
-
-            <div className="flex justify-start self-end ml-2">
-              <div className="mx-4 flex">
+            <div className="text-xs block w-full whitespace-no-wrap overflow-x-scroll mt-2 ">
+              {tags.map((tag) => {
+                return (
+                  <span
+                    className="p-1 m-1 ml-0 bg-gray-200 rounded-full cursor-pointer "
+                    onClick={() => tagSearch(tag.tagRef.name)}
+                  >
+                    {tag.tagRef.name}
+                  </span>
+                )
+              })}
+            </div>
+            <div className="flex justify-start self-end">
+              <div className="mr-4 flex">
                 <img
                   className={`${
                     freezeReaction ? 'pointer-events-none' : 'cursor-pointer'

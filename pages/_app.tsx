@@ -49,6 +49,7 @@ interface AppState {
   notificationsOpen: boolean
   modalOpen: boolean
   searchOpen: boolean
+  searchQuery: string
   modalTitle: string
   modalChildren: React.ReactNode
   yPos: number
@@ -68,6 +69,7 @@ class MyApp extends App<UserProps, {}, AppState> {
       scrollFreeze: false,
       notificationsOpen: false,
       searchOpen: false,
+      searchQuery: '',
       modalOpen: false,
       currentUserInfo: undefined,
       modalTitle: '',
@@ -121,8 +123,8 @@ class MyApp extends App<UserProps, {}, AppState> {
     this.setState({ notificationsOpen: open })
     this.setScrollFreezeState(open)
   }
-  setSearchState(open: boolean) {
-    this.setState({ searchOpen: open })
+  setSearchState(open: boolean, query: string = '') {
+    this.setState({ searchOpen: open, searchQuery: query })
     this.setScrollFreezeState(open)
   }
   setModalState(
@@ -210,6 +212,7 @@ class MyApp extends App<UserProps, {}, AppState> {
               setModalState: this.setModalState,
               setSearchState: this.setSearchState,
               searchOpen: this.state.searchOpen,
+              searchQuery: this.state.searchQuery,
             }}
           >
             {/* Flex col to allow for putting a header and footer above and below the page */}

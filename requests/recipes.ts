@@ -18,6 +18,7 @@ export interface ShortRecipeNodeType {
   stepCount: number
   myReaction: ReactionType
   imageUrl: string | null
+  tags: Array<RecipeTagType>
 }
 
 export const recipeConnectionNodeInit: ShortRecipeNodeType = {
@@ -35,6 +36,13 @@ export const recipeConnectionNodeInit: ShortRecipeNodeType = {
   stepCount: 0,
   myReaction: null,
   imageUrl: null,
+  tags: [
+    {
+      tagRef: {
+        name: '',
+      },
+    },
+  ],
 }
 
 export const RECIPE_SHORT_FRAGMENT = gql`
@@ -53,6 +61,11 @@ export const RECIPE_SHORT_FRAGMENT = gql`
     stepCount
     myReaction
     imageUrl
+    tags {
+      tagRef {
+        name
+      }
+    }
   }
 `
 
@@ -183,6 +196,11 @@ export interface IngredientType {
     name: string
   }
 }
+export interface RecipeTagType {
+  tagRef: {
+    name: string
+  }
+}
 export interface RecipeStepType {
   [id: string]: string | Array<IngredientInputType> | any
   stepNum: number
@@ -211,6 +229,7 @@ export interface RecipeType {
     haveISaved: boolean | null
     myReaction: 0 | 1 | null // update this as more reaction types are added
     steps: Array<RecipeStepType>
+    tags: Array<RecipeTagType>
   }
 }
 
@@ -253,6 +272,11 @@ export const RECIPE_FULL_FRAGMENT = gql`
         unit {
           name
         }
+      }
+    }
+    tags {
+      tagRef {
+        name
       }
     }
   }

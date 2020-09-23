@@ -156,6 +156,7 @@ const RecipePage: NextPage<RecipeProps> = ({ recipe }) => {
     haveISaved,
     myReaction,
     imageUrl,
+    tags,
   } = recipe.result || {}
   const { username, profileImageUrl } = by || {}
   const [reactionCountUpdatable, setReactionCountUpdatable] = React.useState(
@@ -170,6 +171,8 @@ const RecipePage: NextPage<RecipeProps> = ({ recipe }) => {
   const [recipeReaction, setRecipeReaction] = React.useState(myReaction)
   const [freezeReaction, setFreezeReaction] = React.useState(false)
   const [saved, setSaved] = React.useState(haveISaved)
+  const { searchOpen, setSearchState } = React.useContext(ScreenContext)
+
   if (
     currentUserInfo &&
     !onOwnRecipe &&
@@ -194,7 +197,10 @@ const RecipePage: NextPage<RecipeProps> = ({ recipe }) => {
     )
     setFreezeReaction(false)
   }
-
+  const tagSearch = (tag: string) => {
+    let state = searchOpen
+    setSearchState ? setSearchState(!state, tag) : null
+  }
   const pageTitle = `${title || 'a recipe'}, by ${
     by ? by.username : 'rj'
   } - RecipeJoiner`
@@ -233,12 +239,12 @@ const RecipePage: NextPage<RecipeProps> = ({ recipe }) => {
               >
                 {title}
               </h1>
-              <div className=" w-full flex align-middle text-xs">
+              <div className=" w-full flex align-middle text-md">
                 <Link href="/[username]" as={`/${username}`}>
                   <a className="flex align-middle">
                     <img
                       src={profileImageUrl ? profileImageUrl : PROFILE}
-                      className="h-6 w-6 cursor-pointer rounded-full"
+                      className="h-10 w-10 cursor-pointer rounded-full"
                     />
                     <span className="self-center ml-2">
                       {username || <Skeleton width={40} />}
@@ -282,7 +288,20 @@ const RecipePage: NextPage<RecipeProps> = ({ recipe }) => {
                 <div className="h-full text-xl text-gray-700 m-2 ">
                   {description}
                 </div>
+                <div className="text-xs  block w-full whitespace-no-wrap overflow-x-scroll m-2 ">
+                  {tags.map((tag) => {
+                    return (
+                      <span
+                        className="p-1 m-1 ml-0 bg-gray-200 rounded-full cursor-pointer "
+                        onClick={() => tagSearch(tag.tagRef.name)}
+                      >
+                        {tag.tagRef.name}
+                      </span>
+                    )
+                  })}
+                </div>
               </div>
+
               <div className="w-full text-center font-black">Ingredients</div>
               <div
                 className={`${

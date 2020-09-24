@@ -292,7 +292,7 @@ const RecipePage: NextPage<RecipeProps> = ({ recipe }) => {
                   {tags.map((tag) => {
                     return (
                       <span
-                        className="p-1 m-1 ml-0 bg-gray-200 rounded-full cursor-pointer "
+                        className="p-1 m-1 ml-0 bg-gray-200 rounded cursor-pointer "
                         onClick={() => tagSearch(tag.tagRef.name)}
                       >
                         {tag.tagRef.name}
@@ -302,7 +302,13 @@ const RecipePage: NextPage<RecipeProps> = ({ recipe }) => {
                 </div>
               </div>
 
-              <div className="w-full text-center font-black">Ingredients</div>
+              <div
+                className={`${
+                  ingredients.length <= 0 ? 'hidden' : ''
+                } w-full text-center font-black`}
+              >
+                Ingredients
+              </div>
               <div
                 className={`${
                   ingredients.length <= 0 ? 'border-none' : 'border'

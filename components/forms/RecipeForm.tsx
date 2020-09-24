@@ -2,6 +2,8 @@ import * as React from 'react'
 import { GraphQLError } from 'graphql'
 import TextField from '@material-ui/core/TextField'
 import Autocomplete from '@material-ui/lab/Autocomplete'
+import { WithContext as ReactTags } from 'react-tag-input'
+
 import { cloneDeep } from 'lodash'
 import {
   convertFractionToDecimal,
@@ -17,6 +19,13 @@ import {
 import ImageFilePicker from 'helpers/ImageFilePicker'
 
 //start GLOBAL VARIABLES
+const KeyCodes = {
+  comma: 188,
+  enter: 13,
+}
+
+const delimiters = [KeyCodes.comma, KeyCodes.enter]
+
 const IMAGE = require('images/icons/add.svg')
 const TIME = require('images/icons/alarm-clock.svg')
 const SERVINGS = require('images/icons/hot-food.svg')
@@ -82,6 +91,7 @@ const NewRecipe: () => RecipeInputType = () => ({
     hours: 0,
   },
   steps: [NewStep(0)],
+  tags: [],
 })
 
 const NewError = (
@@ -493,7 +503,10 @@ interface RecipeReviewProps {
   goToStep: (step: number) => void
   updateRecipe: (updatedRecipe: RecipeInputType) => void
   getError: (key: string) => Array<Error>
-  updateError: (key: string, value?: string | number | File) => void
+  updateError: (
+    key: string,
+    value?: string | number | File | Array<string>
+  ) => void
   deleteError: (key: string) => void
 }
 const RecipeReviewMode: React.FC<RecipeReviewProps> = ({
@@ -507,7 +520,10 @@ const RecipeReviewMode: React.FC<RecipeReviewProps> = ({
   const [preview, setPreview] = React.useState<string | undefined>()
   const [imageErrs, setImageErrs] = React.useState<readonly GraphQLError[]>([])
 
-  const updateValue = (name: string, value: string | number | File) => {
+  const updateValue = (
+    name: string,
+    value: string | number | File | Array<string>
+  ) => {
     let recipeCopy = cloneDeep<any>(recipe)
     let index = -1
     switch (name) {
@@ -562,6 +578,36 @@ const RecipeReviewMode: React.FC<RecipeReviewProps> = ({
     }
     return IMAGE
   }
+  const updateTags = (
+    tags: string[],
+    changed: string[],
+    changedIndexes: number[]
+  ) => {
+    updateValue('tags', tags)
+  }
+
+  const handleTagDelete = (i: number) => {
+    const tags = recipe.tags
+    updateValue(
+      'tags',
+      tags.filter((tag, index) => index !== i)
+    )
+  }
+
+  const handleTagAddition = (tag: string) => {
+    if (recipe.tags.indexOf(tag) < 0 && recipe.tags.length < 10) {
+      updateValue('tags', [...recipe.tags, tag])
+    }
+  }
+
+  const handleTagDrag = (tag: string, currPos: number, newPos: number) => {
+    const tags = [...recipe.tags]
+    const newTags = tags.slice()
+    newTags.splice(currPos, 1)
+    newTags.splice(newPos, 0, tag)
+    updateValue('tags', newTags)
+  }
+
   return (
     <div className="max-w-3xl lg:my-8 mx-auto ">
       <div className=" mx-auto mt-6 bg-white rounded-lg ">
@@ -653,7 +699,7 @@ const RecipeReviewMode: React.FC<RecipeReviewProps> = ({
           <div className=" w-full h-full rounded ">
             <div className="h-full text-xl text-gray-700 mt-4 ">
               <textarea
-                placeholder="Description and tags"
+                placeholder="Description"
                 className={`${
                   getError('description').length >= 1
                     ? 'border border-red-600'
@@ -664,6 +710,36 @@ const RecipeReviewMode: React.FC<RecipeReviewProps> = ({
                 onChange={handleChange}
               ></textarea>
             </div>
+          </div>
+          <div className="w-full text-center font-black">Tags</div>
+
+          <div className="p-2">
+            <div className="flex flex-wrap">
+              {recipe.tags.map((tag) => (
+                <div className="bg-gray-300 rounded m-1 ml-0 align-middle">
+                  <span className="px-2">{tag}</span>
+
+                  <span
+                    className="px-1 cursor-pointer bg-gray-400 rounded m-auto font-bold rounded-l-none"
+                    onClick={() => handleTagDelete(recipe.tags.indexOf(tag))}
+                  >
+                    x
+                  </span>
+                </div>
+              ))}
+            </div>
+            <input
+              type="text"
+              id="tag-input"
+              placeholder="Type tag and hit ENTER"
+              className="border border-gray-400 p-1 1 outline-none shadow-md w-full"
+              onKeyUp={(e) => {
+                if (e.key === 'Enter') {
+                  handleTagAddition(e.currentTarget.value)
+                  e.currentTarget.value = ''
+                }
+              }}
+            />
           </div>
           {/* <div className="w-full text-center font-black">Ingredients</div>
           <div
@@ -737,7 +813,10 @@ const RecipeForm: React.FC<RecipeFormProps> = ({
     setErrors(updatedErrors)
   }
 
-  const updateError = (key: string, value?: string | number | File) => {
+  const updateError = (
+    key: string,
+    value?: string | number | File | Array<string>
+  ) => {
     if (value && getError(key).length) deleteError(key)
   }
 

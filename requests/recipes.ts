@@ -334,6 +334,7 @@ export interface RecipeInputType {
     hours: number
   }
   steps: Array<RecipeStepInputType>
+  tags: Array<string>
 }
 
 export interface CreateRecipeVars {

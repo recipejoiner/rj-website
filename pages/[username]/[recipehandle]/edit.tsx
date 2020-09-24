@@ -77,6 +77,7 @@ const getExistingRecipeAttributes = async (
     steps,
     recipeTime,
     imageUrl,
+    tags,
   } = result
 
   const image = await urlToFile(imageUrl)
@@ -117,6 +118,9 @@ const getExistingRecipeAttributes = async (
     servings: servings,
     recipeTime: minutesToTime(recipeTime),
     steps: formatSteps(steps),
+    tags: tags.map((tag) => {
+      return tag.tagRef.name
+    }),
   }
 
   return { existingRecipeId: existingRecipeId, oldAttributes: oldAttributes }

@@ -12,83 +12,46 @@ import {
   savedRecipeConnectionNodeInit,
   CurrentUserSavedRecipesVarsType,
   CURRENT_USER_SAVED_RECIPES,
-  UserSavedRecipesByUsernameVarsType,
-  USER_SAVED_RECIPES_BY_USERNAME,
 } from 'requests/recipes'
 
 import InfiniteScroll, { EdgeType } from 'components/InfiniteScroll'
 import ShortRecipe from 'components/ShortRecipe'
 import { escapeRegExp } from 'lodash'
+import { CollectionVarsType, GET_COLLECTION } from 'requests/collections'
 
-interface UserSavedRecipesProps {
-  username?: string
+interface CollectionRecipesProps {
+  username: string
+  handle: string
 }
-export const UserSavedRecipes: React.FC<UserSavedRecipesProps> = ({
+export const CollectionRecipes: React.FC<CollectionRecipesProps> = ({
   username,
+  handle,
 }) => {
   const SavedRecipesVars: UserRecipeFeedVarsType = {
     cursor: null,
   }
   return (
-    <div className="border-t">
-      <div className="m-auto max-w-3xl">
-        <h3 className="text-center text-xl font-bold">{`${
-          username ? `${username}'s` : 'Your'
-        } Saved Recipes`}</h3>
-        {username ? (
-          <InfiniteScroll
-            QUERY={USER_SAVED_RECIPES_BY_USERNAME}
-            hasJustConnection={false}
-            nodeInit={savedRecipeConnectionNodeInit}
-            QueryVars={(() => {
-              const queryVars: UserSavedRecipesByUsernameVarsType = {
-                username: username,
-                cursor: null,
-              }
-              return queryVars
-            })()}
-          >
-            {(edges: Array<EdgeType<SavedRecipeNodeType>>) => (
-              <ul>
-                {edges.map((edge) => {
-                  return (
-                    <ShortRecipe
-                      node={edge.node.savedRecipe}
-                      key={edge.cursor}
-                    />
-                  )
-                })}
-              </ul>
-            )}
-          </InfiniteScroll>
-        ) : (
-          <InfiniteScroll
-            QUERY={CURRENT_USER_SAVED_RECIPES}
-            hasJustConnection={false}
-            nodeInit={savedRecipeConnectionNodeInit}
-            QueryVars={(() => {
-              const queryVars: CurrentUserSavedRecipesVarsType = {
-                cursor: null,
-              }
-              return queryVars
-            })()}
-          >
-            {(edges: Array<EdgeType<SavedRecipeNodeType>>) => (
-              <ul>
-                {edges.map((edge) => {
-                  return (
-                    <ShortRecipe
-                      node={edge.node.savedRecipe}
-                      key={edge.cursor}
-                    />
-                  )
-                })}
-              </ul>
-            )}
-          </InfiniteScroll>
-        )}
-      </div>
-    </div>
+    <InfiniteScroll
+      QUERY={GET_COLLECTION}
+      hasJustConnection={true}
+      nodeInit={savedRecipeConnectionNodeInit}
+      QueryVars={(() => {
+        const queryVars: CollectionVarsType = {
+          username: username,
+          handle: handle,
+          cursor: null,
+        }
+        return queryVars
+      })()}
+    >
+      {(edges: Array<EdgeType<SavedRecipeNodeType>>) => (
+        <ul>
+          {edges.map((edge) => {
+            return <ShortRecipe node={edge.node.saveable} key={edge.cursor} />
+          })}
+        </ul>
+      )}
+    </InfiniteScroll>
   )
 }
 

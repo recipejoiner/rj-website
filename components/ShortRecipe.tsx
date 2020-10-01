@@ -32,6 +32,7 @@ import {
 import UserContext from 'helpers/UserContext'
 import ScreenContext from 'helpers/ScreenContext'
 import { ReactionType } from 'requests/reactions'
+import RecipeInCollection from './RecipeInCollection'
 
 const IMAGE_PLACEHOLDER = require('images/icons/picture.svg')
 const LIKE_BW = require('images/icons/yummy_bw.svg')
@@ -70,6 +71,7 @@ const ShortRecipe: React.FC<ShortRecipeProps> = ({ node }) => {
     reactionCount
   )
   const { searchOpen, setSearchState } = React.useContext(ScreenContext)
+  const { modalOpen, setModalState } = React.useContext(ScreenContext)
 
   let { username, profileImageUrl } = by || {}
   let time = minutesToTime(recipeTime)
@@ -84,6 +86,14 @@ const ShortRecipe: React.FC<ShortRecipeProps> = ({ node }) => {
   const tagSearch = (tag: string) => {
     let state = searchOpen
     setSearchState ? setSearchState(!state, tag) : null
+  }
+  const saveRecipe = () => {
+    setModalState &&
+      setModalState(
+        true,
+        'Cookbooks',
+        <RecipeInCollection recipeId={id} inModal={true} />
+      )
   }
   return (
     <div className="max-w-3xl mx-auto  overflow-hidden border-gray-500 border-b">
@@ -190,7 +200,11 @@ const ShortRecipe: React.FC<ShortRecipeProps> = ({ node }) => {
                 </span>
               </div>
               <div className="mx-4 flex">
-                <img className="h-6 cursor-pointer" src={SAVE_BW} />
+                <img
+                  className="h-6 cursor-pointer"
+                  src={SAVE_BW}
+                  onClick={saveRecipe}
+                />
               </div>
               <div className="mx-4 flex">
                 <img

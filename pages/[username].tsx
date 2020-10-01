@@ -26,6 +26,7 @@ import UserRelList from 'components/modalviews/UserRelList'
 import UpdateProfileImage from 'components/modalviews/UpdateProfileImage'
 import { profile } from 'console'
 import ScreenContext from 'helpers/ScreenContext'
+import Collections from 'components/Collections'
 
 interface UserPageProps {
   userInfo: UserInfoType
@@ -44,6 +45,7 @@ const UserPage: NextPage<UserPageProps> = ({ userInfo }) => {
   } = result || {}
   const { currentUserInfo } = React.useContext(UserContext)
   const { modalOpen, setModalState } = React.useContext(ScreenContext)
+  const [tab, setTab] = React.useState('recipes')
 
   const openFollowers = () => {
     setModalState &&
@@ -106,16 +108,21 @@ const UserPage: NextPage<UserPageProps> = ({ userInfo }) => {
   )
 
   const [stats, setStats] = React.useState([
-    { name: 'recipes', count: recipeCount, onClick: () => {} },
+    {
+      name: 'recipes',
+      count: recipeCount,
+    },
+    {
+      name: 'cookbooks',
+      count: 0,
+    },
     {
       name: 'followers',
       count: followerCountState,
-      onClick: openFollowers,
     },
     {
       name: 'following',
       count: followingCount,
-      onClick: openFollowing,
     },
   ])
 
@@ -151,17 +158,23 @@ const UserPage: NextPage<UserPageProps> = ({ userInfo }) => {
     setCurrProfileImageUrl(profileImageUrl)
     console.log('followerCount', followerCount)
     setFollowerCountState(followerCount)
+    setTab('recipes')
     setStats([
-      { name: 'recipes', count: recipeCount, onClick: () => {} },
+      {
+        name: 'recipes',
+        count: recipeCount,
+      },
+      {
+        name: 'cookbooks',
+        count: 0,
+      },
       {
         name: 'followers',
         count: followerCount,
-        onClick: openFollowers,
       },
       {
         name: 'following',
         count: followingCount,
-        onClick: openFollowing,
       },
     ])
   }
@@ -179,6 +192,49 @@ const UserPage: NextPage<UserPageProps> = ({ userInfo }) => {
     }
   }, [currUsername]) // run on first render and whenever currUsername changes
 
+  const getTab = () => {
+    switch (tab) {
+      case 'recipes':
+        return (
+          <InfiniteScroll
+            QUERY={ALL_USER_RECIPES_BY_USERNAME}
+            hasJustConnection={false}
+            nodeInit={recipeConnectionNodeInit}
+            QueryVars={UsersRecipesVars}
+          >
+            {(edges: Array<EdgeType<ShortRecipeNodeType>>) => {
+              return (
+                <ul>
+                  {edges.map((edge) => {
+                    return <ShortRecipe node={edge.node} key={edge.cursor} />
+                  })}
+                </ul>
+              )
+            }}
+          </InfiniteScroll>
+        )
+      case 'cookbooks':
+        return <Collections username={username} />
+      case 'followers':
+        return (
+          <UserRelList
+            username={username}
+            relationship="followers"
+            inModal={false}
+          />
+        )
+      case 'following':
+        return (
+          <UserRelList
+            username={username}
+            relationship="following"
+            inModal={false}
+          />
+        )
+      default:
+        return null
+    }
+  }
   const title = `chef ${username} - RecipeJoiner`
   const description = `Check out all recipes by chef ${username}!`
   return (
@@ -238,12 +294,20 @@ const UserPage: NextPage<UserPageProps> = ({ userInfo }) => {
               )}
             </div>
           </header>
-          <ul className="flex flex-row text-gray-500 font-semibold text-sm leading-tight border-t border-b py-3">
+          <ul className="flex flex-row text-gray-500 font-semibold text-sm leading-tight border-t border-b">
             {stats.map((stat) => {
-              const { name, count, onClick } = stat
+              const { name, count } = stat
               return (
-                <li className="text-center w-1/3" key={name}>
-                  <button onClick={onClick}>
+                <li
+                  className={`${
+                    name === tab ? 'bg-gray-300' : ''
+                  } text-center w-1/4 py-3 `}
+                  key={name}
+                >
+                  <button
+                    onClick={() => setTab(name)}
+                    className="outline-none focus:outline-none"
+                  >
                     <span className="block text-gray-900 font-bold">
                       {count}
                     </span>
@@ -253,22 +317,7 @@ const UserPage: NextPage<UserPageProps> = ({ userInfo }) => {
               )
             })}
           </ul>
-          <InfiniteScroll
-            QUERY={ALL_USER_RECIPES_BY_USERNAME}
-            hasJustConnection={false}
-            nodeInit={recipeConnectionNodeInit}
-            QueryVars={UsersRecipesVars}
-          >
-            {(edges: Array<EdgeType<ShortRecipeNodeType>>) => {
-              return (
-                <ul>
-                  {edges.map((edge) => {
-                    return <ShortRecipe node={edge.node} key={edge.cursor} />
-                  })}
-                </ul>
-              )
-            }}
-          </InfiniteScroll>
+          {getTab()}
         </div>
       </div>
     </React.Fragment>

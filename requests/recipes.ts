@@ -60,6 +60,7 @@ export const RECIPE_SHORT_FRAGMENT = gql`
     commentCount
     stepCount
     myReaction
+    haveISaved
     imageUrl
     tags {
       tagRef {
@@ -128,10 +129,10 @@ export const ALL_USER_RECIPES_BY_USERNAME = gql`
 
 // SAVED RECIPES
 export interface SavedRecipeNodeType {
-  savedRecipe: ShortRecipeNodeType
+  saveable: ShortRecipeNodeType
 }
 export const savedRecipeConnectionNodeInit: SavedRecipeNodeType = {
-  savedRecipe: recipeConnectionNodeInit,
+  saveable: recipeConnectionNodeInit,
 }
 
 export interface CurrentUserSavedRecipesVarsType {
@@ -140,33 +141,6 @@ export interface CurrentUserSavedRecipesVarsType {
 export const CURRENT_USER_SAVED_RECIPES = gql`
   query currentUserSavedRecipes($cursor: String) {
     result: me {
-      connection: saves(first: 10, after: $cursor) {
-        pageInfo {
-          hasNextPage
-        }
-        edges {
-          cursor
-          node {
-            savedRecipe: saveable {
-              ... on Recipe {
-                ...recipeShortAttributes
-              }
-            }
-          }
-        }
-      }
-    }
-  }
-  ${RECIPE_SHORT_FRAGMENT}
-`
-
-export interface UserSavedRecipesByUsernameVarsType {
-  username: string
-  cursor: string | null
-}
-export const USER_SAVED_RECIPES_BY_USERNAME = gql`
-  query userSavedRecipesByUsername($username: String!, $cursor: String) {
-    result: userByUsername(username: $username) {
       connection: saves(first: 10, after: $cursor) {
         pageInfo {
           hasNextPage

@@ -73,7 +73,6 @@ const MailChimp = () => {
               <input
                 type="text"
                 name="b_c454e2add429cd34426b83c6e_3e7deebbae"
-                tabindex="-1"
                 value=""
               ></input>
             </div>

@@ -162,4 +162,22 @@ const SignUpPage: NextPage<SignUpPageProps> = ({}) => {
   )
 }
 
-export default withHomeRedirect(SignUpPage)
+const NoSignups = () => {
+  return (
+    <React.Fragment>
+      <div className="m-auto p-4">
+        <h1>
+          Sorry we are not accepting new signups at this time. If you have a
+          concern please reach us at help@recipejoiner.com
+        </h1>
+        <a
+          className="mt-5 inline-block align-baseline font-bold text-sm text-blue-500 hover:text-blue-800"
+          href="/login"
+        >
+          Already have an account?
+        </a>
+      </div>
+    </React.Fragment>
+  )
+}
+export default withHomeRedirect(NoSignups)

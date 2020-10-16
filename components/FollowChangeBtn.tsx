@@ -49,14 +49,30 @@ const FollowBtn: React.FC<FollowBtnProps> = ({ followUser }) => {
 interface FollowChangeBtnProps {
   followingStatus: boolean | null
   setFollowingStatus: (status: boolean) => void
+  followingCountStat: number
+  setFollowingCountStat: (amount: number) => void
+  followerCountStat: number
+  setFollowerCountStat: (amount: number) => void
   username: string
 }
 
 const FollowChangeBtn: React.FC<FollowChangeBtnProps> = ({
   followingStatus,
   setFollowingStatus,
+  followingCountStat,
+  setFollowingCountStat,
+  followerCountStat,
+  setFollowerCountStat,
   username,
 }) => {
+  console.log('followers:', followerCountStat)
+  const [currentFollowingCount, setCurrentFollowingCount] = React.useState(
+    followingCountStat
+  )
+  const [currentFollowerCount, setCurrentFollowerCount] = React.useState(
+    followerCountStat
+  )
+  console.log('currentFollowerCount', currentFollowerCount)
   const variables: UserFollowChangeVars = {
     username: username,
   }
@@ -75,6 +91,21 @@ const FollowChangeBtn: React.FC<FollowChangeBtnProps> = ({
         const { data }: { data?: UserFollowChangeReturnType } = res || {}
         if (data && data.result.user) {
           setFollowingStatus(data.result.user.areFollowing)
+
+          //if the current *logged-in* user is on their OWN profile, increment their following count
+          if (
+            currentUserInfo &&
+            window.location.pathname.includes(currentUserInfo?.me.username)
+          ) {
+            const newFollowingCount = currentFollowingCount + 1
+            setFollowingCountStat(newFollowingCount)
+            setCurrentFollowingCount(newFollowingCount)
+            //if the user *being unfollowed* from their own profile, increment their follower count
+          } else if (window.location.pathname.includes(username)) {
+            const newFollowerCount = followerCountStat + 1
+            setFollowerCountStat(newFollowerCount)
+            setCurrentFollowerCount(newFollowerCount)
+          }
         }
       })
   }
@@ -94,6 +125,21 @@ const FollowChangeBtn: React.FC<FollowChangeBtnProps> = ({
         const { data }: { data?: UserFollowChangeReturnType } = res || {}
         if (data && data.result.user) {
           setFollowingStatus(data.result.user.areFollowing)
+
+          //if the current *logged-in* user is on their OWN profile, decrement their following count
+          if (
+            currentUserInfo &&
+            window.location.pathname.includes(currentUserInfo?.me.username)
+          ) {
+            const newFollowingCount = currentFollowingCount - 1
+            setFollowingCountStat(newFollowingCount)
+            setCurrentFollowingCount(newFollowingCount)
+            //if the user *being unfollowed* from their own profile, decrement their follower count
+          } else if (window.location.pathname.includes(username)) {
+            const newFollowerCount = followerCountStat - 1
+            setFollowerCountStat(newFollowerCount)
+            setCurrentFollowerCount(newFollowerCount)
+          }
         }
       })
   }

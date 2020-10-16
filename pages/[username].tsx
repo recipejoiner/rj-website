@@ -24,6 +24,7 @@ import SettingsBtn from 'components/SettingsBtn'
 import FollowChangeBtn from 'components/FollowChangeBtn'
 import UserRelList from 'components/modalviews/UserRelList'
 import UpdateProfileImage from 'components/modalviews/UpdateProfileImage'
+import StatView from 'components/StatView'
 import { profile } from 'console'
 
 interface UserPageProps {
@@ -54,6 +55,10 @@ const UserPage: NextPage<UserPageProps> = ({ userInfo }) => {
           username={username}
           relationship="followers"
           inModal={true}
+          followingCountStat={followingCountStat}
+          setFollowingCountStat={setFollowingCountStat}
+          followerCountStat={followerCountStat}
+          setFollowerCountStat={setFollowerCountStat}
         />
       )
   }
@@ -66,6 +71,10 @@ const UserPage: NextPage<UserPageProps> = ({ userInfo }) => {
           username={username}
           relationship="following"
           inModal={true}
+          followingCountStat={followingCountStat}
+          setFollowingCountStat={setFollowingCountStat}
+          followerCountStat={followerCountStat}
+          setFollowerCountStat={setFollowerCountStat}
         />
       )
   }
@@ -105,19 +114,13 @@ const UserPage: NextPage<UserPageProps> = ({ userInfo }) => {
     followerCount
   )
 
-  const [stats, setStats] = React.useState([
-    { name: 'recipes', count: recipeCount, onClick: () => {} },
-    {
-      name: 'followers',
-      count: followerCountState,
-      onClick: openFollowers,
-    },
-    {
-      name: 'following',
-      count: followingCount,
-      onClick: openFollowing,
-    },
-  ])
+  const [recipeCountStat, setRecipeCountStat] = React.useState(recipeCount)
+  const [followerCountStat, setFollowerCountStat] = React.useState(
+    followerCountState
+  )
+  const [followingCountStat, setFollowingCountStat] = React.useState(
+    followingCount
+  )
 
   const [followingStatus, setFollowingStatus] = React.useState(areFollowing)
 
@@ -151,19 +154,9 @@ const UserPage: NextPage<UserPageProps> = ({ userInfo }) => {
     setCurrProfileImageUrl(profileImageUrl)
     console.log('followerCount', followerCount)
     setFollowerCountState(followerCount)
-    setStats([
-      { name: 'recipes', count: recipeCount, onClick: () => {} },
-      {
-        name: 'followers',
-        count: followerCount,
-        onClick: openFollowers,
-      },
-      {
-        name: 'following',
-        count: followingCount,
-        onClick: openFollowing,
-      },
-    ])
+    setRecipeCountStat(recipeCount)
+    setFollowerCountStat(followerCount)
+    setFollowingCountStat(followingCount)
   }
   React.useEffect(() => {
     setFollowingStatus(areFollowing)
@@ -233,25 +226,40 @@ const UserPage: NextPage<UserPageProps> = ({ userInfo }) => {
                   setFollowingStatus={(status: boolean) =>
                     setFollowingStatus(status)
                   }
+                  followingCountStat={followingCountStat}
+                  setFollowingCountStat={setFollowingCountStat}
+                  followerCountStat={followerCountStat}
+                  setFollowerCountStat={setFollowerCountStat}
                   username={username}
                 />
               )}
             </div>
           </header>
           <ul className="flex flex-row text-gray-500 font-semibold text-sm leading-tight border-t border-b py-3">
-            {stats.map((stat) => {
-              const { name, count, onClick } = stat
-              return (
-                <li className="text-center w-1/3" key={name}>
-                  <button onClick={onClick}>
-                    <span className="block text-gray-900 font-bold">
-                      {count}
-                    </span>
-                    {name}
-                  </button>
-                </li>
-              )
-            })}
+            <li className="text-center w-1/3" key="recipes">
+              <button>
+                <span className="block text-gray-900 font-bold">
+                  {recipeCountStat}
+                </span>
+                recipes
+              </button>
+            </li>
+            <li className="text-center w-1/3" key="followers">
+              <button onClick={openFollowers}>
+                <span className="block text-gray-900 font-bold">
+                  {followerCountStat}
+                </span>
+                followers
+              </button>
+            </li>
+            <li className="text-center w-1/3" key="following">
+              <button onClick={openFollowing}>
+                <span className="block text-gray-900 font-bold">
+                  {followingCountStat}
+                </span>
+                following
+              </button>
+            </li>
           </ul>
           <InfiniteScroll
             QUERY={ALL_USER_RECIPES_BY_USERNAME}

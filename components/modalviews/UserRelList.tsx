@@ -16,12 +16,20 @@ type UserRelListProps = {
   username: string
   relationship: 'following' | 'followers'
   inModal?: boolean
+  followingCountStat: number
+  setFollowingCountStat: (amount: number) => void
+  followerCountStat: number
+  setFollowerCountStat: (amount: number) => void
 }
 
 const UserRelList: React.FC<UserRelListProps> = ({
   username,
   relationship,
   inModal,
+  followingCountStat,
+  setFollowingCountStat,
+  followerCountStat,
+  setFollowerCountStat,
 }) => {
   const UsersFollowRelVars: FollowRelListByUsernameVars = {
     username: username,
@@ -110,6 +118,10 @@ const UserRelList: React.FC<UserRelListProps> = ({
                         setFollowingStatus={(status: boolean) => {
                           setFollowingStatus(edge.node.username, status)
                         }}
+                        followingCountStat={followingCountStat}
+                        setFollowingCountStat={setFollowingCountStat}
+                        followerCountStat={followerCountStat}
+                        setFollowerCountStat={setFollowerCountStat}
                         username={edge.node.username}
                       />
                     ) : (
